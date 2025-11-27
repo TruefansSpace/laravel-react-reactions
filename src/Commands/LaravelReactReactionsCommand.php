@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace TrueFans\LaravelReactReactions\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class LaravelReactReactionsCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-react-reactions';
 
     public $description = 'My command';
 
