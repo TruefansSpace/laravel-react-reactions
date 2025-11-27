@@ -22,7 +22,7 @@ class TestCase extends Orchestra
         // Prevent error handler issues with architecture tests
         restore_error_handler();
         restore_exception_handler();
-        
+
         parent::tearDown();
     }
 
