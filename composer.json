@@ -1,12 +1,12 @@
 {
-    "name": "truefansspace/laravel-react-reactions",
+    "name": "truefanspace/laravel-react-reactions",
     "description": "Faceboook like reaction system for Laravel, Inertia and React",
     "keywords": [
         "Vahan Drnoyan",
         "laravel",
         "laravel-react-reactions"
     ],
-    "homepage": "https://github.com/truefansspace/laravel-react-reactions",
+    "homepage": "https://github.com/truefanspace/laravel-react-reactions",
     "license": "MIT",
     "authors": [
         {
