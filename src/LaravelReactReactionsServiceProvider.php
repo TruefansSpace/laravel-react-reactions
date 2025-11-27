@@ -16,10 +16,19 @@ class LaravelReactReactionsServiceProvider extends PackageServiceProvider
          * More info: https://github.com/spatie/laravel-package-tools
          */
         $package
-            ->name('laravel-react-reactions')
+            ->name('react-reactions')
             ->hasConfigFile()
             ->hasViews()
-            ->hasMigration('create_laravel_react_reactions_table')
+            ->hasMigration('create_react_reactions_table')
+            ->hasRoute('web')
             ->hasCommand(LaravelReactReactionsCommand::class);
+    }
+
+    public function packageRegistered(): void
+    {
+        // Register publishable React components
+        $this->publishes([
+            __DIR__.'/../resources/js/Components' => resource_path('js/Components/Reactions'),
+        ], 'react-reactions-components');
     }
 }
