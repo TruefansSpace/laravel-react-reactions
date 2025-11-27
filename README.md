@@ -1,9 +1,9 @@
 # Faceboook like reaction system for Laravel, Inertia and React
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/truefansspace/laravel-react-reactions.svg?style=flat-square)](https://packagist.org/packages/truefansspace/laravel-react-reactions)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/truefansspace/laravel-react-reactions/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/truefansspace/laravel-react-reactions/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/truefansspace/laravel-react-reactions/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/truefansspace/laravel-react-reactions/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/truefansspace/laravel-react-reactions.svg?style=flat-square)](https://packagist.org/packages/truefansspace/laravel-react-reactions)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/truefanspace/laravel-react-reactions.svg?style=flat-square)](https://packagist.org/packages/truefanspace/laravel-react-reactions)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/truefanspace/laravel-react-reactions/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/truefanspace/laravel-react-reactions/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/truefanspace/laravel-react-reactions/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/truefanspace/laravel-react-reactions/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/truefanspace/laravel-react-reactions.svg?style=flat-square)](https://packagist.org/packages/truefanspace/laravel-react-reactions)
 
 This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
 
@@ -20,7 +20,7 @@ We highly appreciate you sending us a postcard from your hometown, mentioning wh
 You can install the package via composer:
 
 ```bash
-composer require truefansspace/laravel-react-reactions
+composer require truefanspace/laravel-react-reactions
 ```
 
 You can publish and run the migrations with:
