@@ -17,6 +17,15 @@ class TestCase extends Orchestra
         );
     }
 
+    protected function tearDown(): void
+    {
+        // Prevent error handler issues with architecture tests
+        restore_error_handler();
+        restore_exception_handler();
+        
+        parent::tearDown();
+    }
+
     protected function getPackageProviders($app)
     {
         return [
