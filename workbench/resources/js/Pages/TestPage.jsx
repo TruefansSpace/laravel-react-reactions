@@ -1,6 +1,6 @@
 import React from 'react';
 import { Head } from '@inertiajs/react';
-import Reactions from '@/Components/Reactions';
+import Reactions from 'package/Components/Reactions';
 
 export default function TestPage({ post }) {
     return (

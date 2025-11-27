@@ -9,6 +9,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': resolve(__dirname, 'workbench/resources/js'),
+            'package': resolve(__dirname, 'resources/js'),
         },
     },
     build: {
