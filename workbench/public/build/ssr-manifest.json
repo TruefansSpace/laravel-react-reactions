@@ -2,5 +2,9 @@
   "resources/js/Components/Reactions.jsx": [],
   "workbench/resources/js/Pages/Auth/Login.jsx": [],
   "workbench/resources/js/Pages/TestPage.jsx": [],
+  "workbench/resources/js/components/DebugPanel.jsx": [],
+  "workbench/resources/js/components/ui/button.jsx": [],
+  "workbench/resources/js/components/ui/card.jsx": [],
+  "workbench/resources/js/lib/utils.js": [],
   "workbench/resources/js/ssr.jsx": []
 }

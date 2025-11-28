@@ -1,9 +1,180 @@
-import { jsxs, Fragment, jsx } from "react/jsx-runtime";
-import { useState, useRef, useEffect } from "react";
+import { jsx, jsxs, Fragment } from "react/jsx-runtime";
+import * as React from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm, Head, router, usePage, Link, createInertiaApp } from "@inertiajs/react";
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { Slot } from "@radix-ui/react-slot";
+import { cva } from "class-variance-authority";
 import { LogOut, User } from "lucide-react";
 import createServer from "@inertiajs/react/server";
 import ReactDOMServer from "react-dom/server";
+function cn(...inputs) {
+  return twMerge(clsx(inputs));
+}
+const Card = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  "div",
+  {
+    ref,
+    className: cn(
+      "rounded-xl border bg-card text-card-foreground shadow",
+      className
+    ),
+    ...props
+  }
+));
+Card.displayName = "Card";
+const CardHeader = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  "div",
+  {
+    ref,
+    className: cn("flex flex-col space-y-1.5 p-6", className),
+    ...props
+  }
+));
+CardHeader.displayName = "CardHeader";
+const CardTitle = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  "h3",
+  {
+    ref,
+    className: cn("font-semibold leading-none tracking-tight", className),
+    ...props
+  }
+));
+CardTitle.displayName = "CardTitle";
+const CardDescription = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  "p",
+  {
+    ref,
+    className: cn("text-sm text-muted-foreground", className),
+    ...props
+  }
+));
+CardDescription.displayName = "CardDescription";
+const CardContent = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx("div", { ref, className: cn("p-6 pt-0", className), ...props }));
+CardContent.displayName = "CardContent";
+const CardFooter = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  "div",
+  {
+    ref,
+    className: cn("flex items-center p-6 pt-0", className),
+    ...props
+  }
+));
+CardFooter.displayName = "CardFooter";
+const buttonVariants = cva(
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+        outline: "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+        secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline"
+      },
+      size: {
+        default: "h-9 px-4 py-2",
+        sm: "h-8 rounded-md px-3 text-xs",
+        lg: "h-10 rounded-md px-8",
+        icon: "h-9 w-9"
+      }
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default"
+    }
+  }
+);
+const Button = React.forwardRef(({ className, variant, size, asChild = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : "button";
+  return /* @__PURE__ */ jsx(
+    Comp,
+    {
+      className: cn(buttonVariants({ variant, size, className })),
+      ref,
+      ...props
+    }
+  );
+});
+Button.displayName = "Button";
+function DebugPanel() {
+  var _a;
+  const [debugData, setDebugData] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => {
+    const checkDebugbar = () => {
+      if (window.phpdebugbar) {
+        const openHandler = window.phpdebugbar.openHandler;
+        if (openHandler) {
+          openHandler.load((data) => {
+            setDebugData(data);
+          });
+        }
+      }
+    };
+    checkDebugbar();
+    const timer = setTimeout(checkDebugbar, 500);
+    return () => clearTimeout(timer);
+  }, []);
+  if (!debugData) return null;
+  const queries = debugData.queries || [];
+  const queryCount = queries.length;
+  const totalTime = queries.reduce((sum, q) => sum + (parseFloat(q.duration) || 0), 0);
+  const memory = ((_a = debugData.memory) == null ? void 0 : _a.peak_usage_str) || "N/A";
+  return /* @__PURE__ */ jsx("div", { className: "fixed bottom-4 right-4 z-50", children: !isOpen ? /* @__PURE__ */ jsxs(
+    Button,
+    {
+      onClick: () => setIsOpen(true),
+      className: "shadow-lg",
+      variant: "default",
+      children: [
+        "🐛 Debug (",
+        queryCount,
+        " queries)"
+      ]
+    }
+  ) : /* @__PURE__ */ jsxs(Card, { className: "w-96 max-h-96 overflow-auto p-4 shadow-xl", children: [
+    /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-center mb-4", children: [
+      /* @__PURE__ */ jsx("h3", { className: "font-bold text-lg", children: "Debug Info" }),
+      /* @__PURE__ */ jsx(
+        Button,
+        {
+          onClick: () => setIsOpen(false),
+          variant: "ghost",
+          size: "sm",
+          children: "✕"
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx("div", { className: "text-sm font-semibold", children: "Database Queries" }),
+        /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-blue-600", children: queryCount }),
+        /* @__PURE__ */ jsxs("div", { className: "text-xs text-gray-500", children: [
+          "Total time: ",
+          totalTime.toFixed(2),
+          "ms"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx("div", { className: "text-sm font-semibold", children: "Memory Usage" }),
+        /* @__PURE__ */ jsx("div", { className: "text-lg", children: memory })
+      ] }),
+      queries.length > 0 && /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx("div", { className: "text-sm font-semibold mb-2", children: "Recent Queries" }),
+        /* @__PURE__ */ jsx("div", { className: "space-y-2 max-h-48 overflow-y-auto", children: queries.slice(0, 5).map((query, idx) => /* @__PURE__ */ jsxs("div", { className: "text-xs bg-gray-50 p-2 rounded", children: [
+          /* @__PURE__ */ jsx("div", { className: "font-mono text-gray-700 truncate", children: query.sql }),
+          /* @__PURE__ */ jsxs("div", { className: "text-gray-500 mt-1", children: [
+            query.duration,
+            "ms"
+          ] })
+        ] }, idx)) })
+      ] })
+    ] })
+  ] }) });
+}
 function Login() {
   const { data, setData, post, processing, errors } = useForm({
     email: "test@example.com",
@@ -16,83 +187,86 @@ function Login() {
   };
   return /* @__PURE__ */ jsxs(Fragment, { children: [
     /* @__PURE__ */ jsx(Head, { title: "Login" }),
-    /* @__PURE__ */ jsx("div", { className: "min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxs("div", { className: "max-w-md w-full space-y-8", children: [
-      /* @__PURE__ */ jsxs("div", { children: [
-        /* @__PURE__ */ jsx("h2", { className: "mt-6 text-center text-3xl font-extrabold text-gray-900", children: "Sign in to test reactions" }),
-        /* @__PURE__ */ jsx("p", { className: "mt-2 text-center text-sm text-gray-600", children: "Use the default credentials below or try other test accounts" })
-      ] }),
-      /* @__PURE__ */ jsxs("form", { className: "mt-8 space-y-6 bg-white p-8 rounded-lg shadow-md", onSubmit: submit, children: [
-        /* @__PURE__ */ jsxs("div", { className: "rounded-md shadow-sm -space-y-px", children: [
-          /* @__PURE__ */ jsxs("div", { className: "mb-4", children: [
-            /* @__PURE__ */ jsx("label", { htmlFor: "email", className: "block text-sm font-medium text-gray-700 mb-1", children: "Email address" }),
-            /* @__PURE__ */ jsx(
-              "input",
-              {
-                id: "email",
-                name: "email",
-                type: "email",
-                autoComplete: "email",
-                required: true,
-                className: "appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm",
-                placeholder: "Email address",
-                value: data.email,
-                onChange: (e) => setData("email", e.target.value)
-              }
-            ),
-            errors.email && /* @__PURE__ */ jsx("p", { className: "mt-1 text-sm text-red-600", children: errors.email })
+    /* @__PURE__ */ jsxs("div", { className: "min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8", children: [
+      /* @__PURE__ */ jsxs("div", { className: "max-w-md w-full space-y-8", children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("h2", { className: "mt-6 text-center text-3xl font-extrabold text-gray-900", children: "Sign in to test reactions" }),
+          /* @__PURE__ */ jsx("p", { className: "mt-2 text-center text-sm text-gray-600", children: "Use the default credentials below or try other test accounts" })
+        ] }),
+        /* @__PURE__ */ jsxs("form", { className: "mt-8 space-y-6 bg-white p-8 rounded-lg shadow-md", onSubmit: submit, children: [
+          /* @__PURE__ */ jsxs("div", { className: "rounded-md shadow-sm -space-y-px", children: [
+            /* @__PURE__ */ jsxs("div", { className: "mb-4", children: [
+              /* @__PURE__ */ jsx("label", { htmlFor: "email", className: "block text-sm font-medium text-gray-700 mb-1", children: "Email address" }),
+              /* @__PURE__ */ jsx(
+                "input",
+                {
+                  id: "email",
+                  name: "email",
+                  type: "email",
+                  autoComplete: "email",
+                  required: true,
+                  className: "appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm",
+                  placeholder: "Email address",
+                  value: data.email,
+                  onChange: (e) => setData("email", e.target.value)
+                }
+              ),
+              errors.email && /* @__PURE__ */ jsx("p", { className: "mt-1 text-sm text-red-600", children: errors.email })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "mb-4", children: [
+              /* @__PURE__ */ jsx("label", { htmlFor: "password", className: "block text-sm font-medium text-gray-700 mb-1", children: "Password" }),
+              /* @__PURE__ */ jsx(
+                "input",
+                {
+                  id: "password",
+                  name: "password",
+                  type: "password",
+                  autoComplete: "current-password",
+                  required: true,
+                  className: "appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm",
+                  placeholder: "Password",
+                  value: data.password,
+                  onChange: (e) => setData("password", e.target.value)
+                }
+              ),
+              errors.password && /* @__PURE__ */ jsx("p", { className: "mt-1 text-sm text-red-600", children: errors.password })
+            ] })
           ] }),
-          /* @__PURE__ */ jsxs("div", { className: "mb-4", children: [
-            /* @__PURE__ */ jsx("label", { htmlFor: "password", className: "block text-sm font-medium text-gray-700 mb-1", children: "Password" }),
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center", children: [
             /* @__PURE__ */ jsx(
               "input",
               {
-                id: "password",
-                name: "password",
-                type: "password",
-                autoComplete: "current-password",
-                required: true,
-                className: "appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm",
-                placeholder: "Password",
-                value: data.password,
-                onChange: (e) => setData("password", e.target.value)
+                id: "remember",
+                name: "remember",
+                type: "checkbox",
+                className: "h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded",
+                checked: data.remember,
+                onChange: (e) => setData("remember", e.target.checked)
               }
             ),
-            errors.password && /* @__PURE__ */ jsx("p", { className: "mt-1 text-sm text-red-600", children: errors.password })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center", children: [
-          /* @__PURE__ */ jsx(
-            "input",
+            /* @__PURE__ */ jsx("label", { htmlFor: "remember", className: "ml-2 block text-sm text-gray-900", children: "Remember me" })
+          ] }),
+          /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsx(
+            "button",
             {
-              id: "remember",
-              name: "remember",
-              type: "checkbox",
-              className: "h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded",
-              checked: data.remember,
-              onChange: (e) => setData("remember", e.target.checked)
+              type: "submit",
+              disabled: processing,
+              className: "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50",
+              children: processing ? "Signing in..." : "Sign in"
             }
-          ),
-          /* @__PURE__ */ jsx("label", { htmlFor: "remember", className: "ml-2 block text-sm text-gray-900", children: "Remember me" })
-        ] }),
-        /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsx(
-          "button",
-          {
-            type: "submit",
-            disabled: processing,
-            className: "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50",
-            children: processing ? "Signing in..." : "Sign in"
-          }
-        ) }),
-        /* @__PURE__ */ jsxs("div", { className: "mt-4 p-4 bg-gray-50 rounded border border-gray-200", children: [
-          /* @__PURE__ */ jsx("p", { className: "text-xs font-semibold text-gray-700 mb-2", children: "Test Accounts:" }),
-          /* @__PURE__ */ jsxs("ul", { className: "text-xs text-gray-600 space-y-1", children: [
-            /* @__PURE__ */ jsx("li", { children: "• test@example.com / password" }),
-            /* @__PURE__ */ jsx("li", { children: "• john@example.com / password" }),
-            /* @__PURE__ */ jsx("li", { children: "• jane@example.com / password" })
+          ) }),
+          /* @__PURE__ */ jsxs("div", { className: "mt-4 p-4 bg-gray-50 rounded border border-gray-200", children: [
+            /* @__PURE__ */ jsx("p", { className: "text-xs font-semibold text-gray-700 mb-2", children: "Test Accounts:" }),
+            /* @__PURE__ */ jsxs("ul", { className: "text-xs text-gray-600 space-y-1", children: [
+              /* @__PURE__ */ jsx("li", { children: "• test@example.com / password" }),
+              /* @__PURE__ */ jsx("li", { children: "• john@example.com / password" }),
+              /* @__PURE__ */ jsx("li", { children: "• jane@example.com / password" })
+            ] })
           ] })
         ] })
-      ] })
-    ] }) })
+      ] }),
+      /* @__PURE__ */ jsx(DebugPanel, {})
+    ] })
   ] });
 }
 const __vite_glob_0_0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
@@ -172,13 +346,13 @@ function Reactions({
       setCurrentUserReaction(type);
     }
     setReactions(newReactions);
-    const method = currentUserReaction === type ? "delete" : "post";
+    const isRemoving = currentUserReaction === type;
     const data = {
       reactable_type: reactableType,
       reactable_id: reactableId,
       type
     };
-    router[method]("/reactions", data, {
+    const options = {
       preserveScroll: true,
       preserveState: true,
       onSuccess: (page) => {
@@ -196,7 +370,16 @@ function Reactions({
         setCurrentUserReaction(previousUserReaction);
         setIsProcessing(false);
       }
-    });
+    };
+    if (isRemoving) {
+      router.visit("/reactions", {
+        method: "delete",
+        data,
+        ...options
+      });
+    } else {
+      router.post("/reactions", data, options);
+    }
   };
   const totalReactions = Object.values(reactions).reduce((sum, count) => sum + count, 0);
   return /* @__PURE__ */ jsxs(
@@ -346,7 +529,8 @@ function TestPage({ posts }) {
           /* @__PURE__ */ jsx("p", { className: "text-gray-500", children: "Check back later for new content!" })
         ] })
       ] }),
-      /* @__PURE__ */ jsx("footer", { className: "mt-16 py-8 border-t border-gray-200 bg-white", children: /* @__PURE__ */ jsx("div", { className: "max-w-5xl mx-auto px-4 text-center text-sm text-gray-500", children: /* @__PURE__ */ jsx("p", { children: "Built with Laravel, Inertia.js, React & shadcn/ui" }) }) })
+      /* @__PURE__ */ jsx("footer", { className: "mt-16 py-8 border-t border-gray-200 bg-white", children: /* @__PURE__ */ jsx("div", { className: "max-w-5xl mx-auto px-4 text-center text-sm text-gray-500", children: /* @__PURE__ */ jsx("p", { children: "Built with Laravel, Inertia.js, React & shadcn/ui" }) }) }),
+      /* @__PURE__ */ jsx(DebugPanel, {})
     ] })
   ] });
 }

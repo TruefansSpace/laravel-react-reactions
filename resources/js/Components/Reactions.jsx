@@ -92,14 +92,14 @@ export default function Reactions({
 
         setReactions(newReactions);
 
-        const method = currentUserReaction === type ? 'delete' : 'post';
+        const isRemoving = currentUserReaction === type;
         const data = {
             reactable_type: reactableType,
             reactable_id: reactableId,
             type: type,
         };
 
-        router[method]('/reactions', data, {
+        const options = {
             preserveScroll: true,
             preserveState: true,
             onSuccess: (page) => {
@@ -117,7 +117,19 @@ export default function Reactions({
                 setCurrentUserReaction(previousUserReaction);
                 setIsProcessing(false);
             },
-        });
+        };
+
+        if (isRemoving) {
+            // For DELETE, use router.visit with method and data
+            router.visit('/reactions', {
+                method: 'delete',
+                data: data,
+                ...options,
+            });
+        } else {
+            // For POST, send data in body
+            router.post('/reactions', data, options);
+        }
     };
 
     const totalReactions = Object.values(reactions).reduce((sum, count) => sum + count, 0);

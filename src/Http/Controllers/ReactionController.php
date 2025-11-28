@@ -5,6 +5,7 @@ namespace TrueFans\LaravelReactReactions\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class ReactionController extends Controller
 {
@@ -17,19 +18,19 @@ class ReactionController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return back()->withErrors($validator->errors());
+            return redirect()->back()->withErrors($validator->errors());
         }
 
         $reactableClass = $request->input('reactable_type');
         
         if (! class_exists($reactableClass)) {
-            return back()->withErrors(['reactable_type' => 'Invalid reactable type']);
+            return redirect()->back()->withErrors(['reactable_type' => 'Invalid reactable type']);
         }
 
         $reactable = $reactableClass::find($request->input('reactable_id'));
 
         if (! $reactable) {
-            return back()->withErrors(['reactable_id' => 'Reactable not found']);
+            return redirect()->back()->withErrors(['reactable_id' => 'Reactable not found']);
         }
 
         $reaction = $reactable->react(
@@ -37,11 +38,8 @@ class ReactionController extends Controller
             $request->input('type')
         );
 
-        return back()->with([
-            'message' => 'Reaction added successfully',
-            'reactions_summary' => $reactable->reactionsSummary(),
-            'user_reaction' => $reactable->userReaction(auth()->id()),
-        ]);
+        // Inertia automatically converts POST redirects to GET with 303
+        return redirect()->back(303);
     }
 
     public function destroy(Request $request)
@@ -52,28 +50,25 @@ class ReactionController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return back()->withErrors($validator->errors());
+            return redirect()->back()->withErrors($validator->errors());
         }
 
         $reactableClass = $request->input('reactable_type');
         
         if (! class_exists($reactableClass)) {
-            return back()->withErrors(['reactable_type' => 'Invalid reactable type']);
+            return redirect()->back()->withErrors(['reactable_type' => 'Invalid reactable type']);
         }
 
         $reactable = $reactableClass::find($request->input('reactable_id'));
 
         if (! $reactable) {
-            return back()->withErrors(['reactable_id' => 'Reactable not found']);
+            return redirect()->back()->withErrors(['reactable_id' => 'Reactable not found']);
         }
 
         $deleted = $reactable->unreact(auth()->id());
 
-        return back()->with([
-            'message' => $deleted ? 'Reaction removed successfully' : 'No reaction to remove',
-            'reactions_summary' => $reactable->reactionsSummary(),
-            'user_reaction' => null,
-        ]);
+        // Return 303 redirect to force GET request (prevents method not allowed error)
+        return redirect()->back(303);
     }
 }
 
