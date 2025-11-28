@@ -2,7 +2,7 @@ import React from 'react';
 import { Head } from '@inertiajs/react';
 import Reactions from 'package/Components/Reactions';
 
-export default function TestPage({ post }) {
+export default function TestPage({ post, post_class }) {
     return (
         <>
             <Head title="Test Reactions" />
@@ -14,7 +14,7 @@ export default function TestPage({ post }) {
                         
                         <div className="border-t pt-4">
                             <Reactions
-                                reactableType="Workbench\\App\\Models\\TestPost"
+                                reactableType={post_class}
                                 reactableId={post.id}
                                 initialReactions={post.reactions_summary || {}}
                                 userReaction={post.user_reaction}

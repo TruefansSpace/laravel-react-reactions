@@ -22,6 +22,7 @@ class TestController extends Controller
 
         return Inertia::render('TestPage', [
             'post' => $post,
+            'post_class' => get_class($post),
         ]);
     }
 
@@ -34,14 +35,9 @@ class TestController extends Controller
         ]);
 
         \Illuminate\Support\Facades\Log::info('Reactable Type: ' . $data['reactable_type']);
-        \Illuminate\Support\Facades\Log::info('Class exists: ' . (class_exists($data['reactable_type']) ? 'yes' : 'no'));
-
-        // Try to load directly to see if it works
-        if ($data['reactable_type'] === 'Workbench\\App\\Models\\TestPost') {
-             $post = \Workbench\App\Models\TestPost::findOrFail($data['reactable_id']);
-        } else {
-             $post = $data['reactable_type']::findOrFail($data['reactable_id']);
-        }
+        
+        // We can now trust the input since it comes from get_class()
+        $post = $data['reactable_type']::findOrFail($data['reactable_id']);
         
         // Use a hardcoded user ID for testing since we're not authenticated
         $userId = 1;
