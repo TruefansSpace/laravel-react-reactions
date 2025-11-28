@@ -24,5 +24,11 @@ class WorkbenchServiceProvider extends ServiceProvider
         );
         
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'workbench');
+        
+        // Configure Inertia SSR
+        config([
+            'inertia.ssr.enabled' => true,
+            'inertia.ssr.bundle' => realpath(__DIR__.'/../../public/build/ssr.js'),
+        ]);
     }
 }

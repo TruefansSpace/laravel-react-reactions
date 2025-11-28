@@ -1,23 +1,8 @@
 {
-  "workbench/resources/js/Pages/TestPage.jsx": {
-    "file": "assets/TestPage-CC7tdc1M.js",
-    "name": "TestPage",
-    "src": "workbench/resources/js/Pages/TestPage.jsx",
-    "isDynamicEntry": true,
-    "imports": [
-      "workbench/resources/js/app.jsx"
-    ]
-  },
-  "workbench/resources/js/app.jsx": {
-    "file": "assets/app-D2h1KGri.js",
-    "name": "app",
-    "src": "workbench/resources/js/app.jsx",
-    "isEntry": true,
-    "dynamicImports": [
-      "workbench/resources/js/Pages/TestPage.jsx"
-    ],
-    "css": [
-      "assets/app-DFCLIKv4.css"
-    ]
+  "workbench/resources/js/ssr.jsx": {
+    "file": "ssr.js",
+    "name": "ssr",
+    "src": "workbench/resources/js/ssr.jsx",
+    "isEntry": true
   }
 }
