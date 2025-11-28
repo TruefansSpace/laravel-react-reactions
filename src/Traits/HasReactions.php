@@ -69,4 +69,97 @@ trait HasReactions
 
         return $this->userReaction(auth()->id());
     }
+
+    /**
+     * Query Scope: Add reactions data using efficient subqueries
+     * 
+     * This scope adds two subqueries to your main query:
+     * 1. reactions_summary_json - A JSON object with counts for each reaction type
+     * 2. user_reaction_type - The current user's reaction (if userId provided)
+     * 
+     * HOW IT WORKS:
+     * Instead of loading all reactions into memory, we use SQL subqueries that:
+     * - Run aggregation (GROUP BY, COUNT) at the database level
+     * - Return only the final counts, not all reaction records
+     * - Execute as part of the main query (1 query total, not N+1)
+     * 
+     * EXAMPLE SQL GENERATED:
+     * SELECT posts.*,
+     *   (SELECT JSON_OBJECT('like', COUNT(*), 'love', COUNT(*), ...)
+     *    FROM reactions WHERE reactable_id = posts.id) as reactions_summary_json,
+     *   (SELECT type FROM reactions WHERE reactable_id = posts.id AND user_id = 1) as user_reaction_type
+     * FROM posts
+     * 
+     * PERFORMANCE:
+     * - Without this: 1 query for posts + 2 queries per post = 21 queries for 10 posts
+     * - With this: 1 query total, regardless of number of posts
+     * - Scales to millions of reactions without memory issues
+     * 
+     * USAGE:
+     * Post::withReactionsData(auth()->id())->get()
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param int|null $userId Optional user ID to get their reaction
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithReactionsData($query, ?int $userId = null)
+    {
+        $model = $query->getModel();
+        $table = $model->getTable();
+        $modelClass = get_class($model);
+        
+        return $query
+            // Select all columns from the main table first
+            ->select($table . '.*')
+            // Subquery 1: Get reaction counts aggregated by type
+            ->selectSub(
+                \Illuminate\Support\Facades\DB::table('reactions')
+                    ->selectRaw('JSON_OBJECT(
+                        "like", COALESCE(SUM(CASE WHEN type = "like" THEN 1 END), 0),
+                        "love", COALESCE(SUM(CASE WHEN type = "love" THEN 1 END), 0),
+                        "haha", COALESCE(SUM(CASE WHEN type = "haha" THEN 1 END), 0),
+                        "wow", COALESCE(SUM(CASE WHEN type = "wow" THEN 1 END), 0),
+                        "sad", COALESCE(SUM(CASE WHEN type = "sad" THEN 1 END), 0),
+                        "angry", COALESCE(SUM(CASE WHEN type = "angry" THEN 1 END), 0)
+                    )')
+                    ->whereColumn('reactable_id', $table . '.id')
+                    ->where('reactable_type', $modelClass),
+                'reactions_summary_json'
+            )
+            // Subquery 2: Get the specific user's reaction (if userId provided)
+            ->when($userId, function ($q) use ($userId, $modelClass, $table) {
+                $q->selectSub(
+                    \Illuminate\Support\Facades\DB::table('reactions')
+                        ->select('type')
+                        ->whereColumn('reactable_id', $table . '.id')
+                        ->where('reactable_type', $modelClass)
+                        ->where('user_id', $userId)
+                        ->limit(1),
+                    'user_reaction_type'
+                );
+            });
+    }
+
+    /**
+     * Parse reactions summary from JSON subquery result
+     */
+    public function parseReactionsSummary(): array
+    {
+        if (!isset($this->reactions_summary_json)) {
+            return $this->reactionsSummary();
+        }
+
+        $summary = json_decode($this->reactions_summary_json, true) ?? [];
+        
+        // Remove zeros for cleaner output
+        return array_filter($summary, fn($count) => $count > 0);
+    }
+
+    /**
+     * Get user reaction from subquery result
+     */
+    public function parseUserReaction(): ?string
+    {
+        return $this->user_reaction_type ?? null;
+    }
 }

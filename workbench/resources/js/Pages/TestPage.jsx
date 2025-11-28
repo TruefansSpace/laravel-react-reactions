@@ -2,6 +2,7 @@ import React from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import Reactions from 'package/Components/Reactions';
 import { LogOut, User as UserIcon } from 'lucide-react';
+import DebugPanel from '../components/DebugPanel';
 
 export default function TestPage({ posts }) {
     const { auth } = usePage().props;
@@ -122,6 +123,9 @@ export default function TestPage({ posts }) {
                         <p>Built with Laravel, Inertia.js, React & shadcn/ui</p>
                     </div>
                 </footer>
+
+                {/* Debug Panel */}
+                <DebugPanel />
             </div>
         </>
     );

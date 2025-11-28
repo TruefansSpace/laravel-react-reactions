@@ -30,5 +30,10 @@ class WorkbenchServiceProvider extends ServiceProvider
             'inertia.ssr.enabled' => true,
             'inertia.ssr.bundle' => realpath(__DIR__.'/../../public/build/ssr.js'),
         ]);
+        
+        // Load debugbar config
+        $this->mergeConfigFrom(
+            __DIR__.'/../../config/debugbar.php', 'debugbar'
+        );
     }
 }

@@ -21,6 +21,7 @@
         "illuminate/contracts": "^11.0||^12.0"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.16",
         "inertiajs/inertia-laravel": "^2.0",
         "larastan/larastan": "^3.0",
         "laravel/pint": "^1.14",

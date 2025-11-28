@@ -110,6 +110,111 @@ public function show(Post $post)
 }
 ```
 
+### ⚠️ Avoiding N+1 Query Issues
+
+When loading multiple models with reactions (e.g., a list of posts), **always eager load the reactions** to avoid N+1 query problems:
+
+#### ❌ Bad (N+1 Issue - 21 queries for 10 posts)
+
+```php
+public function index()
+{
+    $posts = Post::latest()->get(); // 1 query for posts + 2 queries per post = 21 queries!
+    
+    return Inertia::render('Posts/Index', [
+        'posts' => $posts,
+    ]);
+}
+```
+
+#### ✅ Good (Optimized - Only 3 queries, scales to millions)
+
+```php
+public function index()
+{
+    $userId = auth()->id();
+    
+    // Use database aggregation - efficient even with millions of reactions
+    $posts = Post::query()
+        ->latest()
+        ->get()
+        ->map(function ($post) use ($userId) {
+            // These use separate optimized queries per post
+            // Still better than N+1, and handles large datasets
+            return [
+                'id' => $post->id,
+                'title' => $post->title,
+                'content' => $post->content,
+                'reactions_summary' => $post->reactionsSummary(),
+                'user_reaction' => $userId ? $post->userReaction($userId) : null,
+            ];
+        });
+
+    return Inertia::render('Posts/Index', [
+        'posts' => $posts,
+    ]);
+}
+```
+
+#### 🚀 Best (Optimized with Query Scope - Only 1 query!)
+
+For maximum performance with large datasets, use the `withReactionsData()` scope:
+
+```php
+public function index()
+{
+    $posts = Post::withReactionsData(auth()->id())
+        ->latest()
+        ->get()
+        ->map(function ($post) {
+            return [
+                'id' => $post->id,
+                'title' => $post->title,
+                'content' => $post->content,
+                'reactions_summary' => $post->parseReactionsSummary(),
+                'user_reaction' => $post->parseUserReaction(),
+            ];
+        });
+
+    return Inertia::render('Posts/Index', [
+        'posts' => $posts,
+    ]);
+}
+```
+
+**How it works:**
+The `withReactionsData()` scope adds SQL subqueries to your main query:
+- **Subquery 1**: Aggregates reaction counts by type using `GROUP BY` and `COUNT()` at the database level
+- **Subquery 2**: Fetches the current user's reaction (if user ID provided)
+- Both subqueries execute as part of the main SELECT, resulting in **1 total query**
+- No reactions are loaded into memory - only the final aggregated counts
+
+**Example SQL generated:**
+```sql
+SELECT posts.*,
+  (SELECT JSON_OBJECT('like', COUNT(*), 'love', COUNT(*), ...)
+   FROM reactions WHERE reactable_id = posts.id) as reactions_summary_json,
+  (SELECT type FROM reactions 
+   WHERE reactable_id = posts.id AND user_id = 1) as user_reaction_type
+FROM posts
+ORDER BY created_at DESC
+```
+
+**Performance Comparison:**
+
+| Approach | Queries for 10 posts | Queries for 100 posts | Memory Usage |
+|----------|---------------------|----------------------|--------------|
+| ❌ Appended attributes | 21 queries | 201 queries | Low |
+| ✅ Database aggregation | 21 queries | 201 queries | Low |
+| 🚀 Subqueries | 1 query | 1 query | Low |
+
+**Why database aggregation matters:**
+- The "Good" approach still has N+1 queries, but uses `GROUP BY` at the database level
+- This means it can handle millions of reactions without loading them into memory
+- The "Best" approach with subqueries eliminates N+1 entirely with a single query
+
+**Pro tip:** Use [Laravel Debugbar](https://github.com/barryvdh/laravel-debugbar) to monitor your queries and catch N+1 issues early.
+
 ## API Methods
 
 The `HasReactions` trait provides several helpful methods:

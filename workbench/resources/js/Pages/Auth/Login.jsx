@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
+import DebugPanel from '../../components/DebugPanel';
 
 export default function Login() {
     const { data, setData, post, processing, errors } = useForm({
@@ -102,6 +103,7 @@ export default function Login() {
                         </div>
                     </form>
                 </div>
+                <DebugPanel />
             </div>
         </>
     );
