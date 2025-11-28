@@ -25,6 +25,48 @@ composer install
 npm install
 ```
 
+### Quick Start (First Time Setup)
+
+Run these commands in order:
+
+```bash
+# 1. Build workbench and run migrations
+composer serve
+# Press Ctrl+C after it starts
+
+# 2. Run database migrations and seed test data
+php vendor/bin/testbench migrate:fresh --seed
+
+# 3. Build frontend assets
+npm run build
+
+# 4. Start the development server
+composer serve
+```
+
+Now visit http://127.0.0.1:8000 and login with `test@example.com` / `password`
+
+## Package Routes Architecture
+
+The package follows a publishable routes pattern:
+
+**Package Routes** (`routes/web.php`):
+- Contains the ReactionController endpoints
+- Uses `['web', 'auth']` middleware
+- These routes are included in the workbench for testing
+- Will be published to the parent application
+
+**Workbench Routes** (`workbench/routes/web.php`):
+- Includes package routes via `require __DIR__ . '/../../routes/web.php'`
+- Adds authentication routes (login/logout) for testing
+- Adds test page route to demonstrate the package
+
+This approach ensures:
+- ✅ Package routes are tested in the same way they'll be used
+- ✅ No duplicate controller logic
+- ✅ Authentication is only for testing, not part of the package
+- ✅ ReactionController from the package is used directly
+
 ## Running the Development Server
 
 The package uses Laravel Testbench Workbench for isolated development and testing.
@@ -84,9 +126,30 @@ composer serve
 1. Start the development server: `composer serve`
 2. Start Vite dev server (optional, for hot reload): `npm run dev`
 3. Open your browser to **http://127.0.0.1:8000**
-4. Navigate to the workbench routes to test the reactions component
+4. You'll see the test page with a post and reactions component
 5. Changes to React components in `resources/js/` will hot-reload automatically
 6. Changes to PHP files will require a browser refresh
+
+### Authentication for Testing
+
+The workbench includes a simple authentication system for testing reactions:
+
+**Test Accounts:**
+- Email: `test@example.com` / Password: `password`
+- Email: `john@example.com` / Password: `password`
+- Email: `jane@example.com` / Password: `password`
+
+**Login Flow:**
+1. Visit http://127.0.0.1:8000
+2. Click "Login" button
+3. Use any of the test accounts above
+4. You'll be redirected back to the test page
+5. Now you can add reactions (requires authentication)
+
+**Testing Different Users:**
+- Login with different accounts to test reactions from multiple users
+- Logout and login as another user to see how reactions update
+- Each user can only have one reaction per post
 
 ## Running Tests
 
@@ -238,22 +301,37 @@ packages/truefans/laravel-react-reactions/
 ├── src/                          # Package source code
 │   ├── Traits/                   # HasReactions trait
 │   ├── Models/                   # Reaction model
-│   └── Http/Controllers/         # API controllers
+│   └── Http/Controllers/         # ReactionController (publishable)
 ├── resources/js/                 # React components (publishable)
 │   └── Components/Reactions/     # Reaction picker component
+├── routes/                       # Package routes (publishable)
+│   └── web.php                   # Reaction API routes
 ├── tests/
 │   ├── Unit/                     # Unit tests
 │   ├── Feature/                  # Feature tests
 │   ├── Browser/                  # Playwright E2E tests
 │   └── ArchTest.php              # Architecture tests
 ├── workbench/                    # Testbench environment
-│   ├── app/                      # Test application
-│   ├── database/                 # Test migrations/seeders
-│   └── resources/                # Test frontend assets
+│   ├── app/
+│   │   ├── Http/Controllers/     # TestController, AuthController
+│   │   └── Models/               # User, TestPost
+│   ├── database/
+│   │   ├── migrations/           # Users, sessions, test_posts tables
+│   │   └── seeders/              # Test data seeder
+│   ├── resources/
+│   │   └── js/Pages/             # TestPage, Login page
+│   └── routes/
+│       └── web.php               # Includes package routes + auth routes
 ├── config/                       # Package configuration
-├── database/migrations/          # Package migrations
-└── routes/                       # Package routes
+└── database/migrations/          # Package migrations (reactions table)
 ```
+
+### Important Notes
+
+- **Workbench routes** (`workbench/routes/web.php`) include the package routes via `require`
+- **Package routes** (`routes/web.php`) contain the publishable ReactionController endpoints
+- **Authentication** is only for workbench testing; the package itself is auth-agnostic
+- **TestController** uses the package's ReactionController, not custom logic
 
 ## Testing Your Changes
 

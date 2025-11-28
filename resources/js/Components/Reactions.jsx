@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { router } from '@inertiajs/react';
-import ReactionPicker from './ReactionPicker';
-import ReactionButton from './ReactionButton';
+import { ThumbsUp } from 'lucide-react';
 
 const REACTION_TYPES = {
     like: '👍',
@@ -10,6 +9,15 @@ const REACTION_TYPES = {
     wow: '😮',
     sad: '😢',
     angry: '😠',
+};
+
+const REACTION_LABELS = {
+    like: 'Like',
+    love: 'Love',
+    haha: 'Haha',
+    wow: 'Wow',
+    sad: 'Sad',
+    angry: 'Angry',
 };
 
 export default function Reactions({ 
@@ -34,16 +42,17 @@ export default function Reactions({
     }, []);
 
     const handleMouseEnter = () => {
+        if (isProcessing) return;
         timeoutRef.current = setTimeout(() => {
             setShowPicker(true);
-        }, 300);
+        }, 200);
     };
 
     const handleMouseLeave = () => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
-        setShowPicker(false);
+        setTimeout(() => setShowPicker(false), 100);
     };
 
     const handleReaction = (type) => {
@@ -94,7 +103,6 @@ export default function Reactions({
             preserveScroll: true,
             preserveState: true,
             onSuccess: (page) => {
-                // Update with server response if available
                 if (page.props.reactions_summary) {
                     setReactions(page.props.reactions_summary);
                 }
@@ -105,7 +113,6 @@ export default function Reactions({
             },
             onError: (errors) => {
                 console.error('Failed to update reaction:', errors);
-                // Revert optimistic update
                 setReactions(previousReactions);
                 setCurrentUserReaction(previousUserReaction);
                 setIsProcessing(false);
@@ -122,54 +129,79 @@ export default function Reactions({
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
                 {/* Main reaction button */}
                 <button
                     onClick={() => handleReaction(currentUserReaction || 'like')}
                     disabled={isProcessing}
                     className={`
-                        px-4 py-2 rounded-lg font-medium transition-all duration-200
+                        group inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200
                         ${currentUserReaction 
-                            ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' 
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-gray-900 text-white hover:bg-gray-800 shadow-sm' 
+                            : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                         }
-                        ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                        ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-105'}
                     `}
                 >
-                    <span className="flex items-center gap-2">
-                        <span className="text-xl">
-                            {currentUserReaction ? REACTION_TYPES[currentUserReaction] : '👍'}
-                        </span>
-                        <span>{currentUserReaction || 'Like'}</span>
+                    <span className="text-lg">
+                        {currentUserReaction ? REACTION_TYPES[currentUserReaction] : '👍'}
+                    </span>
+                    <span className="font-medium">
+                        {currentUserReaction ? REACTION_LABELS[currentUserReaction] : 'Like'}
                     </span>
                 </button>
 
                 {/* Reaction counts */}
                 {totalReactions > 0 && (
-                    <div className="flex items-center gap-1">
-                        {Object.entries(reactions).map(([type, count]) => (
-                            <ReactionButton
-                                key={type}
-                                type={type}
-                                emoji={REACTION_TYPES[type]}
-                                count={count}
-                                isActive={currentUserReaction === type}
-                                onClick={() => handleReaction(type)}
-                            />
-                        ))}
+                    <div className="flex items-center gap-1.5">
+                        {Object.entries(reactions)
+                            .sort(([, a], [, b]) => b - a)
+                            .map(([type, count]) => (
+                                <button
+                                    key={type}
+                                    onClick={() => handleReaction(type)}
+                                    disabled={isProcessing}
+                                    className={`
+                                        inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all
+                                        ${currentUserReaction === type
+                                            ? 'bg-gray-900 text-white shadow-sm'
+                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }
+                                        ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-105'}
+                                    `}
+                                >
+                                    <span className="text-base">{REACTION_TYPES[type]}</span>
+                                    <span>{count}</span>
+                                </button>
+                            ))}
                     </div>
                 )}
             </div>
 
-            {/* Reaction picker */}
-            {showPicker && (
-                <ReactionPicker
-                    reactions={REACTION_TYPES}
-                    onSelect={handleReaction}
-                    currentReaction={currentUserReaction}
-                />
+            {/* Reaction picker dropdown */}
+            {showPicker && !isProcessing && (
+                <div className="absolute bottom-full left-0 mb-2 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    <div className="bg-white rounded-xl shadow-xl border border-gray-200 p-2 flex gap-1">
+                        {Object.entries(REACTION_TYPES).map(([type, emoji]) => (
+                            <button
+                                key={type}
+                                onClick={() => handleReaction(type)}
+                                className={`
+                                    group relative flex flex-col items-center gap-1 p-2.5 rounded-lg transition-all duration-200
+                                    hover:bg-gray-100 hover:scale-125
+                                    ${currentUserReaction === type ? 'bg-gray-100' : ''}
+                                `}
+                                title={REACTION_LABELS[type]}
+                            >
+                                <span className="text-2xl">{emoji}</span>
+                                <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-medium text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                    {REACTION_LABELS[type]}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
             )}
         </div>
     );
 }
-
