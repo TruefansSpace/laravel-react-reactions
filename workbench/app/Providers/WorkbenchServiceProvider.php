@@ -19,6 +19,10 @@ class WorkbenchServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Illuminate\Support\Facades\Vite::useHotFile(
+            realpath(__DIR__.'/../../public/hot')
+        );
+        
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'workbench');
     }
 }

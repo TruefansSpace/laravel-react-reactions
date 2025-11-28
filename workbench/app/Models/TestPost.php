@@ -18,4 +18,10 @@ class TestPost extends Model
         'reactions_summary',
         'user_reaction',
     ];
+
+    public function getUserReactionAttribute(): ?string
+    {
+        // For testing purposes, we assume user ID 1
+        return $this->userReaction(1);
+    }
 }

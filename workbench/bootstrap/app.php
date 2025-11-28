@@ -13,7 +13,7 @@ return Application::configure(basePath: $APP_BASE_PATH ?? default_skeleton_path(
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
-            \Inertia\Middleware::class,
+            \Workbench\App\Http\Middleware\HandleInertiaRequests::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

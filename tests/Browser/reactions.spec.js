@@ -2,9 +2,16 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Reactions Component', () => {
     test.beforeEach(async ({ page }) => {
+        // Listen for console logs
+        page.on('console', msg => console.log(`BROWSER LOG: ${msg.text()}`));
+        page.on('pageerror', exception => console.log(`BROWSER ERROR: ${exception}`));
+
         // Navigate to the test page
         await page.goto('/');
         
+        // Log page content for debugging
+        console.log('PAGE CONTENT:', await page.content());
+
         // Wait for the page to load
         await page.waitForLoadState('networkidle');
     });
