@@ -11,7 +11,7 @@ class WorkbenchServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->usePublicPath(realpath(__DIR__.'/../../public'));
     }
 
     /**

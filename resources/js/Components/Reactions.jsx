@@ -1,6 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { router } from '@inertiajs/react';
-import { ThumbsUp } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const REACTION_TYPES = {
     like: '👍',
@@ -28,38 +33,14 @@ export default function Reactions({
 }) {
     const [reactions, setReactions] = useState(initialReactions);
     const [currentUserReaction, setCurrentUserReaction] = useState(userReaction);
-    const [showPicker, setShowPicker] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
-    const timeoutRef = useRef(null);
-    const containerRef = useRef(null);
-
-    useEffect(() => {
-        return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-            }
-        };
-    }, []);
-
-    const handleMouseEnter = () => {
-        if (isProcessing) return;
-        timeoutRef.current = setTimeout(() => {
-            setShowPicker(true);
-        }, 200);
-    };
-
-    const handleMouseLeave = () => {
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-        }
-        setTimeout(() => setShowPicker(false), 100);
-    };
+    const [isOpen, setIsOpen] = useState(false);
+    const hoverTimeoutRef = React.useRef(null);
 
     const handleReaction = (type) => {
         if (isProcessing) return;
 
         setIsProcessing(true);
-        setShowPicker(false);
 
         // Optimistic update
         const previousReactions = { ...reactions };
@@ -134,84 +115,101 @@ export default function Reactions({
 
     const totalReactions = Object.values(reactions).reduce((sum, count) => sum + count, 0);
 
+    const handleMouseEnter = () => {
+        if (isProcessing) return;
+        if (hoverTimeoutRef.current) {
+            clearTimeout(hoverTimeoutRef.current);
+        }
+        hoverTimeoutRef.current = setTimeout(() => {
+            setIsOpen(true);
+        }, 300);
+    };
+
+    const handleMouseLeave = () => {
+        if (hoverTimeoutRef.current) {
+            clearTimeout(hoverTimeoutRef.current);
+        }
+        hoverTimeoutRef.current = setTimeout(() => {
+            setIsOpen(false);
+        }, 300);
+    };
+
     return (
-        <div 
-            ref={containerRef}
-            className="relative inline-block"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-        >
-            <div className="flex items-center gap-3">
-                {/* Main reaction button */}
-                <button
-                    onClick={() => handleReaction(currentUserReaction || 'like')}
-                    disabled={isProcessing}
-                    className={`
-                        group inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200
-                        ${currentUserReaction 
-                            ? 'bg-gray-900 text-white hover:bg-gray-800 shadow-sm' 
-                            : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                        }
-                        ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-105'}
-                    `}
-                >
-                    <span className="text-lg">
-                        {currentUserReaction ? REACTION_TYPES[currentUserReaction] : '👍'}
-                    </span>
-                    <span className="font-medium">
-                        {currentUserReaction ? REACTION_LABELS[currentUserReaction] : 'Like'}
-                    </span>
-                </button>
-
-                {/* Reaction counts */}
-                {totalReactions > 0 && (
-                    <div className="flex items-center gap-1.5">
-                        {Object.entries(reactions)
-                            .sort(([, a], [, b]) => b - a)
-                            .map(([type, count]) => (
-                                <button
-                                    key={type}
-                                    onClick={() => handleReaction(type)}
-                                    disabled={isProcessing}
-                                    className={`
-                                        inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all
-                                        ${currentUserReaction === type
-                                            ? 'bg-gray-900 text-white shadow-sm'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                        }
-                                        ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-105'}
-                                    `}
-                                >
-                                    <span className="text-base">{REACTION_TYPES[type]}</span>
-                                    <span>{count}</span>
-                                </button>
-                            ))}
-                    </div>
-                )}
-            </div>
-
+        <div className="flex items-center gap-3">
             {/* Reaction picker dropdown */}
-            {showPicker && !isProcessing && (
-                <div className="absolute bottom-full left-0 mb-2 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
-                    <div className="bg-white rounded-xl shadow-xl border border-gray-200 p-2 flex gap-1">
+            <DropdownMenu open={isOpen} onOpenChange={setIsOpen} modal={false}>
+                <DropdownMenuTrigger asChild>
+                    <button
+                        onClick={() => handleReaction(currentUserReaction || 'like')}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                        disabled={isProcessing}
+                        className={`
+                            group inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200
+                            ${currentUserReaction 
+                                ? 'bg-gray-900 text-white hover:bg-gray-800 shadow-sm' 
+                                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                            }
+                            ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-105'}
+                        `}
+                    >
+                        <span className="text-lg">
+                            {currentUserReaction ? REACTION_TYPES[currentUserReaction] : '👍'}
+                        </span>
+                        <span className="font-medium">
+                            {currentUserReaction ? REACTION_LABELS[currentUserReaction] : 'Like'}
+                        </span>
+                    </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent 
+                    side="top" 
+                    align="start"
+                    className="bg-white rounded-xl shadow-xl border border-gray-200 p-2"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                >
+                    <div className="flex gap-1">
                         {Object.entries(REACTION_TYPES).map(([type, emoji]) => (
-                            <button
+                            <DropdownMenuItem
                                 key={type}
                                 onClick={() => handleReaction(type)}
                                 className={`
                                     group relative flex flex-col items-center gap-1 p-2.5 rounded-lg transition-all duration-200
-                                    hover:bg-gray-100 hover:scale-125
+                                    hover:bg-gray-100 hover:scale-125 cursor-pointer
                                     ${currentUserReaction === type ? 'bg-gray-100' : ''}
                                 `}
                                 title={REACTION_LABELS[type]}
                             >
                                 <span className="text-2xl">{emoji}</span>
-                                <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-medium text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                                    {REACTION_LABELS[type]}
-                                </span>
-                            </button>
+                            </DropdownMenuItem>
                         ))}
                     </div>
+                </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Reaction counts */}
+            {totalReactions > 0 && (
+                <div className="flex items-center gap-1.5">
+                    {Object.entries(reactions)
+                        .sort(([, a], [, b]) => b - a)
+                        .map(([type, count]) => (
+                            <button
+                                key={type}
+                                onClick={() => handleReaction(type)}
+                                disabled={isProcessing}
+                                className={`
+                                    inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all
+                                    ${currentUserReaction === type
+                                        ? 'bg-gray-900 text-white shadow-sm'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    }
+                                    ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-105'}
+                                `}
+                            >
+                                <span className="text-base">{REACTION_TYPES[type]}</span>
+                                <span>{count}</span>
+                            </button>
+                        ))}
                 </div>
             )}
         </div>
