@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MessageSquare } from 'lucide-react';
 import CommentItem from './CommentItem';
 import CommentForm from './CommentForm';
@@ -14,8 +14,13 @@ export default function Comments({
     const [comments, setComments] = useState(initialComments);
     const [showForm, setShowForm] = useState(false);
 
-    const handleCommentAdded = (newComment) => {
-        setComments(prev => [newComment, ...prev]);
+    // Update comments when initialComments prop changes (after Inertia reload)
+    useEffect(() => {
+        setComments(initialComments);
+    }, [initialComments]);
+
+    const handleCommentAdded = () => {
+        // Form will close itself, page will reload with new data
         setShowForm(false);
     };
 

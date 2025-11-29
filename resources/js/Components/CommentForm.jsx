@@ -58,10 +58,9 @@ export default function CommentForm({
         };
 
         if (isEditing && commentId) {
-            // Update existing comment
+            // Update existing comment - back(303) will reload automatically
             router.put(`/comments/${commentId}`, data, {
                 preserveScroll: true,
-                preserveState: true,
                 onSuccess: () => {
                     onSuccess(content.trim());
                     setContent('');
@@ -75,25 +74,12 @@ export default function CommentForm({
                 }
             });
         } else {
-            // Create new comment
+            // Create new comment - back(303) will reload automatically
             router.post('/comments', data, {
                 preserveScroll: true,
-                preserveState: true,
-                onSuccess: (page) => {
-                    // Create optimistic comment object
-                    const newComment = {
-                        id: Date.now(), // Temporary ID
-                        content: content.trim(),
-                        user: page.props.auth?.user,
-                        user_id: page.props.auth?.user?.id,
-                        created_at: new Date().toISOString(),
-                        is_edited: false,
-                        reactions_summary: {},
-                        user_reaction: null,
-                        replies: []
-                    };
-                    onSuccess(newComment);
+                onSuccess: () => {
                     setContent('');
+                    if (onCancel) onCancel();
                 },
                 onError: (errors) => {
                     setError(errors.content || errors.error || 'Failed to add comment');

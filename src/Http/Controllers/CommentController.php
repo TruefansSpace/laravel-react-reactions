@@ -11,6 +11,11 @@ class CommentController extends Controller
 {
     public function store(Request $request)
     {
+        \Log::info('Comment store called', [
+            'data' => $request->all(),
+            'user' => auth()->id()
+        ]);
+
         $validator = Validator::make($request->all(), [
             'commentable_type' => 'required|string',
             'commentable_id' => 'required|integer',
@@ -19,12 +24,16 @@ class CommentController extends Controller
         ]);
 
         if ($validator->fails()) {
+            \Log::error('Comment validation failed', ['errors' => $validator->errors()]);
             return redirect()->back(303)->withErrors($validator->errors());
         }
 
-        $commentableClass = $request->input('commentable_type');
+        // Fix double-escaped backslashes from JavaScript
+        $commentableClass = stripslashes($request->input('commentable_type'));
+        \Log::info('Commentable class', ['original' => $request->input('commentable_type'), 'fixed' => $commentableClass]);
 
         if (! class_exists($commentableClass)) {
+            \Log::error('Class does not exist', ['class' => $commentableClass]);
             return redirect()->back(303)->withErrors(['commentable_type' => 'Invalid commentable type']);
         }
 
