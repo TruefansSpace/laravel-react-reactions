@@ -76,7 +76,7 @@ class ReactionController extends Controller
     public function list(Request $request, string $reactableType, int $reactableId)
     {
         $type = $request->query('type', 'all');
-        $perPage = 20;
+        $perPage = 8;
 
         $query = \TrueFans\LaravelReactReactions\Models\Reaction::query()
             ->where('reactable_type', $reactableType)

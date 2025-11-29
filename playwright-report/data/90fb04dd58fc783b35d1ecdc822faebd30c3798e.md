@@ -1,0 +1,177 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - iframe [ref=e3]:
+    - generic [ref=f1e2]:
+      - generic [ref=f1e4]:
+        - generic [ref=f1e5]:
+          - img [ref=f1e7]
+          - generic [ref=f1e10]: Internal Server Error
+        - button "Copy as Markdown" [ref=f1e11] [cursor=pointer]:
+          - img [ref=f1e12]
+          - generic [ref=f1e15]: Copy as Markdown
+      - generic [ref=f1e18]:
+        - generic [ref=f1e19]:
+          - heading "Error" [level=1] [ref=f1e20]
+          - generic [ref=f1e22]: /Users/vahan/Herd/laravel-react-reactions/packages/truefans/laravel-react-reactions/workbench/app/Http/Controllers/TestController.php:36
+          - paragraph [ref=f1e23]: Class "Workbench\\App\\Models\\TestPost" not found
+        - generic [ref=f1e24]:
+          - generic [ref=f1e25]:
+            - generic [ref=f1e26]:
+              - generic [ref=f1e27]: LARAVEL
+              - generic [ref=f1e28]: 12.40.2
+            - generic [ref=f1e29]:
+              - generic [ref=f1e30]: PHP
+              - generic [ref=f1e31]: 8.4.15
+          - generic [ref=f1e32]:
+            - img [ref=f1e33]
+            - text: UNHANDLED
+          - generic [ref=f1e36]: CODE 0
+        - generic [ref=f1e38]:
+          - generic [ref=f1e39]:
+            - img [ref=f1e40]
+            - text: "500"
+          - generic [ref=f1e43]:
+            - img [ref=f1e44]
+            - text: POST
+          - generic [ref=f1e47]: http://127.0.0.1:8000/reactions
+          - button [ref=f1e48] [cursor=pointer]:
+            - img [ref=f1e49]
+      - generic [ref=f1e53]:
+        - generic [ref=f1e54]:
+          - generic [ref=f1e55]:
+            - img [ref=f1e57]
+            - heading "Exception trace" [level=3] [ref=f1e60]
+          - generic [ref=f1e61]:
+            - generic [ref=f1e63] [cursor=pointer]:
+              - img [ref=f1e64]
+              - generic [ref=f1e68]: 51 vendor frames
+              - button [ref=f1e69]:
+                - img [ref=f1e70]
+            - generic [ref=f1e74]:
+              - generic [ref=f1e75] [cursor=pointer]:
+                - generic [ref=f1e78]:
+                  - code [ref=f1e82]:
+                    - generic [ref=f1e83]: public/index.php
+                  - generic [ref=f1e85]: public/index.php:20
+                - button [ref=f1e87]:
+                  - img [ref=f1e88]
+              - code [ref=f1e96]:
+                - generic [ref=f1e97]: "15"
+                - generic [ref=f1e98]: 16// Bootstrap Laravel and handle the request...
+                - generic [ref=f1e99]: 17/** @var Application $app */
+                - generic [ref=f1e100]: 18$app = require_once __DIR__.'/../bootstrap/app.php';
+                - generic [ref=f1e101]: "19"
+                - generic [ref=f1e102]: 20$app->handleRequest(Request::capture());
+                - generic [ref=f1e103]: "21"
+            - generic [ref=f1e105] [cursor=pointer]:
+              - generic [ref=f1e108]:
+                - code [ref=f1e112]:
+                  - generic [ref=f1e113]: server.php
+                - generic [ref=f1e115]: server.php:23
+              - button [ref=f1e117]:
+                - img [ref=f1e118]
+        - generic [ref=f1e122]:
+          - generic [ref=f1e124]:
+            - img [ref=f1e126]
+            - heading "Queries" [level=3] [ref=f1e128]
+          - generic [ref=f1e130]: // No queries executed
+      - generic [ref=f1e132]:
+        - generic [ref=f1e133]:
+          - heading "Headers" [level=2] [ref=f1e134]
+          - generic [ref=f1e135]:
+            - generic [ref=f1e136]:
+              - generic [ref=f1e137]: host
+              - generic [ref=f1e139]: 127.0.0.1:8000
+            - generic [ref=f1e140]:
+              - generic [ref=f1e141]: connection
+              - generic [ref=f1e143]: keep-alive
+            - generic [ref=f1e144]:
+              - generic [ref=f1e145]: content-length
+              - generic [ref=f1e147]: "90"
+            - generic [ref=f1e148]:
+              - generic [ref=f1e149]: sec-ch-ua-platform
+              - generic [ref=f1e151]: "\"Windows\""
+            - generic [ref=f1e152]:
+              - generic [ref=f1e153]: x-xsrf-token
+              - generic [ref=f1e155]: eyJpdiI6IkFBajBUV2RaM1JBSlN0NDcrOHRvSkE9PSIsInZhbHVlIjoidFhRbWpFbEFTRWlLdVdXTTQxU2ZVOHNEQ2ZLR0NxczRxVTJpeTNGb2VrYmNtRmRnd0szaDh0d1I0ZUQ4Tk9SUW85MXR3RldFRHVBUUx1ZVZUc3c0c2pUUmJEaDNwVDFIeFNwUDk2aGlVVC9LYWNLSExGaGV4ay81TkRmZE05V1giLCJtYWMiOiIyYjIwOTZkMjkzNTU5ZTczOWYzOTcyZTg5MjIxMTJhYzY3NDhhNTY3NDZlZTE0OGIxZDBjNzkyYzExMWNmNDgyIiwidGFnIjoiIn0=
+            - generic [ref=f1e156]:
+              - generic [ref=f1e157]: accept-language
+              - generic [ref=f1e159]: en-US
+            - generic [ref=f1e160]:
+              - generic [ref=f1e161]: sec-ch-ua
+              - generic [ref=f1e163]: "\"HeadlessChrome\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\""
+            - generic [ref=f1e164]:
+              - generic [ref=f1e165]: x-inertia
+              - generic [ref=f1e167]: "true"
+            - generic [ref=f1e168]:
+              - generic [ref=f1e169]: sec-ch-ua-mobile
+              - generic [ref=f1e171]: "?0"
+            - generic [ref=f1e172]:
+              - generic [ref=f1e173]: x-requested-with
+              - generic [ref=f1e175]: XMLHttpRequest
+            - generic [ref=f1e176]:
+              - generic [ref=f1e177]: user-agent
+              - generic [ref=f1e179]: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.7499.4 Safari/537.36
+            - generic [ref=f1e180]:
+              - generic [ref=f1e181]: accept
+              - generic [ref=f1e183]: text/html, application/xhtml+xml
+            - generic [ref=f1e184]:
+              - generic [ref=f1e185]: content-type
+              - generic [ref=f1e187]: application/json
+            - generic [ref=f1e188]:
+              - generic [ref=f1e189]: origin
+              - generic [ref=f1e191]: http://127.0.0.1:8000
+            - generic [ref=f1e192]:
+              - generic [ref=f1e193]: sec-fetch-site
+              - generic [ref=f1e195]: same-origin
+            - generic [ref=f1e196]:
+              - generic [ref=f1e197]: sec-fetch-mode
+              - generic [ref=f1e199]: cors
+            - generic [ref=f1e200]:
+              - generic [ref=f1e201]: sec-fetch-dest
+              - generic [ref=f1e203]: empty
+            - generic [ref=f1e204]:
+              - generic [ref=f1e205]: referer
+              - generic [ref=f1e207]: http://127.0.0.1:8000/
+            - generic [ref=f1e208]:
+              - generic [ref=f1e209]: accept-encoding
+              - generic [ref=f1e211]: gzip, deflate, br, zstd
+            - generic [ref=f1e212]:
+              - generic [ref=f1e213]: cookie
+              - generic [ref=f1e215]: XSRF-TOKEN=eyJpdiI6IkFBajBUV2RaM1JBSlN0NDcrOHRvSkE9PSIsInZhbHVlIjoidFhRbWpFbEFTRWlLdVdXTTQxU2ZVOHNEQ2ZLR0NxczRxVTJpeTNGb2VrYmNtRmRnd0szaDh0d1I0ZUQ4Tk9SUW85MXR3RldFRHVBUUx1ZVZUc3c0c2pUUmJEaDNwVDFIeFNwUDk2aGlVVC9LYWNLSExGaGV4ay81TkRmZE05V1giLCJtYWMiOiIyYjIwOTZkMjkzNTU5ZTczOWYzOTcyZTg5MjIxMTJhYzY3NDhhNTY3NDZlZTE0OGIxZDBjNzkyYzExMWNmNDgyIiwidGFnIjoiIn0%3D; laravel_session=eyJpdiI6IjNEK3hJbzU1WUg4UDNSVGVpWlR1L3c9PSIsInZhbHVlIjoic0o2cHVwMVV2LzhXNGx4RTR6RkNGc01CQ2daNlEzRFMwQ3BCeHVlcklrUjZHVngzUVQyMGJaWWN0TzZLOEg2VGlLc2R6dVhONjhSYUJQR0djSWpwQVBJeTJWTlJRVWRmVlR2bDlFOHZsMnN6RlAxSSs1SXJFSURCdi9QNTk2NlUiLCJtYWMiOiI0MjY4OTUwNzBiODg5NmJjZGEzNWI2NjQxYWU4NjUxZGM0MGYyZjkwMmFlMTcxZTE2ZDg5ZTAzNTJlMGRlMmViIiwidGFnIjoiIn0%3D; Fq1MriQIMM5MV7ueib2ZzAS6smFIPq8q0eDoenYi=eyJpdiI6InVPNWVBUnpRei9aNEQyQW9CWlJsc3c9PSIsInZhbHVlIjoiMERaeDFzL1dDcUxpbnRiTi9mOTFBTGpvcE85dkgvUURNUlFPMG1lUWlQVjhGVVNPMHRWVy9SVDV2VVMwa292LzFua09ZWG1pOGF2STZvd0IrdklFK3dQZThJKzRDQm1mWm11VE9LcU92Qk8rRm1KY0h6dEJQUDZWb052ZTJpTGdZT2VUTFZyeHlvMm1kZnFZcmVCTXRlZEhUWWFCaGVtdkwxR1VkT0RJcmNTZjZrdXN3MGE1UTFacGtOYWhRQkZYdThmNnhFa0FwSU9JWDQ3ajFwM3JpbUI5c2dCQVd0MGVtN0ZTajc1YUVaWlNlQjVZdW1VTW10Ynh5YlBseGV4c1ZJMkhXZTkveitleWlwcWdMMnk4RGc5cFgySlYwcXNlTG5Vd2dPWXBvNnpyYWZ2ajZKREQrUFJucDdmeVhPYklLd2Jjakhtb25yVEZXNEdiekxoajdiOFlHMzlIaHphejlTUFlaWS9DZGRzakphTi9JYXdlM0U1cGZBNFF2M001akRieFZxVEVjVFhLMno4WXFxbXZ1aUdOc3k3azlsaHlZWXExWlR2d1djWT0iLCJtYWMiOiJmNzQ5M2E2ZTc1ZDdjMjI3YzJiNmQ0YmU3MTIwZWMwMDlkMzdmODMyY2Q2NTY4YWMxZWM0NDI5MDAyYTE5NjJmIiwidGFnIjoiIn0%3D
+        - generic [ref=f1e216]:
+          - heading "Body" [level=2] [ref=f1e217]
+          - code [ref=f1e222]:
+            - generic [ref=f1e223]: "{"
+            - generic [ref=f1e224]: "\"reactable_type\": \"WorkbenchAppModelsTestPost\","
+            - generic [ref=f1e225]: "\"reactable_id\": 1,"
+            - generic [ref=f1e226]: "\"type\": \"like\""
+            - generic [ref=f1e227]: "}"
+        - generic [ref=f1e228]:
+          - heading "Routing" [level=2] [ref=f1e229]
+          - generic [ref=f1e230]:
+            - generic [ref=f1e231]:
+              - generic [ref=f1e232]: controller
+              - generic [ref=f1e234]: Workbench\App\Http\Controllers\TestController@react
+            - generic [ref=f1e235]:
+              - generic [ref=f1e236]: route name
+              - generic [ref=f1e238]: reactions.react
+            - generic [ref=f1e239]:
+              - generic [ref=f1e240]: middleware
+              - generic [ref=f1e242]: web
+        - generic [ref=f1e243]:
+          - heading "Routing parameters" [level=2] [ref=f1e244]
+          - generic [ref=f1e245]: // No routing parameters
+      - generic [ref=f1e248]:
+        - img [ref=f1e250]
+        - img [ref=f1e252]
+  - generic [ref=e7]:
+    - heading "Test Post for Reactions" [level=1] [ref=e8]
+    - paragraph [ref=e9]: This is a test post to demonstrate the Facebook-like reaction system. Hover over the Like button to see all available reactions!
+    - generic [ref=e12]:
+      - button "👍like" [disabled] [ref=e13]:
+        - generic [ref=e14]: 👍like
+      - button "👍1" [ref=e16]
+```

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
+import { X, AlertCircle, Loader2 } from 'lucide-react';
 
 const REACTION_TYPES = {
     like: '👍',
@@ -21,8 +21,10 @@ export default function ReactionsModal({
     const [isAnimating, setIsAnimating] = useState(false);
     const [reactions, setReactions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [page, setPage] = useState(1);
+    const [error, setError] = useState(null);
     const scrollRef = useRef(null);
 
     useEffect(() => {
@@ -44,9 +46,15 @@ export default function ReactionsModal({
     ];
 
     const loadReactions = async (pageNum, append = false) => {
-        if (isLoading) return;
+        if (isLoading || isLoadingMore) return;
         
-        setIsLoading(true);
+        if (append) {
+            setIsLoadingMore(true);
+        } else {
+            setIsLoading(true);
+            setError(null);
+        }
+        
         try {
             const url = `/reactions/list/${encodeURIComponent(reactableType)}/${reactableId}?type=${activeTab}&page=${pageNum}`;
             const response = await fetch(url, {
@@ -55,6 +63,11 @@ export default function ReactionsModal({
                     'Accept': 'application/json',
                 },
             });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const data = await response.json();
             
             if (data.reactions) {
@@ -69,8 +82,10 @@ export default function ReactionsModal({
             }
         } catch (error) {
             console.error('Failed to load reactions:', error);
+            setError(append ? 'Failed to load more reactions' : 'Failed to load reactions');
         } finally {
             setIsLoading(false);
+            setIsLoadingMore(false);
         }
     };
 
@@ -148,16 +163,44 @@ export default function ReactionsModal({
                     onScroll={handleScroll}
                     className="flex-1 overflow-y-auto p-4"
                 >
-                    {!reactions || (reactions.length === 0 && !isLoading) ? (
-                        <div className="text-center py-8 text-gray-500">
-                            {isLoading ? 'Loading...' : 'No reactions yet'}
+                    {error ? (
+                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                            <AlertCircle className="w-12 h-12 text-red-500 mb-3" />
+                            <p className="text-gray-900 font-medium mb-1">Oops! Something went wrong</p>
+                            <p className="text-sm text-gray-500 mb-4">{error}</p>
+                            <button
+                                onClick={() => loadReactions(1, false)}
+                                className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+                            >
+                                Try Again
+                            </button>
+                        </div>
+                    ) : isLoading ? (
+                        <div className="space-y-2">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} className="flex items-center gap-3 p-3 animate-pulse">
+                                    <div className="w-10 h-10 bg-gray-200 rounded-full flex-shrink-0"></div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="h-4 bg-gray-200 rounded w-32 mb-2"></div>
+                                        <div className="h-3 bg-gray-200 rounded w-48"></div>
+                                    </div>
+                                    <div className="w-8 h-8 bg-gray-200 rounded flex-shrink-0"></div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : reactions.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                            <div className="text-6xl mb-3">😊</div>
+                            <p className="text-gray-900 font-medium mb-1">No reactions yet</p>
+                            <p className="text-sm text-gray-500">Be the first to react!</p>
                         </div>
                     ) : (
                         <div className="space-y-2">
-                            {reactions.map((reaction) => (
+                            {reactions.map((reaction, index) => (
                                 <div 
                                     key={reaction.id}
-                                    className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                                    className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-all duration-200 animate-in fade-in slide-in-from-bottom-2"
+                                    style={{ animationDelay: `${index * 30}ms`, animationFillMode: 'backwards' }}
                                 >
                                     <div className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
                                         {reaction.user?.name?.charAt(0).toUpperCase() || '?'}
@@ -175,9 +218,15 @@ export default function ReactionsModal({
                                     </div>
                                 </div>
                             ))}
-                            {isLoading && (
-                                <div className="text-center py-4 text-gray-500">
-                                    Loading...
+                            {isLoadingMore && (
+                                <div className="flex items-center justify-center py-4 text-gray-500">
+                                    <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                                    <span>Loading more...</span>
+                                </div>
+                            )}
+                            {!hasMore && reactions.length > 0 && (
+                                <div className="text-center py-4 text-sm text-gray-400">
+                                    That's all! 🎉
                                 </div>
                             )}
                         </div>
