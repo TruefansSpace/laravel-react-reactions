@@ -77,11 +77,11 @@ export default function ReactionsModal({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
             <div 
-                className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[80vh] flex flex-col"
+                className="bg-white rounded-lg shadow-xl w-full max-w-md h-[600px] flex flex-col"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b">
+                <div className="flex items-center justify-between p-4 border-b border-gray-200">
                     <h2 className="text-lg font-semibold">Reactions</h2>
                     <button
                         onClick={onClose}
@@ -92,13 +92,13 @@ export default function ReactionsModal({
                 </div>
 
                 {/* Tabs */}
-                <div className="flex gap-2 px-4 py-2 border-b overflow-x-auto">
+                <div className="flex gap-2 px-4 py-3 border-b border-gray-200 overflow-x-auto">
                     {tabs.map(tab => (
                         <button
                             key={tab.key}
                             onClick={() => setActiveTab(tab.key)}
                             className={`
-                                flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
+                                flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors
                                 ${activeTab === tab.key
                                     ? 'bg-gray-900 text-white'
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -122,24 +122,24 @@ export default function ReactionsModal({
                             No reactions yet
                         </div>
                     ) : (
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                             {reactions.map((reaction) => (
                                 <div 
                                     key={reaction.id}
-                                    className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                                    className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
                                 >
-                                    <div className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center text-white font-semibold">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
                                         {reaction.user?.name?.charAt(0).toUpperCase() || '?'}
                                     </div>
-                                    <div className="flex-1">
-                                        <div className="font-medium text-gray-900">
+                                    <div className="flex-1 min-w-0">
+                                        <div className="font-medium text-gray-900 truncate">
                                             {reaction.user?.name || 'Unknown User'}
                                         </div>
-                                        <div className="text-sm text-gray-500">
+                                        <div className="text-sm text-gray-500 truncate">
                                             {reaction.user?.email}
                                         </div>
                                     </div>
-                                    <div className="text-2xl">
+                                    <div className="text-2xl flex-shrink-0">
                                         {REACTION_TYPES[reaction.type]}
                                     </div>
                                 </div>
