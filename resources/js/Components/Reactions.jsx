@@ -31,7 +31,8 @@ export default function Reactions({
     reactableType, 
     reactableId, 
     initialReactions = {}, 
-    userReaction = null 
+    userReaction = null,
+    onUserClick
 }) {
     const [reactions, setReactions] = useState(initialReactions);
     const [currentUserReaction, setCurrentUserReaction] = useState(userReaction);
@@ -232,6 +233,7 @@ export default function Reactions({
                 reactableType={reactableType}
                 reactableId={reactableId}
                 reactionsSummary={reactions}
+                onUserClick={onUserClick}
             />
         </div>
     );

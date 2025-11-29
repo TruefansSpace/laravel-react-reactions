@@ -15,7 +15,8 @@ export default function ReactionsModal({
     onClose, 
     reactableType, 
     reactableId,
-    reactionsSummary
+    reactionsSummary,
+    onUserClick
 }) {
     const [activeTab, setActiveTab] = useState('all');
     const [isAnimating, setIsAnimating] = useState(false);
@@ -26,6 +27,7 @@ export default function ReactionsModal({
     const [page, setPage] = useState(1);
     const [error, setError] = useState(null);
     const scrollRef = useRef(null);
+    const modalRef = useRef(null);
 
     useEffect(() => {
         if (isOpen) {
@@ -33,6 +35,50 @@ export default function ReactionsModal({
             loadReactions(1, false);
         }
     }, [isOpen, activeTab]);
+
+    // Handle ESC key to close modal
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === 'Escape' && isOpen) {
+                handleClose();
+            }
+        };
+
+        document.addEventListener('keydown', handleEscape);
+        return () => document.removeEventListener('keydown', handleEscape);
+    }, [isOpen]);
+
+    // Focus trap - circular tab navigation
+    useEffect(() => {
+        if (!isOpen || !modalRef.current) return;
+
+        const handleTabKey = (e) => {
+            if (e.key !== 'Tab') return;
+
+            const focusableElements = modalRef.current.querySelectorAll(
+                'button:not([disabled]), [tabindex="0"]'
+            );
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            if (e.shiftKey) {
+                // Shift + Tab: going backwards
+                if (document.activeElement === firstElement) {
+                    e.preventDefault();
+                    lastElement?.focus();
+                }
+            } else {
+                // Tab: going forwards
+                if (document.activeElement === lastElement) {
+                    e.preventDefault();
+                    firstElement?.focus();
+                }
+            }
+        };
+
+        modalRef.current.addEventListener('keydown', handleTabKey);
+        return () => modalRef.current?.removeEventListener('keydown', handleTabKey);
+    }, [isOpen, reactions]);
 
     const tabs = [
         { key: 'all', label: 'All', count: Object.values(reactionsSummary).reduce((a, b) => a + b, 0) },
@@ -119,6 +165,10 @@ export default function ReactionsModal({
             onClick={handleClose}
         >
             <div 
+                ref={modalRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="modal-title"
                 className={`bg-white rounded-lg shadow-xl w-full max-w-md h-[600px] flex flex-col transition-all duration-200 ${
                     isOpen && isAnimating 
                         ? 'opacity-100 scale-100' 
@@ -128,7 +178,7 @@ export default function ReactionsModal({
             >
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                    <h2 className="text-lg font-semibold">Reactions</h2>
+                    <h2 id="modal-title" className="text-lg font-semibold">Reactions</h2>
                     <button
                         onClick={onClose}
                         className="p-1 hover:bg-gray-100 rounded-full transition-colors"
@@ -199,7 +249,18 @@ export default function ReactionsModal({
                             {reactions.map((reaction, index) => (
                                 <div 
                                     key={reaction.id}
-                                    className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-all duration-200 animate-in fade-in slide-in-from-bottom-2"
+                                    role={onUserClick ? "button" : undefined}
+                                    tabIndex={onUserClick ? 0 : undefined}
+                                    onClick={() => onUserClick?.(reaction.user?.id)}
+                                    onKeyDown={(e) => {
+                                        if (onUserClick && (e.key === 'Enter' || e.key === ' ')) {
+                                            e.preventDefault();
+                                            onUserClick(reaction.user?.id);
+                                        }
+                                    }}
+                                    className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 animate-in fade-in slide-in-from-bottom-2 ${
+                                        onUserClick ? 'hover:bg-gray-100 cursor-pointer active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2' : 'hover:bg-gray-50'
+                                    }`}
                                     style={{ animationDelay: `${index * 30}ms`, animationFillMode: 'backwards' }}
                                 >
                                     <div className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">

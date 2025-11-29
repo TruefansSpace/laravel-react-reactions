@@ -99,6 +99,11 @@ export default function TestPage({ posts }) {
                                             reactableId={post.id}
                                             initialReactions={post.reactions_summary || {}}
                                             userReaction={post.user_reaction}
+                                            onUserClick={(userId) => {
+                                                console.log('User clicked from TestPage:', userId);
+                                                // You can add custom logic here, e.g.:
+                                                // router.visit(`/users/${userId}`);
+                                            }}
                                         />
                                     </div>
                                 </div>
