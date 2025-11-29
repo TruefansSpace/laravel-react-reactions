@@ -60,8 +60,14 @@ class TestController extends Controller
                 ];
             });
 
+        $errors = session()->get('errors');
+        
         return Inertia::render('TestPage', [
             'posts' => $posts,
+            'flash' => [
+                'success' => session()->get('success'),
+            ],
+            'errors' => $errors ? $errors->getBag('default')->getMessages() : [],
         ]);
     }
 }

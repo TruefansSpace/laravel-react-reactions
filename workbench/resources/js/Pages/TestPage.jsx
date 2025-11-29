@@ -2,9 +2,38 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import Reactions from 'package/Components/Reactions';
 import Comments from 'package/Components/Comments';
 import { LogOut, User as UserIcon } from 'lucide-react';
+import { Toaster } from '@/components/ui/toaster';
+import { toast } from '@/hooks/use-toast';
+import { useEffect } from 'react';
 
 export default function TestPage({ posts }) {
-    const { auth } = usePage().props;
+    const page = usePage();
+    const { auth, flash, errors } = page.props;
+
+    // Show flash messages as toasts
+    useEffect(() => {
+        console.log('All props:', page.props);
+        console.log('Flash:', flash, 'Errors:', errors);
+        
+        if (flash?.success) {
+            console.log('Showing success toast:', flash.success);
+            toast({
+                title: "Success",
+                description: flash.success,
+                variant: "success",
+            });
+        }
+
+        if (errors && Object.keys(errors).length > 0) {
+            const errorMessage = Object.values(errors)[0];
+            console.log('Showing error toast:', errorMessage);
+            toast({
+                title: "Error",
+                description: errorMessage,
+                variant: "destructive",
+            });
+        }
+    }, [flash, errors]);
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -141,6 +170,7 @@ export default function TestPage({ posts }) {
                     </div>
                 </footer>
             </div>
+            <Toaster />
         </>
     );
 }

@@ -13,7 +13,6 @@ export default function CommentForm({
     isEditing = false,
     placeholder = 'Write a comment...'
 }) {
-     const { errors } = usePage().props
     const [content, setContent] = useState(initialContent);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');

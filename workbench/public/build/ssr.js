@@ -1380,6 +1380,11 @@ createServer((page) => {
       }
       return page2;
     },
+    defaults: {
+        future: {
+            useDialogForErrorModal: true,
+        },
+    },
     setup: ({ App, props }) => /* @__PURE__ */ jsx(App, { ...props })
   });
 });

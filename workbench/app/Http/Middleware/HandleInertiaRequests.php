@@ -35,6 +35,8 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $errors = $request->session()->get('errors');
+        
         return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $request->user() ? [
@@ -43,6 +45,10 @@ class HandleInertiaRequests extends Middleware
                     'email' => $request->user()->email,
                 ] : null,
             ],
+            'flash' => [
+                'success' => $request->session()->get('success'),
+            ],
+            'errors' => $errors ? $errors->getBag('default')->getMessages() : [],
         ]);
     }
 }

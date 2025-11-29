@@ -20,6 +20,11 @@ createServer((page) => {
       }
       return page;
     },
+    defaults: {
+        future: {
+            useDialogForErrorModal: true,
+        },
+    },
     setup: ({ App, props }) => <App {...props} />,
   });
 })

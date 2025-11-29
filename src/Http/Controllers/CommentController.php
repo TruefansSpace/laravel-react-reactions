@@ -91,12 +91,12 @@ class CommentController extends Controller
     {
         // Check if user can delete this comment
         if (! $comment->canDelete(auth()->id())) {
-            return back(303)->withErrors(['error' => 'You are not allowed to delete this comment']);
+            return redirect()->back(303)->withErrors(['errors' => 'You are not allowed to delete this comment']);
         }
 
         $comment->delete();
 
-        return back(303);
+        return redirect()->back(303);
     }
 
     public function list(Request $request, string $commentableType, int $commentableId)

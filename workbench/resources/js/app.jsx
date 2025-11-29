@@ -17,4 +17,9 @@ createInertiaApp({
     progress: {
         color: '#4B5563',
     },
+    defaults: {
+        future: {
+            useDialogForErrorModal: true,
+        },
+    },
 });
