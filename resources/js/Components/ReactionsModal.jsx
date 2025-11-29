@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
-import { router } from '@inertiajs/react';
 
 const REACTION_TYPES = {
     like: '👍',
@@ -16,20 +15,22 @@ export default function ReactionsModal({
     onClose, 
     reactableType, 
     reactableId,
-    reactionsSummary 
+    reactionsSummary
 }) {
     const [activeTab, setActiveTab] = useState('all');
+    const [isAnimating, setIsAnimating] = useState(false);
     const [reactions, setReactions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [nextPage, setNextPage] = useState(null);
-    const [isAnimating, setIsAnimating] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const [page, setPage] = useState(1);
     const scrollRef = useRef(null);
 
     useEffect(() => {
         if (isOpen) {
             setIsAnimating(true);
+            loadReactions(1, false);
         }
-    }, [isOpen]);
+    }, [isOpen, activeTab]);
 
     const tabs = [
         { key: 'all', label: 'All', count: Object.values(reactionsSummary).reduce((a, b) => a + b, 0) },
@@ -42,23 +43,30 @@ export default function ReactionsModal({
             }))
     ];
 
-    const loadReactions = async (page = 1, append = false) => {
+    const loadReactions = async (pageNum, append = false) => {
+        if (isLoading) return;
+        
         setIsLoading(true);
         try {
-            const url = `/reactions/list/${encodeURIComponent(reactableType)}/${reactableId}?type=${activeTab}&page=${page}`;
+            const url = `/reactions/list/${encodeURIComponent(reactableType)}/${reactableId}?type=${activeTab}&page=${pageNum}`;
             const response = await fetch(url, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
                 },
             });
             const data = await response.json();
             
-            if (append) {
-                setReactions(prev => [...prev, ...data.data]);
-            } else {
-                setReactions(data.data);
+            if (data.reactions) {
+                const paginatedData = data.reactions;
+                if (append) {
+                    setReactions(prev => [...prev, ...paginatedData.data]);
+                } else {
+                    setReactions(paginatedData.data);
+                }
+                setHasMore(paginatedData.current_page < paginatedData.last_page);
+                setPage(paginatedData.current_page);
             }
-            setNextPage(data.next_page);
         } catch (error) {
             console.error('Failed to load reactions:', error);
         } finally {
@@ -66,16 +74,16 @@ export default function ReactionsModal({
         }
     };
 
-    useEffect(() => {
-        if (isOpen) {
-            loadReactions();
-        }
-    }, [isOpen, activeTab]);
+    const handleTabChange = (type) => {
+        setActiveTab(type);
+        setPage(1);
+        setHasMore(true);
+    };
 
     const handleScroll = (e) => {
         const { scrollTop, scrollHeight, clientHeight } = e.target;
-        if (scrollHeight - scrollTop <= clientHeight * 1.5 && nextPage && !isLoading) {
-            loadReactions(nextPage, true);
+        if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasMore && !isLoading) {
+            loadReactions(page + 1, true);
         }
     };
 
@@ -134,15 +142,15 @@ export default function ReactionsModal({
                     ))}
                 </div>
 
-                {/* List */}
+                {/* List with Infinite Scroll */}
                 <div 
                     ref={scrollRef}
                     onScroll={handleScroll}
                     className="flex-1 overflow-y-auto p-4"
                 >
-                    {reactions.length === 0 && !isLoading ? (
+                    {!reactions || (reactions.length === 0 && !isLoading) ? (
                         <div className="text-center py-8 text-gray-500">
-                            No reactions yet
+                            {isLoading ? 'Loading...' : 'No reactions yet'}
                         </div>
                     ) : (
                         <div className="space-y-2">

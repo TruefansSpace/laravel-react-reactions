@@ -91,8 +91,7 @@ class ReactionController extends Controller
         $reactions = $query->paginate($perPage);
 
         return response()->json([
-            'data' => $reactions->items(),
-            'next_page' => $reactions->hasMorePages() ? $reactions->currentPage() + 1 : null,
+            'reactions' => $reactions,
         ]);
     }
 }
