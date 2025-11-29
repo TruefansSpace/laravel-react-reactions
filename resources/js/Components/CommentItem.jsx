@@ -47,7 +47,6 @@ export default function CommentItem({
         
         router.delete(`/comments/${comment.id}`, {
             preserveScroll: true,
-            preserveState: true,
             onSuccess: () => {
                 onCommentDeleted(comment.id);
             },

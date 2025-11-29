@@ -40,7 +40,12 @@ class CommentController extends Controller
         $commentable = $commentableClass::find($request->input('commentable_id'));
 
         if (! $commentable) {
-            return redirect()->back(303)->withErrors(['commentable_id' => 'Commentable not found']);
+            return back()->withErrors(['commentable_id' => 'Commentable not found']);
+        }
+
+        // Check if user can comment on this model
+        if (! $commentable->canComment(auth()->id())) {
+            return back()->withErrors(['error' => 'You are not allowed to comment on this item']);
         }
 
         $comment = $commentable->comment(
@@ -54,9 +59,9 @@ class CommentController extends Controller
 
     public function update(Request $request, Comment $comment)
     {
-        // Check if user owns the comment
-        if ($comment->user_id !== auth()->id()) {
-            return redirect()->back(303)->withErrors(['error' => 'Unauthorized']);
+        // Check if user can edit this comment
+        if (! $comment->canEdit(auth()->id())) {
+            return back()->withErrors(['error' => 'You are not allowed to edit this comment']);
         }
 
         // Check edit timeout
@@ -84,9 +89,9 @@ class CommentController extends Controller
 
     public function destroy(Comment $comment)
     {
-        // Check if user owns the comment or is admin
-        if ($comment->user_id !== auth()->id() && ! (auth()->user()->is_admin ?? false)) {
-            return back(303)->withErrors(['error' => 'Unauthorized']);
+        // Check if user can delete this comment
+        if (! $comment->canDelete(auth()->id())) {
+            return back(303)->withErrors(['error' => 'You are not allowed to delete this comment']);
         }
 
         $comment->delete();

@@ -85,4 +85,52 @@ class Comment extends Model
     {
         return config('react-reactions.comments.reactions_enabled', true);
     }
+
+    /**
+     * Check if a user can edit this comment
+     * Override this method to implement custom logic
+     *
+     * @param int|null $userId
+     * @return bool
+     */
+    public function canEdit(?int $userId = null): bool
+    {
+        if (! $userId) {
+            return false;
+        }
+        if(!$this->commentable()->canComment()){
+            return false;
+        }
+
+        // Default: only comment owner can edit
+        // Override for custom logic, e.g.:
+        // - Allow admins to edit any comment
+        // - Allow moderators to edit comments in their groups
+        // - Disable editing after certain time period
+        return $this->user_id === $userId;
+    }
+
+    /**
+     * Check if a user can delete this comment
+     * Override this method to implement custom logic
+     *
+     * @param int|null $userId
+     * @return bool
+     */
+    public function canDelete(?int $userId = null): bool
+    {
+        if(!$this->commentable()->canComment()){
+            return false;
+        }
+        if (! $userId) {
+            return false;
+        }
+
+        // Default: only comment owner can delete
+        // Override for custom logic, e.g.:
+        // - Allow admins to delete any comment
+        // - Allow post owner to delete comments on their post
+        // - Allow moderators to delete comments
+        return $this->user_id === $userId;
+    }
 }

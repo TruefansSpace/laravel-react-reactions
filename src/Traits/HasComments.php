@@ -63,4 +63,21 @@ trait HasComments
     {
         return $this->comments()->topLevel()->count();
     }
+
+    /**
+     * Check if a user can comment on this model
+     * Override this method in your model to implement custom logic
+     *
+     * @param int|null $userId
+     * @return bool
+     */
+    public function canComment(?int $userId = null): bool
+    {
+        // Default: anyone can comment
+        // Override in your model for custom logic, e.g.:
+        // - Only allow comments if post is published
+        // - Only allow comments from followers
+        // - Only allow comments if user is member of group
+        return true;
+    }
 }
