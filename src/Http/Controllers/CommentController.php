@@ -96,7 +96,7 @@ class CommentController extends Controller
 
         $comment->delete();
 
-        return redirect()->back(303);
+        return redirect()->back(303)->with(['success' => 'You have successfully deleted this comment']);
     }
 
     public function list(Request $request, string $commentableType, int $commentableId)
