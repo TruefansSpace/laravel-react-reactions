@@ -10,47 +10,45 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create test users using updateOrCreate to avoid duplicates
+        // Create 60 test users to demonstrate infinite scroll
         $users = [];
-        $users[] = User::updateOrCreate(
-            ['email' => 'test@example.com'],
-            [
-                'name' => 'Test User',
-                'password' => bcrypt('password'),
-            ]
-        );
+        
+        // First 5 main test users
+        $mainUsers = [
+            ['email' => 'test@example.com', 'name' => 'Test User'],
+            ['email' => 'john@example.com', 'name' => 'John Doe'],
+            ['email' => 'jane@example.com', 'name' => 'Jane Smith'],
+            ['email' => 'alice@example.com', 'name' => 'Alice Johnson'],
+            ['email' => 'bob@example.com', 'name' => 'Bob Wilson'],
+        ];
 
-        $users[] = User::updateOrCreate(
-            ['email' => 'john@example.com'],
-            [
-                'name' => 'John Doe',
-                'password' => bcrypt('password'),
-            ]
-        );
+        foreach ($mainUsers as $userData) {
+            $users[] = User::updateOrCreate(
+                ['email' => $userData['email']],
+                [
+                    'name' => $userData['name'],
+                    'password' => bcrypt('password'),
+                ]
+            );
+        }
 
-        $users[] = User::updateOrCreate(
-            ['email' => 'jane@example.com'],
-            [
-                'name' => 'Jane Smith',
-                'password' => bcrypt('password'),
-            ]
-        );
+        // Generate 55 more users for infinite scroll demo
+        $firstNames = ['Emma', 'Liam', 'Olivia', 'Noah', 'Ava', 'Ethan', 'Sophia', 'Mason', 'Isabella', 'William', 'Mia', 'James', 'Charlotte', 'Benjamin', 'Amelia', 'Lucas', 'Harper', 'Henry', 'Evelyn', 'Alexander', 'Abigail', 'Michael', 'Emily', 'Daniel', 'Elizabeth', 'Matthew', 'Sofia', 'Jackson', 'Avery', 'Sebastian', 'Ella', 'Jack', 'Scarlett', 'Aiden', 'Grace', 'Owen', 'Chloe', 'Samuel', 'Victoria', 'David', 'Riley', 'Joseph', 'Aria', 'Carter', 'Lily', 'Wyatt', 'Aubrey', 'John', 'Zoey', 'Luke', 'Penelope', 'Dylan', 'Lillian', 'Grayson', 'Addison'];
+        $lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Thompson', 'White', 'Harris', 'Clark'];
 
-        $users[] = User::updateOrCreate(
-            ['email' => 'alice@example.com'],
-            [
-                'name' => 'Alice Johnson',
-                'password' => bcrypt('password'),
-            ]
-        );
-
-        $users[] = User::updateOrCreate(
-            ['email' => 'bob@example.com'],
-            [
-                'name' => 'Bob Wilson',
-                'password' => bcrypt('password'),
-            ]
-        );
+        for ($i = 0; $i < 55; $i++) {
+            $firstName = $firstNames[array_rand($firstNames)];
+            $lastName = $lastNames[array_rand($lastNames)];
+            $email = strtolower($firstName . '.' . $lastName . $i . '@example.com');
+            
+            $users[] = User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $firstName . ' ' . $lastName,
+                    'password' => bcrypt('password'),
+                ]
+            );
+        }
 
         // Delete existing posts to start fresh
         TestPost::query()->delete();
@@ -101,16 +99,26 @@ class DatabaseSeeder extends Seeder
 
         $reactionTypes = ['like', 'love', 'haha', 'wow', 'sad', 'angry'];
 
-        foreach ($posts as $postData) {
+        foreach ($posts as $index => $postData) {
             $post = TestPost::create($postData);
 
-            // Add 3-4 random reactions from different users
-            $numReactions = rand(3, 4);
-            $selectedUsers = collect($users)->random($numReactions);
-            
-            foreach ($selectedUsers as $user) {
-                $randomReaction = $reactionTypes[array_rand($reactionTypes)];
-                $post->react($user->id, $randomReaction);
+            // First post gets 50+ reactions for infinite scroll demo
+            if ($index === 0) {
+                // Add reactions from 50 random users
+                $selectedUsers = collect($users)->random(min(50, count($users)));
+                foreach ($selectedUsers as $user) {
+                    $randomReaction = $reactionTypes[array_rand($reactionTypes)];
+                    $post->react($user->id, $randomReaction);
+                }
+            } else {
+                // Other posts get 3-8 random reactions
+                $numReactions = rand(3, 8);
+                $selectedUsers = collect($users)->random(min($numReactions, count($users)));
+                
+                foreach ($selectedUsers as $user) {
+                    $randomReaction = $reactionTypes[array_rand($reactionTypes)];
+                    $post->react($user->id, $randomReaction);
+                }
             }
         }
     }

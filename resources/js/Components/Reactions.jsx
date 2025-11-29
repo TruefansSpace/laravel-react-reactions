@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { router } from '@inertiajs/react';
+import { ChevronDown } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import ReactionsModal from './ReactionsModal';
 
 const REACTION_TYPES = {
     like: '👍',
@@ -35,6 +37,7 @@ export default function Reactions({
     const [currentUserReaction, setCurrentUserReaction] = useState(userReaction);
     const [isProcessing, setIsProcessing] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [showModal, setShowModal] = useState(false);
     const hoverTimeoutRef = React.useRef(null);
 
     const handleReaction = (type) => {
@@ -210,8 +213,26 @@ export default function Reactions({
                                 <span>{count}</span>
                             </button>
                         ))}
+                    
+                    {/* Chevron button to open modal */}
+                    <button
+                        onClick={() => setShowModal(true)}
+                        className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+                        title="See who reacted"
+                    >
+                        <ChevronDown className="w-4 h-4 text-gray-600" />
+                    </button>
                 </div>
             )}
+
+            {/* Reactions Modal */}
+            <ReactionsModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                reactableType={reactableType}
+                reactableId={reactableId}
+                reactionsSummary={reactions}
+            />
         </div>
     );
 }

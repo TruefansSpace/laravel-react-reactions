@@ -72,5 +72,28 @@ class ReactionController extends Controller
         // Return 303 redirect to force GET request (prevents method not allowed error)
         return redirect()->back(303);
     }
+
+    public function list(Request $request, string $reactableType, int $reactableId)
+    {
+        $type = $request->query('type', 'all');
+        $perPage = 20;
+
+        $query = \TrueFans\LaravelReactReactions\Models\Reaction::query()
+            ->where('reactable_type', $reactableType)
+            ->where('reactable_id', $reactableId)
+            ->with('user:id,name,email')
+            ->latest();
+
+        if ($type !== 'all') {
+            $query->where('type', $type);
+        }
+
+        $reactions = $query->paginate($perPage);
+
+        return response()->json([
+            'data' => $reactions->items(),
+            'next_page' => $reactions->hasMorePages() ? $reactions->currentPage() + 1 : null,
+        ]);
+    }
 }
 
