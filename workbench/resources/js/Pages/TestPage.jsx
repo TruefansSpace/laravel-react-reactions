@@ -1,8 +1,7 @@
-import React from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import Reactions from 'package/Components/Reactions';
+import Comments from 'package/Components/Comments';
 import { LogOut, User as UserIcon } from 'lucide-react';
-import DebugPanel from '../components/DebugPanel';
 
 export default function TestPage({ posts }) {
     const { auth } = usePage().props;
@@ -106,6 +105,19 @@ export default function TestPage({ posts }) {
                                             }}
                                         />
                                     </div>
+
+                                    <div className="pt-6 border-t border-gray-100 mt-6">
+                                        <Comments
+                                            commentableType="Workbench\\App\\Models\\TestPost"
+                                            commentableId={post.id}
+                                            initialComments={post.comments || []}
+                                            reactionsEnabled={true}
+                                            currentUserId={auth?.user?.id}
+                                            onUserClick={(userId) => {
+                                                console.log('User clicked from comment:', userId);
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                             </article>
                         ))}
@@ -128,9 +140,6 @@ export default function TestPage({ posts }) {
                         <p>Built with Laravel, Inertia.js, React & shadcn/ui</p>
                     </div>
                 </footer>
-
-                {/* Debug Panel */}
-                <DebugPanel />
             </div>
         </>
     );

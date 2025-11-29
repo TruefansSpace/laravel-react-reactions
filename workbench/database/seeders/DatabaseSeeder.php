@@ -5,6 +5,7 @@ namespace Workbench\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Workbench\App\Models\TestPost;
 use Workbench\App\Models\User;
+use TrueFans\LaravelReactReactions\Models\Comment;
 
 class DatabaseSeeder extends Seeder
 {
@@ -118,6 +119,66 @@ class DatabaseSeeder extends Seeder
                 foreach ($selectedUsers as $user) {
                     $randomReaction = $reactionTypes[array_rand($reactionTypes)];
                     $post->react($user->id, $randomReaction);
+                }
+            }
+
+            // Add comments to posts
+            $numComments = rand(2, 5);
+            $commentUsers = collect($users)->random(min($numComments, count($users)));
+            
+            $commentTexts = [
+                'This is amazing! Great work!',
+                'I totally agree with this.',
+                'Thanks for sharing this information.',
+                'Very interesting perspective.',
+                'Could you elaborate more on this?',
+                'This is exactly what I needed to hear.',
+                'Fantastic post! Keep it up!',
+                'I have some thoughts on this...',
+                'This resonates with me so much.',
+                'Well said! Couldn\'t agree more.',
+                'This is really helpful, thank you!',
+                'Interesting take on this topic.',
+                'I learned something new today!',
+                'This deserves more attention.',
+                'Brilliant insights here.',
+            ];
+
+            foreach ($commentUsers as $commentUser) {
+                $comment = Comment::create([
+                    'commentable_type' => TestPost::class,
+                    'commentable_id' => $post->id,
+                    'user_id' => $commentUser->id,
+                    'content' => $commentTexts[array_rand($commentTexts)],
+                ]);
+
+                // 50% chance to add 1-2 replies to this comment
+                if (rand(0, 1)) {
+                    $numReplies = rand(1, 2);
+                    $replyUsers = collect($users)->random(min($numReplies, count($users)));
+                    
+                    $replyTexts = [
+                        'I agree with you!',
+                        'Thanks for your comment!',
+                        'That\'s a good point.',
+                        'Interesting perspective!',
+                        'I see what you mean.',
+                        'Exactly my thoughts!',
+                        'Well put!',
+                        'Thanks for clarifying.',
+                        'I hadn\'t thought of it that way.',
+                        'Great addition to the discussion!',
+                    ];
+
+                    foreach ($replyUsers as $replyUser) {
+                        Comment::create([
+                            'commentable_type' => TestPost::class,
+                            'commentable_id' => $post->id,
+                            'user_id' => $replyUser->id,
+                            'parent_id' => $comment->id,
+                            'content' => $replyTexts[array_rand($replyTexts)],
+                        ]);
+                    }
                 }
             }
         }
