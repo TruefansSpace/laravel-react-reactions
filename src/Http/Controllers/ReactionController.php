@@ -11,10 +11,12 @@ class ReactionController extends Controller
 {
     public function store(Request $request)
     {
+        $allowedTypes = implode(',', array_keys(config('react-reactions.types', [])));
+        
         $validator = Validator::make($request->all(), [
             'reactable_type' => 'required|string',
             'reactable_id' => 'required|integer',
-            'type' => 'required|string|in:like,love,haha,wow,sad,angry',
+            'type' => 'required|string|in:' . $allowedTypes,
         ]);
 
         if ($validator->fails()) {

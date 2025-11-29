@@ -108,20 +108,33 @@ trait HasReactions
         $table = $model->getTable();
         $modelClass = get_class($model);
         
+        // Build JSON_OBJECT dynamically from config
+        $reactionTypes = array_keys(config('react-reactions.types', [
+            'like' => '👍',
+            'love' => '❤️',
+            'haha' => '😂',
+            'wow' => '😮',
+            'sad' => '😢',
+            'angry' => '😠',
+        ]));
+        
+        $jsonParts = [];
+        foreach ($reactionTypes as $type) {
+            $jsonParts[] = sprintf(
+                '"%s", COALESCE(SUM(CASE WHEN type = "%s" THEN 1 END), 0)',
+                $type,
+                $type
+            );
+        }
+        $jsonObjectSql = 'JSON_OBJECT(' . implode(', ', $jsonParts) . ')';
+        
         return $query
             // Select all columns from the main table first
             ->select($table . '.*')
             // Subquery 1: Get reaction counts aggregated by type
             ->selectSub(
                 \Illuminate\Support\Facades\DB::table('reactions')
-                    ->selectRaw('JSON_OBJECT(
-                        "like", COALESCE(SUM(CASE WHEN type = "like" THEN 1 END), 0),
-                        "love", COALESCE(SUM(CASE WHEN type = "love" THEN 1 END), 0),
-                        "haha", COALESCE(SUM(CASE WHEN type = "haha" THEN 1 END), 0),
-                        "wow", COALESCE(SUM(CASE WHEN type = "wow" THEN 1 END), 0),
-                        "sad", COALESCE(SUM(CASE WHEN type = "sad" THEN 1 END), 0),
-                        "angry", COALESCE(SUM(CASE WHEN type = "angry" THEN 1 END), 0)
-                    )')
+                    ->selectRaw($jsonObjectSql)
                     ->whereColumn('reactable_id', $table . '.id')
                     ->where('reactable_type', $modelClass),
                 'reactions_summary_json'
