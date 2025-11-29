@@ -22,7 +22,14 @@ export default function ReactionsModal({
     const [reactions, setReactions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [nextPage, setNextPage] = useState(null);
+    const [isAnimating, setIsAnimating] = useState(false);
     const scrollRef = useRef(null);
+
+    useEffect(() => {
+        if (isOpen) {
+            setIsAnimating(true);
+        }
+    }, [isOpen]);
 
     const tabs = [
         { key: 'all', label: 'All', count: Object.values(reactionsSummary).reduce((a, b) => a + b, 0) },
@@ -72,12 +79,28 @@ export default function ReactionsModal({
         }
     };
 
-    if (!isOpen) return null;
+    const handleClose = () => {
+        setIsAnimating(false);
+        setTimeout(() => {
+            onClose();
+        }, 200);
+    };
+
+    if (!isOpen && !isAnimating) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+        <div 
+            className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-200 ${
+                isOpen && isAnimating ? 'bg-black/50' : 'bg-black/0'
+            }`}
+            onClick={handleClose}
+        >
             <div 
-                className="bg-white rounded-lg shadow-xl w-full max-w-md h-[600px] flex flex-col"
+                className={`bg-white rounded-lg shadow-xl w-full max-w-md h-[600px] flex flex-col transition-all duration-200 ${
+                    isOpen && isAnimating 
+                        ? 'opacity-100 scale-100' 
+                        : 'opacity-0 scale-95'
+                }`}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
