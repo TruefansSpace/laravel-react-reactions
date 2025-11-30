@@ -45,6 +45,7 @@ class TestController extends Controller
                             'id' => $comment->id,
                             'content' => $comment->content,
                             'user' => $comment->user,
+                            'user_id' => $comment->user_id,
                             'created_at' => $comment->created_at,
                             'is_edited' => $comment->is_edited,
                             'edited_at' => $comment->edited_at,
@@ -56,6 +57,7 @@ class TestController extends Controller
                                     'id' => $reply->id,
                                     'content' => $reply->content,
                                     'user' => $reply->user,
+                                    'user_id' => $reply->user_id,
                                     'created_at' => $reply->created_at,
                                     'is_edited' => $reply->is_edited,
                                     'edited_at' => $reply->edited_at,
@@ -71,10 +73,19 @@ class TestController extends Controller
 
         $errors = session()->get('errors');
         
+        // Explicitly pass auth, flash, and errors since middleware sharing isn't working
         return Inertia::render('TestPage', [
             'posts' => $posts,
+            'auth' => [
+                'user' => auth()->user() ? [
+                    'id' => auth()->user()->id,
+                    'name' => auth()->user()->name,
+                    'email' => auth()->user()->email,
+                ] : null,
+            ],
             'flash' => [
                 'success' => session()->get('success'),
+                'error' => session()->get('error'),
             ],
             'errors' => $errors ? $errors->getBag('default')->getMessages() : [],
         ]);

@@ -12,7 +12,6 @@ export default function TestPage({ posts }) {
 
     // Show flash messages as toasts
     useEffect(() => {
-        console.log('All props:', page.props);
         console.log('Flash:', flash, 'Errors:', errors);
         
         if (flash?.success) {
@@ -43,7 +42,7 @@ export default function TestPage({ posts }) {
     return (
         <>
             <Head title="Reactions Demo" />
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+            <div data-auth_user={JSON.stringify(auth?.user) ||''} className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
                 {/* Header */}
                 <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
                     <div className="max-w-5xl mx-auto px-4 py-4">

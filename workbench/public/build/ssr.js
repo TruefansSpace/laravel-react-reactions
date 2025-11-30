@@ -9,6 +9,7 @@ import { cva } from "class-variance-authority";
 import { X, AlertCircle, Loader2, ChevronDown, Send, Clock, MoreVertical, Edit2, Trash2, Reply, MessageSquare, LogOut, User } from "lucide-react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
+import axios from "axios";
 import * as ToastPrimitives from "@radix-ui/react-toast";
 import createServer from "@inertiajs/react/server";
 import ReactDOMServer from "react-dom/server";
@@ -437,6 +438,7 @@ function ReactionsModal({
     {
       className: `fixed inset-0 z-50 flex items-center justify-center transition-all duration-200 ${isOpen && isAnimating ? "bg-black/50" : "bg-black/0"}`,
       onClick: handleClose,
+      "data-testid": "modal-overlay",
       children: /* @__PURE__ */ jsxs(
         "div",
         {
@@ -454,6 +456,7 @@ function ReactionsModal({
                 {
                   onClick: onClose,
                   className: "p-1 hover:bg-gray-100 rounded-full transition-colors",
+                  "data-testid": "close-modal",
                   children: /* @__PURE__ */ jsx(X, { className: "w-5 h-5" })
                 }
               )
@@ -462,6 +465,7 @@ function ReactionsModal({
               "button",
               {
                 onClick: () => setActiveTab(tab.key),
+                "data-testid": `reaction-tab-${tab.key}`,
                 className: `
                                 flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors
                                 ${activeTab === tab.key ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}
@@ -514,6 +518,7 @@ function ReactionsModal({
                           var _a2;
                           return onUserClick == null ? void 0 : onUserClick((_a2 = reaction.user) == null ? void 0 : _a2.id);
                         },
+                        "data-testid": "user-reaction-item",
                         onKeyDown: (e) => {
                           var _a2;
                           if (onUserClick && (e.key === "Enter" || e.key === " ")) {
@@ -529,7 +534,7 @@ function ReactionsModal({
                             /* @__PURE__ */ jsx("div", { className: "font-medium text-gray-900 truncate", children: ((_c = reaction.user) == null ? void 0 : _c.name) || "Unknown User" }),
                             /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-500 truncate", children: (_d = reaction.user) == null ? void 0 : _d.email })
                           ] }),
-                          /* @__PURE__ */ jsx("div", { className: "text-2xl flex-shrink-0", children: REACTION_TYPES$1[reaction.type] })
+                          /* @__PURE__ */ jsx("div", { className: "text-2xl flex-shrink-0", "data-testid": "user-reaction-type", children: REACTION_TYPES$1[reaction.type] })
                         ]
                       },
                       reaction.id
@@ -665,14 +670,15 @@ function Reactions({
           onMouseEnter: handleMouseEnter,
           onMouseLeave: handleMouseLeave,
           disabled: isProcessing,
+          "data-testid": `reaction-button-${currentUserReaction || "like"}`,
           className: `
-                            group inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200
+                            group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium text-sm transition-all duration-200
                             ${currentUserReaction ? "bg-gray-900 text-white hover:bg-gray-800 shadow-sm" : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-300"}
                             ${isProcessing ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:scale-105"}
                         `,
           children: [
-            /* @__PURE__ */ jsx("span", { className: "text-lg", children: currentUserReaction ? REACTION_TYPES[currentUserReaction] : "👍" }),
-            /* @__PURE__ */ jsx("span", { className: "font-medium", children: currentUserReaction ? REACTION_LABELS[currentUserReaction] : "Like" })
+            /* @__PURE__ */ jsx("span", { className: "text-base", children: currentUserReaction ? REACTION_TYPES[currentUserReaction] : "👍" }),
+            /* @__PURE__ */ jsx("span", { className: "font-medium text-sm", children: currentUserReaction ? REACTION_LABELS[currentUserReaction] : "Like" })
           ]
         }
       ) }),
@@ -688,6 +694,7 @@ function Reactions({
             DropdownMenuItem,
             {
               onClick: () => handleReaction(type),
+              "data-testid": `reaction-button-${type}`,
               className: `
                                     group relative flex flex-col items-center gap-1 p-2.5 rounded-lg transition-all duration-200
                                     hover:bg-gray-100 hover:scale-125 cursor-pointer
@@ -707,8 +714,9 @@ function Reactions({
         {
           onClick: () => handleReaction(type),
           disabled: isProcessing,
+          "data-testid": `reaction-count-${type}`,
           className: `
-                                    inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all
+                                    inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all
                                     ${currentUserReaction === type ? "bg-gray-900 text-white shadow-sm" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}
                                     ${isProcessing ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:scale-105"}
                                 `,
@@ -938,6 +946,7 @@ function CommentForm({
           },
           placeholder,
           disabled: isSubmitting,
+          "data-testid": isEditing ? "edit-comment-input" : "comment-input",
           className: `w-full px-4 py-3 pr-12 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all ${error ? "border-red-500" : "border-gray-300"} ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`,
           rows: 3,
           maxLength: 5e3
@@ -965,6 +974,7 @@ function CommentForm({
         {
           type: "submit",
           disabled: isSubmitting || !content.trim(),
+          "data-testid": isEditing ? "save-edit" : "submit-comment",
           className: "flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
           children: isSubmitting ? /* @__PURE__ */ jsxs(Fragment, { children: [
             /* @__PURE__ */ jsx("div", { className: "w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" }),
@@ -990,12 +1000,11 @@ function CommentItem({
   currentUserId,
   isReply = false
 }) {
-  var _a, _b, _c;
+  var _a, _b, _c, _d, _e;
   const [isEditing, setIsEditing] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const isOwner = currentUserId === comment.user_id;
   const formattedDate = new Date(comment.created_at).toLocaleDateString("en-US", {
     month: "short",
@@ -1018,9 +1027,8 @@ function CommentItem({
       onSuccess: () => {
         onCommentDeleted(comment.id);
       },
-      onError: (errors) => {
+      onError: () => {
         setIsDeleting(false);
-        setErrorMessage((errors == null ? void 0 : errors.error) || "Failed to delete comment");
       },
       onFinish: () => {
         setIsDeleting(false);
@@ -1036,12 +1044,12 @@ function CommentItem({
     setShowReplyForm(false);
   };
   if (isDeleting) {
-    return /* @__PURE__ */ jsx("div", { className: "animate-pulse bg-gray-50 rounded-lg p-4", children: /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-500", children: "Deleting..." }) });
+    return /* @__PURE__ */ jsx("div", { className: "animate-pulse bg-gray-50 rounded-md p-3", children: /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-500", children: "Deleting..." }) });
   }
-  return /* @__PURE__ */ jsxs("div", { className: `${isReply ? "ml-12" : ""}`, children: [
-    /* @__PURE__ */ jsxs("div", { className: "bg-white rounded-lg border border-gray-200 p-4", children: [
-      /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between mb-3", children: [
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
+  return /* @__PURE__ */ jsxs("div", { className: `${isReply ? "ml-10" : ""}`, children: [
+    /* @__PURE__ */ jsxs("div", { "data-content_id": comment.id, "data-content_owner_id": `container_${(_a = comment.user) == null ? void 0 : _a.id}`, className: "bg-white rounded-md border border-gray-200 p-3", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between mb-2", children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsx(
             "div",
             {
@@ -1049,12 +1057,12 @@ function CommentItem({
                 var _a2;
                 return onUserClick == null ? void 0 : onUserClick((_a2 = comment.user) == null ? void 0 : _a2.id);
               },
-              className: `w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 ${onUserClick ? "cursor-pointer hover:ring-2 hover:ring-gray-900 hover:ring-offset-2 transition-all" : ""}`,
-              children: ((_b = (_a = comment.user) == null ? void 0 : _a.name) == null ? void 0 : _b.charAt(0).toUpperCase()) || "?"
+              className: `w-8 h-8 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 ${onUserClick ? "cursor-pointer hover:ring-2 hover:ring-gray-900 hover:ring-offset-1 transition-all" : ""}`,
+              children: ((_c = (_b = comment.user) == null ? void 0 : _b.name) == null ? void 0 : _c.charAt(0).toUpperCase()) || "?"
             }
           ),
           /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1.5", children: [
               /* @__PURE__ */ jsx(
                 "span",
                 {
@@ -1062,26 +1070,26 @@ function CommentItem({
                     var _a2;
                     return onUserClick == null ? void 0 : onUserClick((_a2 = comment.user) == null ? void 0 : _a2.id);
                   },
-                  className: `font-semibold text-gray-900 ${onUserClick ? "cursor-pointer hover:underline" : ""}`,
-                  children: ((_c = comment.user) == null ? void 0 : _c.name) || "Unknown User"
+                  className: `text-sm font-semibold text-gray-900 ${onUserClick ? "cursor-pointer hover:underline" : ""}`,
+                  children: ((_d = comment.user) == null ? void 0 : _d.name) || "Unknown User"
                 }
               ),
-              comment.is_edited && /* @__PURE__ */ jsxs("span", { className: "text-xs text-gray-400 flex items-center gap-1", children: [
-                /* @__PURE__ */ jsx(Clock, { className: "w-3 h-3" }),
+              comment.is_edited && /* @__PURE__ */ jsxs("span", { className: "text-xs text-gray-400 flex items-center gap-0.5", children: [
+                /* @__PURE__ */ jsx(Clock, { className: "w-2.5 h-2.5" }),
                 "edited"
               ] })
             ] }),
-            /* @__PURE__ */ jsx("span", { className: "text-sm text-gray-500", children: formattedDate })
+            /* @__PURE__ */ jsx("span", { className: "text-xs text-gray-500", children: formattedDate })
           ] })
         ] }),
         isOwner && !isEditing && /* @__PURE__ */ jsxs(DropdownMenu, { children: [
-          /* @__PURE__ */ jsx(DropdownMenuTrigger, { asChild: true, children: /* @__PURE__ */ jsx("button", { className: "p-1 hover:bg-gray-100 rounded-full transition-colors", children: /* @__PURE__ */ jsx(MoreVertical, { className: "w-4 h-4 text-gray-600" }) }) }),
+          /* @__PURE__ */ jsx(DropdownMenuTrigger, { asChild: true, children: /* @__PURE__ */ jsx("button", { "data-content_owner_id": `view_more_button_${(_e = comment.user) == null ? void 0 : _e.id}`, className: "p-1 hover:bg-gray-100 rounded-full transition-colors", children: /* @__PURE__ */ jsx(MoreVertical, { className: "w-4 h-4 text-gray-600" }) }) }),
           /* @__PURE__ */ jsxs(DropdownMenuContent, { align: "end", children: [
-            /* @__PURE__ */ jsxs(DropdownMenuItem, { onClick: handleEdit, className: "cursor-pointer", children: [
+            /* @__PURE__ */ jsxs(DropdownMenuItem, { onClick: handleEdit, className: "cursor-pointer", "data-testid": "edit-comment", children: [
               /* @__PURE__ */ jsx(Edit2, { className: "w-4 h-4 mr-2" }),
               "Edit"
             ] }),
-            /* @__PURE__ */ jsxs(DropdownMenuItem, { onClick: handleDelete, className: "cursor-pointer text-red-600", children: [
+            /* @__PURE__ */ jsxs(DropdownMenuItem, { onClick: handleDelete, className: "cursor-pointer text-red-600", "data-testid": "delete-comment", children: [
               /* @__PURE__ */ jsx(Trash2, { className: "w-4 h-4 mr-2" }),
               "Delete"
             ] })
@@ -1100,8 +1108,8 @@ function CommentItem({
           isEditing: true
         }
       ) : /* @__PURE__ */ jsxs(Fragment, { children: [
-        /* @__PURE__ */ jsx("p", { className: "text-gray-800 whitespace-pre-wrap mb-3", children: comment.content }),
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4", children: [
+        /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-800 whitespace-pre-wrap mb-2", children: comment.content }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
           reactionsEnabled && /* @__PURE__ */ jsx(
             Reactions,
             {
@@ -1116,6 +1124,7 @@ function CommentItem({
             "button",
             {
               onClick: () => setShowReplyForm(!showReplyForm),
+              "data-testid": "reply-button",
               className: "flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors",
               children: [
                 /* @__PURE__ */ jsx(Reply, { className: "w-4 h-4" }),
@@ -1137,7 +1146,7 @@ function CommentItem({
         placeholder: "Write a reply..."
       }
     ) }),
-    comment.replies && comment.replies.length > 0 && /* @__PURE__ */ jsx("div", { className: "mt-3 space-y-3", children: comment.replies.map((reply) => /* @__PURE__ */ jsx(
+    comment.replies && comment.replies.length > 0 && /* @__PURE__ */ jsx("div", { className: "mt-2 space-y-2", children: comment.replies.map((reply) => /* @__PURE__ */ jsx(
       CommentItem,
       {
         comment: reply,
@@ -1160,18 +1169,8 @@ function CommentItem({
       ] }),
       /* @__PURE__ */ jsxs(AlertDialogFooter, { children: [
         /* @__PURE__ */ jsx(AlertDialogCancel, { children: "Cancel" }),
-        /* @__PURE__ */ jsx(AlertDialogAction, { onClick: confirmDelete, className: "bg-red-600 hover:bg-red-700", children: "Delete" })
+        /* @__PURE__ */ jsx(AlertDialogAction, { onClick: confirmDelete, className: "bg-red-600 hover:bg-red-700", "data-testid": "confirm-delete", children: "Delete" })
       ] })
-    ] }) }),
-    /* @__PURE__ */ jsx(AlertDialog, { open: !!errorMessage, onOpenChange: () => setErrorMessage(""), children: /* @__PURE__ */ jsxs(AlertDialogContent, { children: [
-      /* @__PURE__ */ jsxs(AlertDialogHeader, { children: [
-        /* @__PURE__ */ jsxs(AlertDialogTitle, { className: "flex items-center gap-2 text-red-600", children: [
-          /* @__PURE__ */ jsx(AlertCircle, { className: "w-5 h-5" }),
-          "Error"
-        ] }),
-        /* @__PURE__ */ jsx(AlertDialogDescription, { children: errorMessage })
-      ] }),
-      /* @__PURE__ */ jsx(AlertDialogFooter, { children: /* @__PURE__ */ jsx(AlertDialogAction, { onClick: () => setErrorMessage(""), children: "OK" }) })
     ] }) })
   ] });
 }
@@ -1179,15 +1178,29 @@ function Comments({
   commentableType,
   commentableId,
   initialComments = [],
+  totalComments = null,
   reactionsEnabled = true,
   onUserClick,
-  currentUserId
+  currentUserId,
+  perPage = 5
 }) {
   const [comments, setComments] = useState(initialComments);
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+  useRef(null);
   useEffect(() => {
+    console.log("Comments initialized:", {
+      initialCount: initialComments.length,
+      totalComments,
+      hasMore: initialComments.length < (totalComments || initialComments.length)
+    });
     setComments(initialComments);
-  }, [initialComments]);
+    setPage(1);
+    const total = totalComments !== null ? totalComments : initialComments.length;
+    setHasMore(initialComments.length < total);
+  }, [initialComments, totalComments]);
   const handleCommentAdded = () => {
     setShowForm(false);
   };
@@ -1210,13 +1223,59 @@ function Comments({
       return comment;
     }));
   };
-  return /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+  const loadMoreComments = async () => {
+    var _a;
+    if (loading || !hasMore) {
+      console.log("Load more skipped:", { loading, hasMore });
+      return;
+    }
+    console.log("Loading more comments...");
+    setLoading(true);
+    try {
+      const nextPage = page + 1;
+      const encodedType = btoa(commentableType);
+      const url = `/comments/list/${encodedType}/${commentableId}?page=${nextPage}&per_page=${perPage}`;
+      console.log("Fetching URL:", url);
+      console.log("Original type:", commentableType);
+      console.log("Encoded type:", encodedType);
+      const response = await axios.get(url);
+      console.log("Response received:", response.data);
+      if (response.data.success) {
+        const newComments = response.data.comments;
+        console.log("New comments:", newComments.length);
+        if (newComments.length > 0) {
+          setComments((prev) => {
+            const updated = [...prev, ...newComments];
+            console.log("Updated comments count:", updated.length);
+            return updated;
+          });
+          setPage(nextPage);
+        }
+        setHasMore(response.data.pagination.has_more);
+        console.log("Has more:", response.data.pagination.has_more);
+      } else {
+        console.error("API returned success: false");
+      }
+    } catch (error) {
+      console.error("Failed to load more comments:", error);
+      console.error("Error details:", (_a = error.response) == null ? void 0 : _a.data);
+      setHasMore(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const showLessComments = () => {
+    setComments(initialComments);
+    setPage(1);
+    setHasMore(initialComments.length < (totalComments || initialComments.length));
+  };
+  return /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
     /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
-        /* @__PURE__ */ jsx(MessageSquare, { className: "w-5 h-5 text-gray-600" }),
-        /* @__PURE__ */ jsxs("h3", { className: "text-lg font-semibold text-gray-900", children: [
+        /* @__PURE__ */ jsx(MessageSquare, { className: "w-4 h-4 text-gray-600" }),
+        /* @__PURE__ */ jsxs("h3", { className: "text-base font-semibold text-gray-900", children: [
           "Comments (",
-          comments.length,
+          totalComments !== null ? totalComments : comments.length,
           ")"
         ] })
       ] }),
@@ -1224,7 +1283,8 @@ function Comments({
         "button",
         {
           onClick: () => setShowForm(true),
-          className: "px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors",
+          "data-testid": "add-comment-button",
+          className: "px-3 py-1.5 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 transition-colors",
           children: "Add Comment"
         }
       )
@@ -1238,25 +1298,50 @@ function Comments({
         onCancel: () => setShowForm(false)
       }
     ),
-    /* @__PURE__ */ jsx("div", { className: "space-y-4", children: comments.length === 0 ? /* @__PURE__ */ jsxs("div", { className: "text-center py-12 bg-gray-50 rounded-lg", children: [
+    /* @__PURE__ */ jsx("div", { className: "space-y-2", children: comments.length === 0 ? /* @__PURE__ */ jsxs("div", { className: "text-center py-12 bg-gray-50 rounded-lg", children: [
       /* @__PURE__ */ jsx(MessageSquare, { className: "w-12 h-12 text-gray-300 mx-auto mb-3" }),
       /* @__PURE__ */ jsx("p", { className: "text-gray-500 font-medium mb-1", children: "No comments yet" }),
       /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-400", children: "Be the first to comment!" })
-    ] }) : comments.map((comment) => /* @__PURE__ */ jsx(
-      CommentItem,
-      {
-        comment,
-        commentableType,
-        commentableId,
-        reactionsEnabled,
-        onUserClick,
-        onCommentUpdated: handleCommentUpdated,
-        onCommentDeleted: handleCommentDeleted,
-        onReplyAdded: handleReplyAdded,
-        currentUserId
-      },
-      comment.id
-    )) })
+    ] }) : /* @__PURE__ */ jsxs(Fragment, { children: [
+      comments.map((comment) => /* @__PURE__ */ jsx(
+        CommentItem,
+        {
+          comment,
+          commentableType,
+          commentableId,
+          reactionsEnabled,
+          onUserClick,
+          onCommentUpdated: handleCommentUpdated,
+          onCommentDeleted: handleCommentDeleted,
+          onReplyAdded: handleReplyAdded,
+          currentUserId
+        },
+        comment.id
+      )),
+      (hasMore || comments.length > initialComments.length) && /* @__PURE__ */ jsxs("div", { className: "pt-4 flex justify-center gap-3", children: [
+        hasMore && /* @__PURE__ */ jsx(
+          "button",
+          {
+            onClick: loadMoreComments,
+            disabled: loading,
+            className: "px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2",
+            children: loading ? /* @__PURE__ */ jsxs(Fragment, { children: [
+              /* @__PURE__ */ jsx(Loader2, { className: "w-4 h-4 animate-spin" }),
+              "Loading..."
+            ] }) : /* @__PURE__ */ jsx(Fragment, { children: "Show More Comments" })
+          }
+        ),
+        comments.length > initialComments.length && /* @__PURE__ */ jsx(
+          "button",
+          {
+            onClick: showLessComments,
+            disabled: loading,
+            className: "px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+            children: "Show Less"
+          }
+        )
+      ] })
+    ] }) })
   ] });
 }
 const TOAST_LIMIT = 5;
@@ -1469,7 +1554,6 @@ function TestPage({ posts }) {
   const page = usePage();
   const { auth, flash, errors } = page.props;
   useEffect(() => {
-    console.log("All props:", page.props);
     console.log("Flash:", flash, "Errors:", errors);
     if (flash == null ? void 0 : flash.success) {
       console.log("Showing success toast:", flash.success);
@@ -1495,7 +1579,7 @@ function TestPage({ posts }) {
   };
   return /* @__PURE__ */ jsxs(Fragment, { children: [
     /* @__PURE__ */ jsx(Head, { title: "Reactions Demo" }),
-    /* @__PURE__ */ jsxs("div", { className: "min-h-screen bg-gradient-to-br from-gray-50 to-gray-100", children: [
+    /* @__PURE__ */ jsxs("div", { "data-auth_user": JSON.stringify(auth == null ? void 0 : auth.user) || "", className: "min-h-screen bg-gradient-to-br from-gray-50 to-gray-100", children: [
       /* @__PURE__ */ jsx("header", { className: "bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm", children: /* @__PURE__ */ jsx("div", { className: "max-w-5xl mx-auto px-4 py-4", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
         /* @__PURE__ */ jsxs("div", { children: [
           /* @__PURE__ */ jsx("h1", { className: "text-2xl font-bold text-gray-900", children: "Reactions Demo" }),
@@ -1571,8 +1655,10 @@ function TestPage({ posts }) {
                     commentableType: "Workbench\\\\App\\\\Models\\\\TestPost",
                     commentableId: post.id,
                     initialComments: post.comments || [],
+                    totalComments: post.total_comments,
                     reactionsEnabled: true,
                     currentUserId: (_a = auth == null ? void 0 : auth.user) == null ? void 0 : _a.id,
+                    perPage: 5,
                     onUserClick: (userId) => {
                       console.log("User clicked from comment:", userId);
                     }
