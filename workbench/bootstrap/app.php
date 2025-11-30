@@ -17,5 +17,17 @@ return Application::configure(basePath: $APP_BASE_PATH ?? default_skeleton_path(
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->respond(function (\Symfony\Component\HttpFoundation\Response $response, \Throwable $exception, \Illuminate\Http\Request $request) {
+            // Handle unauthenticated exceptions
+            if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+                // For Inertia requests, redirect to login with 303
+                if ($request->expectsJson() || $request->inertia()) {
+                    return \Inertia\Inertia::location(route('login'));
+                }
+                // For regular requests, redirect to login with 303
+                return redirect()->guest(route('login'), 303);
+            }
+            
+            return $response;
+        });
     })->create();
