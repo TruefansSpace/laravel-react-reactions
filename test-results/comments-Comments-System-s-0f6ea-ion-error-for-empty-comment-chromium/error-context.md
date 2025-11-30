@@ -1,0 +1,1407 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - banner [ref=e4]:
+        - generic [ref=e6]:
+          - generic [ref=e7]:
+            - heading "Reactions Demo" [level=1] [ref=e8]
+            - paragraph [ref=e9]: Facebook-like reaction system
+          - link "Login to React" [ref=e10] [cursor=pointer]:
+            - /url: /login
+            - img [ref=e11]
+            - text: Login to React
+      - main [ref=e14]:
+        - generic [ref=e16]:
+          - generic [ref=e18]: 💡
+          - generic [ref=e19]:
+            - heading "Login Required" [level=3] [ref=e20]
+            - paragraph [ref=e21]:
+              - text: You need to be logged in to add reactions to posts.
+              - link "Click here to login" [ref=e22] [cursor=pointer]:
+                - /url: /login
+        - generic [ref=e23]:
+          - article [ref=e24]:
+            - generic [ref=e25]:
+              - heading "Welcome to Our Reaction System!" [level=2] [ref=e26]
+              - paragraph [ref=e27]: This is a demonstration of our Facebook-like reaction system. Hover over the Like button to see all available reactions! You can express yourself with 👍 Like, ❤️ Love, 😂 Haha, 😮 Wow, 😢 Sad, or 😠 Angry.
+              - generic [ref=e29]:
+                - button "😮 Wow" [ref=e30] [cursor=pointer]:
+                  - generic [ref=e31]: 😮
+                  - generic [ref=e32]: Wow
+                - generic [ref=e33]:
+                  - button "😂 13" [ref=e34] [cursor=pointer]:
+                    - generic [ref=e35]: 😂
+                    - generic [ref=e36]: "13"
+                  - button "❤️ 11" [ref=e37] [cursor=pointer]:
+                    - generic [ref=e38]: ❤️
+                    - generic [ref=e39]: "11"
+                  - button "😠 8" [ref=e40] [cursor=pointer]:
+                    - generic [ref=e41]: 😠
+                    - generic [ref=e42]: "8"
+                  - button "👍 6" [ref=e43] [cursor=pointer]:
+                    - generic [ref=e44]: 👍
+                    - generic [ref=e45]: "6"
+                  - button "😮 6" [ref=e46] [cursor=pointer]:
+                    - generic [ref=e47]: 😮
+                    - generic [ref=e48]: "6"
+                  - button "😢 6" [ref=e49] [cursor=pointer]:
+                    - generic [ref=e50]: 😢
+                    - generic [ref=e51]: "6"
+                  - button "See who reacted" [ref=e52]:
+                    - img [ref=e53]
+              - generic [ref=e56]:
+                - generic [ref=e58]:
+                  - img [ref=e59]
+                  - heading "Comments (31)" [level=3] [ref=e61]
+                - generic [ref=e62]:
+                  - generic [ref=e63]:
+                    - textbox "Write a comment..." [active] [ref=e64]
+                    - generic [ref=e65]: 0/5000
+                  - generic [ref=e66]:
+                    - button "Cancel" [ref=e67]
+                    - button "Post" [disabled] [ref=e68]:
+                      - img [ref=e69]
+                      - text: Post
+                - generic [ref=e72]:
+                  - generic [ref=e74]:
+                    - generic [ref=e75]:
+                      - generic [ref=e76]:
+                        - generic [ref=e77] [cursor=pointer]: T
+                        - generic [ref=e78]:
+                          - generic [ref=e80] [cursor=pointer]: Test User
+                          - text: Nov 30, 2025, 07:19 PM
+                      - button [ref=e81]:
+                        - img [ref=e82]
+                    - paragraph [ref=e86]: Test comment 1764515946425
+                    - generic [ref=e87]:
+                      - button "👍 Like" [ref=e89] [cursor=pointer]:
+                        - generic [ref=e90]: 👍
+                        - generic [ref=e91]: Like
+                      - button "Reply" [ref=e92]:
+                        - img [ref=e93]
+                        - text: Reply
+                  - generic [ref=e96]:
+                    - generic [ref=e97]:
+                      - generic [ref=e98]:
+                        - generic [ref=e99]:
+                          - generic [ref=e100] [cursor=pointer]: T
+                          - generic [ref=e101]:
+                            - generic [ref=e103] [cursor=pointer]: Test User
+                            - text: Nov 30, 2025, 07:12 PM
+                        - button [ref=e104]:
+                          - img [ref=e105]
+                      - paragraph [ref=e109]: Test comment 1764515579444
+                      - generic [ref=e110]:
+                        - button "👍 Like" [ref=e112] [cursor=pointer]:
+                          - generic [ref=e113]: 👍
+                          - generic [ref=e114]: Like
+                        - button "Reply" [ref=e115]:
+                          - img [ref=e116]
+                          - text: Reply
+                    - generic [ref=e121]:
+                      - generic [ref=e122]:
+                        - generic [ref=e123]:
+                          - generic [ref=e124] [cursor=pointer]: T
+                          - generic [ref=e125]:
+                            - generic [ref=e127] [cursor=pointer]: Test User
+                            - text: Nov 30, 2025, 07:19 PM
+                        - button [ref=e128]:
+                          - img [ref=e129]
+                      - paragraph [ref=e133]: Test reply 1764515946207
+                      - button "👍 Like" [ref=e136] [cursor=pointer]:
+                        - generic [ref=e137]: 👍
+                        - generic [ref=e138]: Like
+                  - generic [ref=e139]:
+                    - generic [ref=e140]:
+                      - generic [ref=e141]:
+                        - generic [ref=e142]:
+                          - generic [ref=e143] [cursor=pointer]: T
+                          - generic [ref=e144]:
+                            - generic [ref=e146] [cursor=pointer]: Test User
+                            - text: Nov 30, 2025, 07:00 PM
+                        - button [ref=e147]:
+                          - img [ref=e148]
+                      - paragraph [ref=e152]: Test comment 1764514829158
+                      - generic [ref=e153]:
+                        - button "👍 Like" [ref=e155] [cursor=pointer]:
+                          - generic [ref=e156]: 👍
+                          - generic [ref=e157]: Like
+                        - button "Reply" [ref=e158]:
+                          - img [ref=e159]
+                          - text: Reply
+                    - generic [ref=e164]:
+                      - generic [ref=e165]:
+                        - generic [ref=e166]:
+                          - generic [ref=e167] [cursor=pointer]: T
+                          - generic [ref=e168]:
+                            - generic [ref=e170] [cursor=pointer]: Test User
+                            - text: Nov 30, 2025, 07:12 PM
+                        - button [ref=e171]:
+                          - img [ref=e172]
+                      - paragraph [ref=e176]: Test reply 1764515579560
+                      - button "👍 Like" [ref=e179] [cursor=pointer]:
+                        - generic [ref=e180]: 👍
+                        - generic [ref=e181]: Like
+                  - generic [ref=e182]:
+                    - generic [ref=e183]:
+                      - generic [ref=e184]:
+                        - generic [ref=e185]:
+                          - generic [ref=e186] [cursor=pointer]: T
+                          - generic [ref=e187]:
+                            - generic [ref=e189] [cursor=pointer]: Test User
+                            - text: Nov 30, 2025, 06:56 PM
+                        - button [ref=e190]:
+                          - img [ref=e191]
+                      - paragraph [ref=e195]: Test comment 1764514579447
+                      - generic [ref=e196]:
+                        - button "👍 Like" [ref=e198] [cursor=pointer]:
+                          - generic [ref=e199]: 👍
+                          - generic [ref=e200]: Like
+                        - button "Reply" [ref=e201]:
+                          - img [ref=e202]
+                          - text: Reply
+                    - generic [ref=e207]:
+                      - generic [ref=e208]:
+                        - generic [ref=e209]:
+                          - generic [ref=e210] [cursor=pointer]: T
+                          - generic [ref=e211]:
+                            - generic [ref=e213] [cursor=pointer]: Test User
+                            - text: Nov 30, 2025, 07:00 PM
+                        - button [ref=e214]:
+                          - img [ref=e215]
+                      - paragraph [ref=e219]: Test reply 1764514828934
+                      - button "👍 Like" [ref=e222] [cursor=pointer]:
+                        - generic [ref=e223]: 👍
+                        - generic [ref=e224]: Like
+                  - generic [ref=e225]:
+                    - generic [ref=e226]:
+                      - generic [ref=e227]:
+                        - generic [ref=e228]:
+                          - generic [ref=e229] [cursor=pointer]: T
+                          - generic [ref=e230]:
+                            - generic [ref=e232] [cursor=pointer]: Test User
+                            - text: Nov 30, 2025, 06:55 PM
+                        - button [ref=e233]:
+                          - img [ref=e234]
+                      - paragraph [ref=e238]: Test comment 1764514502939
+                      - generic [ref=e239]:
+                        - button "👍 Like" [ref=e241] [cursor=pointer]:
+                          - generic [ref=e242]: 👍
+                          - generic [ref=e243]: Like
+                        - button "Reply" [ref=e244]:
+                          - img [ref=e245]
+                          - text: Reply
+                    - generic [ref=e250]:
+                      - generic [ref=e251]:
+                        - generic [ref=e252]:
+                          - generic [ref=e253] [cursor=pointer]: T
+                          - generic [ref=e254]:
+                            - generic [ref=e256] [cursor=pointer]: Test User
+                            - text: Nov 30, 2025, 06:56 PM
+                        - button [ref=e257]:
+                          - img [ref=e258]
+                      - paragraph [ref=e262]: Test reply 1764514578360
+                      - button "👍 Like" [ref=e265] [cursor=pointer]:
+                        - generic [ref=e266]: 👍
+                        - generic [ref=e267]: Like
+                  - button "Show More Comments" [ref=e269]
+          - article [ref=e270]:
+            - generic [ref=e271]:
+              - heading "Amazing New Features Released" [level=2] [ref=e272]
+              - paragraph [ref=e273]: We are excited to announce the release of our new features! The reaction system now supports real-time updates and beautiful animations. Try it out and let us know what you think!
+              - generic [ref=e275]:
+                - button "👍 Like" [ref=e276] [cursor=pointer]:
+                  - generic [ref=e277]: 👍
+                  - generic [ref=e278]: Like
+                - generic [ref=e279]:
+                  - button "😠 3" [ref=e280] [cursor=pointer]:
+                    - generic [ref=e281]: 😠
+                    - generic [ref=e282]: "3"
+                  - button "👍 1" [ref=e283] [cursor=pointer]:
+                    - generic [ref=e284]: 👍
+                    - generic [ref=e285]: "1"
+                  - button "😮 1" [ref=e286] [cursor=pointer]:
+                    - generic [ref=e287]: 😮
+                    - generic [ref=e288]: "1"
+                  - button "See who reacted" [ref=e289]:
+                    - img [ref=e290]
+              - generic [ref=e293]:
+                - generic [ref=e294]:
+                  - generic [ref=e295]:
+                    - img [ref=e296]
+                    - heading "Comments (3)" [level=3] [ref=e298]
+                  - button "Add Comment" [ref=e299]
+                - generic [ref=e300]:
+                  - generic [ref=e302]:
+                    - generic [ref=e303]:
+                      - generic [ref=e304]:
+                        - generic [ref=e305] [cursor=pointer]: D
+                        - generic [ref=e306]:
+                          - generic [ref=e308] [cursor=pointer]: David Taylor
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e309]:
+                        - img [ref=e310]
+                    - paragraph [ref=e314]: Fantastic post! Keep it up!
+                    - generic [ref=e315]:
+                      - button "👍 Like" [ref=e317] [cursor=pointer]:
+                        - generic [ref=e318]: 👍
+                        - generic [ref=e319]: Like
+                      - button "Reply" [ref=e320]:
+                        - img [ref=e321]
+                        - text: Reply
+                  - generic [ref=e325]:
+                    - generic [ref=e326]:
+                      - generic [ref=e327]:
+                        - generic [ref=e328] [cursor=pointer]: I
+                        - generic [ref=e329]:
+                          - generic [ref=e331] [cursor=pointer]: Isabella Jones
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e332]:
+                        - img [ref=e333]
+                    - paragraph [ref=e337]: Very interesting perspective.
+                    - generic [ref=e338]:
+                      - button "👍 Like" [ref=e340] [cursor=pointer]:
+                        - generic [ref=e341]: 👍
+                        - generic [ref=e342]: Like
+                      - button "Reply" [ref=e343]:
+                        - img [ref=e344]
+                        - text: Reply
+                  - generic [ref=e348]:
+                    - generic [ref=e349]:
+                      - generic [ref=e350]:
+                        - generic [ref=e351] [cursor=pointer]: E
+                        - generic [ref=e352]:
+                          - generic [ref=e354] [cursor=pointer]: Ethan Lopez
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e355]:
+                        - img [ref=e356]
+                    - paragraph [ref=e360]: Well said! Couldn't agree more.
+                    - generic [ref=e361]:
+                      - button "👍 Like" [ref=e363] [cursor=pointer]:
+                        - generic [ref=e364]: 👍
+                        - generic [ref=e365]: Like
+                      - button "Reply" [ref=e366]:
+                        - img [ref=e367]
+                        - text: Reply
+          - article [ref=e370]:
+            - generic [ref=e371]:
+              - heading "Community Guidelines Update" [level=2] [ref=e372]
+              - paragraph [ref=e373]: We have updated our community guidelines to ensure a safe and welcoming environment for everyone. Please take a moment to review the changes and react to show your acknowledgment.
+              - generic [ref=e375]:
+                - button "👍 Like" [ref=e376] [cursor=pointer]:
+                  - generic [ref=e377]: 👍
+                  - generic [ref=e378]: Like
+                - generic [ref=e379]:
+                  - button "😢 2" [ref=e380] [cursor=pointer]:
+                    - generic [ref=e381]: 😢
+                    - generic [ref=e382]: "2"
+                  - button "😠 2" [ref=e383] [cursor=pointer]:
+                    - generic [ref=e384]: 😠
+                    - generic [ref=e385]: "2"
+                  - button "👍 1" [ref=e386] [cursor=pointer]:
+                    - generic [ref=e387]: 👍
+                    - generic [ref=e388]: "1"
+                  - button "❤️ 1" [ref=e389] [cursor=pointer]:
+                    - generic [ref=e390]: ❤️
+                    - generic [ref=e391]: "1"
+                  - button "😂 1" [ref=e392] [cursor=pointer]:
+                    - generic [ref=e393]: 😂
+                    - generic [ref=e394]: "1"
+                  - button "See who reacted" [ref=e395]:
+                    - img [ref=e396]
+              - generic [ref=e399]:
+                - generic [ref=e400]:
+                  - generic [ref=e401]:
+                    - img [ref=e402]
+                    - heading "Comments (2)" [level=3] [ref=e404]
+                  - button "Add Comment" [ref=e405]
+                - generic [ref=e406]:
+                  - generic [ref=e408]:
+                    - generic [ref=e409]:
+                      - generic [ref=e410]:
+                        - generic [ref=e411] [cursor=pointer]: L
+                        - generic [ref=e412]:
+                          - generic [ref=e414] [cursor=pointer]: Liam Garcia
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e415]:
+                        - img [ref=e416]
+                    - paragraph [ref=e420]: Thanks for sharing this information.
+                    - generic [ref=e421]:
+                      - button "👍 Like" [ref=e423] [cursor=pointer]:
+                        - generic [ref=e424]: 👍
+                        - generic [ref=e425]: Like
+                      - button "Reply" [ref=e426]:
+                        - img [ref=e427]
+                        - text: Reply
+                  - generic [ref=e430]:
+                    - generic [ref=e431]:
+                      - generic [ref=e432]:
+                        - generic [ref=e433]:
+                          - generic [ref=e434] [cursor=pointer]: S
+                          - generic [ref=e435]:
+                            - generic [ref=e437] [cursor=pointer]: Sebastian Thomas
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e438]:
+                          - img [ref=e439]
+                      - paragraph [ref=e443]: Could you elaborate more on this?
+                      - generic [ref=e444]:
+                        - button "👍 Like" [ref=e446] [cursor=pointer]:
+                          - generic [ref=e447]: 👍
+                          - generic [ref=e448]: Like
+                        - button "Reply" [ref=e449]:
+                          - img [ref=e450]
+                          - text: Reply
+                    - generic [ref=e453]:
+                      - generic [ref=e455]:
+                        - generic [ref=e456]:
+                          - generic [ref=e457]:
+                            - generic [ref=e458] [cursor=pointer]: L
+                            - generic [ref=e459]:
+                              - generic [ref=e461] [cursor=pointer]: Liam Garcia
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e462]:
+                            - img [ref=e463]
+                        - paragraph [ref=e467]: Interesting perspective!
+                        - button "👍 Like" [ref=e470] [cursor=pointer]:
+                          - generic [ref=e471]: 👍
+                          - generic [ref=e472]: Like
+                      - generic [ref=e474]:
+                        - generic [ref=e475]:
+                          - generic [ref=e476]:
+                            - generic [ref=e477] [cursor=pointer]: V
+                            - generic [ref=e478]:
+                              - generic [ref=e480] [cursor=pointer]: Victoria White
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e481]:
+                            - img [ref=e482]
+                        - paragraph [ref=e486]: I hadn't thought of it that way.
+                        - button "👍 Like" [ref=e489] [cursor=pointer]:
+                          - generic [ref=e490]: 👍
+                          - generic [ref=e491]: Like
+          - article [ref=e492]:
+            - generic [ref=e493]:
+              - 'heading "Behind the Scenes: Development Journey" [level=2] [ref=e494]'
+              - paragraph [ref=e495]: Ever wondered how we built this reaction system? In this post, we share our development journey, the challenges we faced, and the solutions we implemented. It has been an amazing ride!
+              - generic [ref=e497]:
+                - button "👍 Like" [ref=e498] [cursor=pointer]:
+                  - generic [ref=e499]: 👍
+                  - generic [ref=e500]: Like
+                - generic [ref=e501]:
+                  - button "😂 3" [ref=e502] [cursor=pointer]:
+                    - generic [ref=e503]: 😂
+                    - generic [ref=e504]: "3"
+                  - button "😢 2" [ref=e505] [cursor=pointer]:
+                    - generic [ref=e506]: 😢
+                    - generic [ref=e507]: "2"
+                  - button "👍 1" [ref=e508] [cursor=pointer]:
+                    - generic [ref=e509]: 👍
+                    - generic [ref=e510]: "1"
+                  - button "❤️ 1" [ref=e511] [cursor=pointer]:
+                    - generic [ref=e512]: ❤️
+                    - generic [ref=e513]: "1"
+                  - button "😮 1" [ref=e514] [cursor=pointer]:
+                    - generic [ref=e515]: 😮
+                    - generic [ref=e516]: "1"
+                  - button "See who reacted" [ref=e517]:
+                    - img [ref=e518]
+              - generic [ref=e521]:
+                - generic [ref=e522]:
+                  - generic [ref=e523]:
+                    - img [ref=e524]
+                    - heading "Comments (5)" [level=3] [ref=e526]
+                  - button "Add Comment" [ref=e527]
+                - generic [ref=e528]:
+                  - generic [ref=e529]:
+                    - generic [ref=e530]:
+                      - generic [ref=e531]:
+                        - generic [ref=e532]:
+                          - generic [ref=e533] [cursor=pointer]: A
+                          - generic [ref=e534]:
+                            - generic [ref=e536] [cursor=pointer]: Amelia Anderson
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e537]:
+                          - img [ref=e538]
+                      - paragraph [ref=e542]: Interesting take on this topic.
+                      - generic [ref=e543]:
+                        - button "👍 Like" [ref=e545] [cursor=pointer]:
+                          - generic [ref=e546]: 👍
+                          - generic [ref=e547]: Like
+                        - button "Reply" [ref=e548]:
+                          - img [ref=e549]
+                          - text: Reply
+                    - generic [ref=e554]:
+                      - generic [ref=e555]:
+                        - generic [ref=e556]:
+                          - generic [ref=e557] [cursor=pointer]: W
+                          - generic [ref=e558]:
+                            - generic [ref=e560] [cursor=pointer]: Wyatt Wilson
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e561]:
+                          - img [ref=e562]
+                      - paragraph [ref=e566]: That's a good point.
+                      - button "👍 Like" [ref=e569] [cursor=pointer]:
+                        - generic [ref=e570]: 👍
+                        - generic [ref=e571]: Like
+                  - generic [ref=e573]:
+                    - generic [ref=e574]:
+                      - generic [ref=e575]:
+                        - generic [ref=e576] [cursor=pointer]: O
+                        - generic [ref=e577]:
+                          - generic [ref=e579] [cursor=pointer]: Owen Miller
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e580]:
+                        - img [ref=e581]
+                    - paragraph [ref=e585]: This is really helpful, thank you!
+                    - generic [ref=e586]:
+                      - button "👍 Like" [ref=e588] [cursor=pointer]:
+                        - generic [ref=e589]: 👍
+                        - generic [ref=e590]: Like
+                      - button "Reply" [ref=e591]:
+                        - img [ref=e592]
+                        - text: Reply
+                  - generic [ref=e595]:
+                    - generic [ref=e596]:
+                      - generic [ref=e597]:
+                        - generic [ref=e598]:
+                          - generic [ref=e599] [cursor=pointer]: J
+                          - generic [ref=e600]:
+                            - generic [ref=e602] [cursor=pointer]: Jackson Taylor
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e603]:
+                          - img [ref=e604]
+                      - paragraph [ref=e608]: I learned something new today!
+                      - generic [ref=e609]:
+                        - button "👍 Like" [ref=e611] [cursor=pointer]:
+                          - generic [ref=e612]: 👍
+                          - generic [ref=e613]: Like
+                        - button "Reply" [ref=e614]:
+                          - img [ref=e615]
+                          - text: Reply
+                    - generic [ref=e618]:
+                      - generic [ref=e620]:
+                        - generic [ref=e621]:
+                          - generic [ref=e622]:
+                            - generic [ref=e623] [cursor=pointer]: L
+                            - generic [ref=e624]:
+                              - generic [ref=e626] [cursor=pointer]: Luke Wilson
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e627]:
+                            - img [ref=e628]
+                        - paragraph [ref=e632]: Great addition to the discussion!
+                        - button "👍 Like" [ref=e635] [cursor=pointer]:
+                          - generic [ref=e636]: 👍
+                          - generic [ref=e637]: Like
+                      - generic [ref=e639]:
+                        - generic [ref=e640]:
+                          - generic [ref=e641]:
+                            - generic [ref=e642] [cursor=pointer]: R
+                            - generic [ref=e643]:
+                              - generic [ref=e645] [cursor=pointer]: Riley Williams
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e646]:
+                            - img [ref=e647]
+                        - paragraph [ref=e651]: Well put!
+                        - button "👍 Like" [ref=e654] [cursor=pointer]:
+                          - generic [ref=e655]: 👍
+                          - generic [ref=e656]: Like
+                  - generic [ref=e658]:
+                    - generic [ref=e659]:
+                      - generic [ref=e660]:
+                        - generic [ref=e661] [cursor=pointer]: C
+                        - generic [ref=e662]:
+                          - generic [ref=e664] [cursor=pointer]: Charlotte Johnson
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e665]:
+                        - img [ref=e666]
+                    - paragraph [ref=e670]: Could you elaborate more on this?
+                    - generic [ref=e671]:
+                      - button "👍 Like" [ref=e673] [cursor=pointer]:
+                        - generic [ref=e674]: 👍
+                        - generic [ref=e675]: Like
+                      - button "Reply" [ref=e676]:
+                        - img [ref=e677]
+                        - text: Reply
+                  - generic [ref=e681]:
+                    - generic [ref=e682]:
+                      - generic [ref=e683]:
+                        - generic [ref=e684] [cursor=pointer]: S
+                        - generic [ref=e685]:
+                          - generic [ref=e687] [cursor=pointer]: Samuel Rodriguez
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e688]:
+                        - img [ref=e689]
+                    - paragraph [ref=e693]: This resonates with me so much.
+                    - generic [ref=e694]:
+                      - button "👍 Like" [ref=e696] [cursor=pointer]:
+                        - generic [ref=e697]: 👍
+                        - generic [ref=e698]: Like
+                      - button "Reply" [ref=e699]:
+                        - img [ref=e700]
+                        - text: Reply
+          - article [ref=e703]:
+            - generic [ref=e704]:
+              - heading "User Success Stories" [level=2] [ref=e705]
+              - paragraph [ref=e706]: We love hearing from our users! Today we are sharing some incredible success stories from our community. Your feedback and reactions mean the world to us. Keep them coming!
+              - generic [ref=e708]:
+                - button "👍 Like" [ref=e709] [cursor=pointer]:
+                  - generic [ref=e710]: 👍
+                  - generic [ref=e711]: Like
+                - generic [ref=e712]:
+                  - button "❤️ 3" [ref=e713] [cursor=pointer]:
+                    - generic [ref=e714]: ❤️
+                    - generic [ref=e715]: "3"
+                  - button "😢 2" [ref=e716] [cursor=pointer]:
+                    - generic [ref=e717]: 😢
+                    - generic [ref=e718]: "2"
+                  - button "👍 1" [ref=e719] [cursor=pointer]:
+                    - generic [ref=e720]: 👍
+                    - generic [ref=e721]: "1"
+                  - button "😮 1" [ref=e722] [cursor=pointer]:
+                    - generic [ref=e723]: 😮
+                    - generic [ref=e724]: "1"
+                  - button "😠 1" [ref=e725] [cursor=pointer]:
+                    - generic [ref=e726]: 😠
+                    - generic [ref=e727]: "1"
+                  - button "See who reacted" [ref=e728]:
+                    - img [ref=e729]
+              - generic [ref=e732]:
+                - generic [ref=e733]:
+                  - generic [ref=e734]:
+                    - img [ref=e735]
+                    - heading "Comments (3)" [level=3] [ref=e737]
+                  - button "Add Comment" [ref=e738]
+                - generic [ref=e739]:
+                  - generic [ref=e741]:
+                    - generic [ref=e742]:
+                      - generic [ref=e743]:
+                        - generic [ref=e744] [cursor=pointer]: L
+                        - generic [ref=e745]:
+                          - generic [ref=e747] [cursor=pointer]: Lillian Gonzalez
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e748]:
+                        - img [ref=e749]
+                    - paragraph [ref=e753]: This is really helpful, thank you!
+                    - generic [ref=e754]:
+                      - button "👍 Like" [ref=e756] [cursor=pointer]:
+                        - generic [ref=e757]: 👍
+                        - generic [ref=e758]: Like
+                      - button "Reply" [ref=e759]:
+                        - img [ref=e760]
+                        - text: Reply
+                  - generic [ref=e764]:
+                    - generic [ref=e765]:
+                      - generic [ref=e766]:
+                        - generic [ref=e767] [cursor=pointer]: M
+                        - generic [ref=e768]:
+                          - generic [ref=e770] [cursor=pointer]: Mason Miller
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e771]:
+                        - img [ref=e772]
+                    - paragraph [ref=e776]: Thanks for sharing this information.
+                    - generic [ref=e777]:
+                      - button "👍 Like" [ref=e779] [cursor=pointer]:
+                        - generic [ref=e780]: 👍
+                        - generic [ref=e781]: Like
+                      - button "Reply" [ref=e782]:
+                        - img [ref=e783]
+                        - text: Reply
+                  - generic [ref=e786]:
+                    - generic [ref=e787]:
+                      - generic [ref=e788]:
+                        - generic [ref=e789]:
+                          - generic [ref=e790] [cursor=pointer]: S
+                          - generic [ref=e791]:
+                            - generic [ref=e793] [cursor=pointer]: Sebastian Thomas
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e794]:
+                          - img [ref=e795]
+                      - paragraph [ref=e799]: This is amazing! Great work!
+                      - generic [ref=e800]:
+                        - button "👍 Like" [ref=e802] [cursor=pointer]:
+                          - generic [ref=e803]: 👍
+                          - generic [ref=e804]: Like
+                        - button "Reply" [ref=e805]:
+                          - img [ref=e806]
+                          - text: Reply
+                    - generic [ref=e809]:
+                      - generic [ref=e811]:
+                        - generic [ref=e812]:
+                          - generic [ref=e813]:
+                            - generic [ref=e814] [cursor=pointer]: L
+                            - generic [ref=e815]:
+                              - generic [ref=e817] [cursor=pointer]: Liam Brown
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e818]:
+                            - img [ref=e819]
+                        - paragraph [ref=e823]: I agree with you!
+                        - button "👍 Like" [ref=e826] [cursor=pointer]:
+                          - generic [ref=e827]: 👍
+                          - generic [ref=e828]: Like
+                      - generic [ref=e830]:
+                        - generic [ref=e831]:
+                          - generic [ref=e832]:
+                            - generic [ref=e833] [cursor=pointer]: S
+                            - generic [ref=e834]:
+                              - generic [ref=e836] [cursor=pointer]: Sebastian Thomas
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e837]:
+                            - img [ref=e838]
+                        - paragraph [ref=e842]: Thanks for your comment!
+                        - button "👍 Like" [ref=e845] [cursor=pointer]:
+                          - generic [ref=e846]: 👍
+                          - generic [ref=e847]: Like
+          - article [ref=e848]:
+            - generic [ref=e849]:
+              - heading "Tips and Tricks for Power Users" [level=2] [ref=e850]
+              - paragraph [ref=e851]: Did you know you can quickly react by hovering over the button? Here are some tips and tricks to get the most out of our platform. Become a power user today!
+              - generic [ref=e853]:
+                - button "👍 Like" [ref=e854] [cursor=pointer]:
+                  - generic [ref=e855]: 👍
+                  - generic [ref=e856]: Like
+                - generic [ref=e857]:
+                  - button "❤️ 2" [ref=e858] [cursor=pointer]:
+                    - generic [ref=e859]: ❤️
+                    - generic [ref=e860]: "2"
+                  - button "👍 1" [ref=e861] [cursor=pointer]:
+                    - generic [ref=e862]: 👍
+                    - generic [ref=e863]: "1"
+                  - button "😮 1" [ref=e864] [cursor=pointer]:
+                    - generic [ref=e865]: 😮
+                    - generic [ref=e866]: "1"
+                  - button "See who reacted" [ref=e867]:
+                    - img [ref=e868]
+              - generic [ref=e871]:
+                - generic [ref=e872]:
+                  - generic [ref=e873]:
+                    - img [ref=e874]
+                    - heading "Comments (4)" [level=3] [ref=e876]
+                  - button "Add Comment" [ref=e877]
+                - generic [ref=e878]:
+                  - generic [ref=e879]:
+                    - generic [ref=e880]:
+                      - generic [ref=e881]:
+                        - generic [ref=e882]:
+                          - generic [ref=e883] [cursor=pointer]: V
+                          - generic [ref=e884]:
+                            - generic [ref=e886] [cursor=pointer]: Victoria Thomas
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e887]:
+                          - img [ref=e888]
+                      - paragraph [ref=e892]: Fantastic post! Keep it up!
+                      - generic [ref=e893]:
+                        - button "👍 Like" [ref=e895] [cursor=pointer]:
+                          - generic [ref=e896]: 👍
+                          - generic [ref=e897]: Like
+                        - button "Reply" [ref=e898]:
+                          - img [ref=e899]
+                          - text: Reply
+                    - generic [ref=e904]:
+                      - generic [ref=e905]:
+                        - generic [ref=e906]:
+                          - generic [ref=e907] [cursor=pointer]: M
+                          - generic [ref=e908]:
+                            - generic [ref=e910] [cursor=pointer]: Mason Jones
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e911]:
+                          - img [ref=e912]
+                      - paragraph [ref=e916]: Interesting perspective!
+                      - button "👍 Like" [ref=e919] [cursor=pointer]:
+                        - generic [ref=e920]: 👍
+                        - generic [ref=e921]: Like
+                  - generic [ref=e922]:
+                    - generic [ref=e923]:
+                      - generic [ref=e924]:
+                        - generic [ref=e925]:
+                          - generic [ref=e926] [cursor=pointer]: B
+                          - generic [ref=e927]:
+                            - generic [ref=e929] [cursor=pointer]: Benjamin Moore
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e930]:
+                          - img [ref=e931]
+                      - paragraph [ref=e935]: This resonates with me so much.
+                      - generic [ref=e936]:
+                        - button "👍 Like" [ref=e938] [cursor=pointer]:
+                          - generic [ref=e939]: 👍
+                          - generic [ref=e940]: Like
+                        - button "Reply" [ref=e941]:
+                          - img [ref=e942]
+                          - text: Reply
+                    - generic [ref=e945]:
+                      - generic [ref=e947]:
+                        - generic [ref=e948]:
+                          - generic [ref=e949]:
+                            - generic [ref=e950] [cursor=pointer]: L
+                            - generic [ref=e951]:
+                              - generic [ref=e953] [cursor=pointer]: Liam Brown
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e954]:
+                            - img [ref=e955]
+                        - paragraph [ref=e959]: I agree with you!
+                        - button "👍 Like" [ref=e962] [cursor=pointer]:
+                          - generic [ref=e963]: 👍
+                          - generic [ref=e964]: Like
+                      - generic [ref=e966]:
+                        - generic [ref=e967]:
+                          - generic [ref=e968]:
+                            - generic [ref=e969] [cursor=pointer]: O
+                            - generic [ref=e970]:
+                              - generic [ref=e972] [cursor=pointer]: Owen Anderson
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e973]:
+                            - img [ref=e974]
+                        - paragraph [ref=e978]: Thanks for your comment!
+                        - button "👍 Like" [ref=e981] [cursor=pointer]:
+                          - generic [ref=e982]: 👍
+                          - generic [ref=e983]: Like
+                  - generic [ref=e985]:
+                    - generic [ref=e986]:
+                      - generic [ref=e987]:
+                        - generic [ref=e988] [cursor=pointer]: E
+                        - generic [ref=e989]:
+                          - generic [ref=e991] [cursor=pointer]: Ethan Clark
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e992]:
+                        - img [ref=e993]
+                    - paragraph [ref=e997]: Well said! Couldn't agree more.
+                    - generic [ref=e998]:
+                      - button "👍 Like" [ref=e1000] [cursor=pointer]:
+                        - generic [ref=e1001]: 👍
+                        - generic [ref=e1002]: Like
+                      - button "Reply" [ref=e1003]:
+                        - img [ref=e1004]
+                        - text: Reply
+                  - generic [ref=e1008]:
+                    - generic [ref=e1009]:
+                      - generic [ref=e1010]:
+                        - generic [ref=e1011] [cursor=pointer]: L
+                        - generic [ref=e1012]:
+                          - generic [ref=e1014] [cursor=pointer]: Luke Wilson
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e1015]:
+                        - img [ref=e1016]
+                    - paragraph [ref=e1020]: Fantastic post! Keep it up!
+                    - generic [ref=e1021]:
+                      - button "👍 Like" [ref=e1023] [cursor=pointer]:
+                        - generic [ref=e1024]: 👍
+                        - generic [ref=e1025]: Like
+                      - button "Reply" [ref=e1026]:
+                        - img [ref=e1027]
+                        - text: Reply
+          - article [ref=e1030]:
+            - generic [ref=e1031]:
+              - heading "Upcoming Events and Webinars" [level=2] [ref=e1032]
+              - paragraph [ref=e1033]: Join us for our upcoming webinar series where we will dive deep into advanced features and best practices. React to this post if you are interested in attending!
+              - generic [ref=e1035]:
+                - button "👍 Like" [ref=e1036] [cursor=pointer]:
+                  - generic [ref=e1037]: 👍
+                  - generic [ref=e1038]: Like
+                - generic [ref=e1039]:
+                  - button "👍 1" [ref=e1040] [cursor=pointer]:
+                    - generic [ref=e1041]: 👍
+                    - generic [ref=e1042]: "1"
+                  - button "😂 1" [ref=e1043] [cursor=pointer]:
+                    - generic [ref=e1044]: 😂
+                    - generic [ref=e1045]: "1"
+                  - button "😠 1" [ref=e1046] [cursor=pointer]:
+                    - generic [ref=e1047]: 😠
+                    - generic [ref=e1048]: "1"
+                  - button "See who reacted" [ref=e1049]:
+                    - img [ref=e1050]
+              - generic [ref=e1053]:
+                - generic [ref=e1054]:
+                  - generic [ref=e1055]:
+                    - img [ref=e1056]
+                    - heading "Comments (5)" [level=3] [ref=e1058]
+                  - button "Add Comment" [ref=e1059]
+                - generic [ref=e1060]:
+                  - generic [ref=e1062]:
+                    - generic [ref=e1063]:
+                      - generic [ref=e1064]:
+                        - generic [ref=e1065] [cursor=pointer]: "N"
+                        - generic [ref=e1066]:
+                          - generic [ref=e1068] [cursor=pointer]: Noah Moore
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e1069]:
+                        - img [ref=e1070]
+                    - paragraph [ref=e1074]: This deserves more attention.
+                    - generic [ref=e1075]:
+                      - button "👍 Like" [ref=e1077] [cursor=pointer]:
+                        - generic [ref=e1078]: 👍
+                        - generic [ref=e1079]: Like
+                      - button "Reply" [ref=e1080]:
+                        - img [ref=e1081]
+                        - text: Reply
+                  - generic [ref=e1085]:
+                    - generic [ref=e1086]:
+                      - generic [ref=e1087]:
+                        - generic [ref=e1088] [cursor=pointer]: E
+                        - generic [ref=e1089]:
+                          - generic [ref=e1091] [cursor=pointer]: Emily Thomas
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e1092]:
+                        - img [ref=e1093]
+                    - paragraph [ref=e1097]: Well said! Couldn't agree more.
+                    - generic [ref=e1098]:
+                      - button "👍 Like" [ref=e1100] [cursor=pointer]:
+                        - generic [ref=e1101]: 👍
+                        - generic [ref=e1102]: Like
+                      - button "Reply" [ref=e1103]:
+                        - img [ref=e1104]
+                        - text: Reply
+                  - generic [ref=e1107]:
+                    - generic [ref=e1108]:
+                      - generic [ref=e1109]:
+                        - generic [ref=e1110]:
+                          - generic [ref=e1111] [cursor=pointer]: J
+                          - generic [ref=e1112]:
+                            - generic [ref=e1114] [cursor=pointer]: Jackson Jackson
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e1115]:
+                          - img [ref=e1116]
+                      - paragraph [ref=e1120]: Fantastic post! Keep it up!
+                      - generic [ref=e1121]:
+                        - button "👍 Like" [ref=e1123] [cursor=pointer]:
+                          - generic [ref=e1124]: 👍
+                          - generic [ref=e1125]: Like
+                        - button "Reply" [ref=e1126]:
+                          - img [ref=e1127]
+                          - text: Reply
+                    - generic [ref=e1130]:
+                      - generic [ref=e1132]:
+                        - generic [ref=e1133]:
+                          - generic [ref=e1134]:
+                            - generic [ref=e1135] [cursor=pointer]: J
+                            - generic [ref=e1136]:
+                              - generic [ref=e1138] [cursor=pointer]: Jackson Jackson
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e1139]:
+                            - img [ref=e1140]
+                        - paragraph [ref=e1144]: I agree with you!
+                        - button "👍 Like" [ref=e1147] [cursor=pointer]:
+                          - generic [ref=e1148]: 👍
+                          - generic [ref=e1149]: Like
+                      - generic [ref=e1151]:
+                        - generic [ref=e1152]:
+                          - generic [ref=e1153]:
+                            - generic [ref=e1154] [cursor=pointer]: S
+                            - generic [ref=e1155]:
+                              - generic [ref=e1157] [cursor=pointer]: Sebastian Thomas
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e1158]:
+                            - img [ref=e1159]
+                        - paragraph [ref=e1163]: Interesting perspective!
+                        - button "👍 Like" [ref=e1166] [cursor=pointer]:
+                          - generic [ref=e1167]: 👍
+                          - generic [ref=e1168]: Like
+                  - generic [ref=e1169]:
+                    - generic [ref=e1170]:
+                      - generic [ref=e1171]:
+                        - generic [ref=e1172]:
+                          - generic [ref=e1173] [cursor=pointer]: M
+                          - generic [ref=e1174]:
+                            - generic [ref=e1176] [cursor=pointer]: Mason Jones
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e1177]:
+                          - img [ref=e1178]
+                      - paragraph [ref=e1182]: Could you elaborate more on this?
+                      - generic [ref=e1183]:
+                        - button "👍 Like" [ref=e1185] [cursor=pointer]:
+                          - generic [ref=e1186]: 👍
+                          - generic [ref=e1187]: Like
+                        - button "Reply" [ref=e1188]:
+                          - img [ref=e1189]
+                          - text: Reply
+                    - generic [ref=e1192]:
+                      - generic [ref=e1194]:
+                        - generic [ref=e1195]:
+                          - generic [ref=e1196]:
+                            - generic [ref=e1197] [cursor=pointer]: M
+                            - generic [ref=e1198]:
+                              - generic [ref=e1200] [cursor=pointer]: Mia Davis
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e1201]:
+                            - img [ref=e1202]
+                        - paragraph [ref=e1206]: Interesting perspective!
+                        - button "👍 Like" [ref=e1209] [cursor=pointer]:
+                          - generic [ref=e1210]: 👍
+                          - generic [ref=e1211]: Like
+                      - generic [ref=e1213]:
+                        - generic [ref=e1214]:
+                          - generic [ref=e1215]:
+                            - generic [ref=e1216] [cursor=pointer]: L
+                            - generic [ref=e1217]:
+                              - generic [ref=e1219] [cursor=pointer]: Lily Martinez
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e1220]:
+                            - img [ref=e1221]
+                        - paragraph [ref=e1225]: Thanks for your comment!
+                        - button "👍 Like" [ref=e1228] [cursor=pointer]:
+                          - generic [ref=e1229]: 👍
+                          - generic [ref=e1230]: Like
+                  - generic [ref=e1232]:
+                    - generic [ref=e1233]:
+                      - generic [ref=e1234]:
+                        - generic [ref=e1235] [cursor=pointer]: A
+                        - generic [ref=e1236]:
+                          - generic [ref=e1238] [cursor=pointer]: Amelia Anderson
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e1239]:
+                        - img [ref=e1240]
+                    - paragraph [ref=e1244]: I totally agree with this.
+                    - generic [ref=e1245]:
+                      - button "👍 Like" [ref=e1247] [cursor=pointer]:
+                        - generic [ref=e1248]: 👍
+                        - generic [ref=e1249]: Like
+                      - button "Reply" [ref=e1250]:
+                        - img [ref=e1251]
+                        - text: Reply
+          - article [ref=e1254]:
+            - generic [ref=e1255]:
+              - heading "Thank You for 10K Users!" [level=2] [ref=e1256]
+              - paragraph [ref=e1257]: We have reached an incredible milestone - 10,000 users! Thank you all for your support and engagement. We could not have done it without you. React with a ❤️ to celebrate with us!
+              - generic [ref=e1259]:
+                - button "👍 Like" [ref=e1260] [cursor=pointer]:
+                  - generic [ref=e1261]: 👍
+                  - generic [ref=e1262]: Like
+                - generic [ref=e1263]:
+                  - button "👍 2" [ref=e1264] [cursor=pointer]:
+                    - generic [ref=e1265]: 👍
+                    - generic [ref=e1266]: "2"
+                  - button "😂 1" [ref=e1267] [cursor=pointer]:
+                    - generic [ref=e1268]: 😂
+                    - generic [ref=e1269]: "1"
+                  - button "😮 1" [ref=e1270] [cursor=pointer]:
+                    - generic [ref=e1271]: 😮
+                    - generic [ref=e1272]: "1"
+                  - button "😠 1" [ref=e1273] [cursor=pointer]:
+                    - generic [ref=e1274]: 😠
+                    - generic [ref=e1275]: "1"
+                  - button "See who reacted" [ref=e1276]:
+                    - img [ref=e1277]
+              - generic [ref=e1280]:
+                - generic [ref=e1281]:
+                  - generic [ref=e1282]:
+                    - img [ref=e1283]
+                    - heading "Comments (2)" [level=3] [ref=e1285]
+                  - button "Add Comment" [ref=e1286]
+                - generic [ref=e1287]:
+                  - generic [ref=e1289]:
+                    - generic [ref=e1290]:
+                      - generic [ref=e1291]:
+                        - generic [ref=e1292] [cursor=pointer]: B
+                        - generic [ref=e1293]:
+                          - generic [ref=e1295] [cursor=pointer]: Benjamin Moore
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e1296]:
+                        - img [ref=e1297]
+                    - paragraph [ref=e1301]: Brilliant insights here.
+                    - generic [ref=e1302]:
+                      - button "👍 Like" [ref=e1304] [cursor=pointer]:
+                        - generic [ref=e1305]: 👍
+                        - generic [ref=e1306]: Like
+                      - button "Reply" [ref=e1307]:
+                        - img [ref=e1308]
+                        - text: Reply
+                  - generic [ref=e1312]:
+                    - generic [ref=e1313]:
+                      - generic [ref=e1314]:
+                        - generic [ref=e1315] [cursor=pointer]: O
+                        - generic [ref=e1316]:
+                          - generic [ref=e1318] [cursor=pointer]: Olivia Lopez
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e1319]:
+                        - img [ref=e1320]
+                    - paragraph [ref=e1324]: This is exactly what I needed to hear.
+                    - generic [ref=e1325]:
+                      - button "👍 Like" [ref=e1327] [cursor=pointer]:
+                        - generic [ref=e1328]: 👍
+                        - generic [ref=e1329]: Like
+                      - button "Reply" [ref=e1330]:
+                        - img [ref=e1331]
+                        - text: Reply
+          - article [ref=e1334]:
+            - generic [ref=e1335]:
+              - 'heading "Feature Request: What Do You Want Next?" [level=2] [ref=e1336]'
+              - paragraph [ref=e1337]: We are planning our next sprint and want to hear from you! What features would you like to see next? React and comment below with your ideas. Your input shapes our roadmap!
+              - generic [ref=e1339]:
+                - button "👍 Like" [ref=e1340] [cursor=pointer]:
+                  - generic [ref=e1341]: 👍
+                  - generic [ref=e1342]: Like
+                - generic [ref=e1343]:
+                  - button "❤️ 2" [ref=e1344] [cursor=pointer]:
+                    - generic [ref=e1345]: ❤️
+                    - generic [ref=e1346]: "2"
+                  - button "😠 2" [ref=e1347] [cursor=pointer]:
+                    - generic [ref=e1348]: 😠
+                    - generic [ref=e1349]: "2"
+                  - button "👍 1" [ref=e1350] [cursor=pointer]:
+                    - generic [ref=e1351]: 👍
+                    - generic [ref=e1352]: "1"
+                  - button "😂 1" [ref=e1353] [cursor=pointer]:
+                    - generic [ref=e1354]: 😂
+                    - generic [ref=e1355]: "1"
+                  - button "😢 1" [ref=e1356] [cursor=pointer]:
+                    - generic [ref=e1357]: 😢
+                    - generic [ref=e1358]: "1"
+                  - button "See who reacted" [ref=e1359]:
+                    - img [ref=e1360]
+              - generic [ref=e1363]:
+                - generic [ref=e1364]:
+                  - generic [ref=e1365]:
+                    - img [ref=e1366]
+                    - heading "Comments (5)" [level=3] [ref=e1368]
+                  - button "Add Comment" [ref=e1369]
+                - generic [ref=e1370]:
+                  - generic [ref=e1372]:
+                    - generic [ref=e1373]:
+                      - generic [ref=e1374]:
+                        - generic [ref=e1375] [cursor=pointer]: B
+                        - generic [ref=e1376]:
+                          - generic [ref=e1378] [cursor=pointer]: Bob Wilson
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e1379]:
+                        - img [ref=e1380]
+                    - paragraph [ref=e1384]: Fantastic post! Keep it up!
+                    - generic [ref=e1385]:
+                      - button "👍 Like" [ref=e1387] [cursor=pointer]:
+                        - generic [ref=e1388]: 👍
+                        - generic [ref=e1389]: Like
+                      - button "Reply" [ref=e1390]:
+                        - img [ref=e1391]
+                        - text: Reply
+                  - generic [ref=e1394]:
+                    - generic [ref=e1395]:
+                      - generic [ref=e1396]:
+                        - generic [ref=e1397]:
+                          - generic [ref=e1398] [cursor=pointer]: L
+                          - generic [ref=e1399]:
+                            - generic [ref=e1401] [cursor=pointer]: Luke Garcia
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e1402]:
+                          - img [ref=e1403]
+                      - paragraph [ref=e1407]: Could you elaborate more on this?
+                      - generic [ref=e1408]:
+                        - button "👍 Like" [ref=e1410] [cursor=pointer]:
+                          - generic [ref=e1411]: 👍
+                          - generic [ref=e1412]: Like
+                        - button "Reply" [ref=e1413]:
+                          - img [ref=e1414]
+                          - text: Reply
+                    - generic [ref=e1419]:
+                      - generic [ref=e1420]:
+                        - generic [ref=e1421]:
+                          - generic [ref=e1422] [cursor=pointer]: J
+                          - generic [ref=e1423]:
+                            - generic [ref=e1425] [cursor=pointer]: Jackson Wilson
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e1426]:
+                          - img [ref=e1427]
+                      - paragraph [ref=e1431]: Great addition to the discussion!
+                      - button "👍 Like" [ref=e1434] [cursor=pointer]:
+                        - generic [ref=e1435]: 👍
+                        - generic [ref=e1436]: Like
+                  - generic [ref=e1438]:
+                    - generic [ref=e1439]:
+                      - generic [ref=e1440]:
+                        - generic [ref=e1441] [cursor=pointer]: L
+                        - generic [ref=e1442]:
+                          - generic [ref=e1444] [cursor=pointer]: Lily Martinez
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e1445]:
+                        - img [ref=e1446]
+                    - paragraph [ref=e1450]: This is really helpful, thank you!
+                    - generic [ref=e1451]:
+                      - button "👍 Like" [ref=e1453] [cursor=pointer]:
+                        - generic [ref=e1454]: 👍
+                        - generic [ref=e1455]: Like
+                      - button "Reply" [ref=e1456]:
+                        - img [ref=e1457]
+                        - text: Reply
+                  - generic [ref=e1461]:
+                    - generic [ref=e1462]:
+                      - generic [ref=e1463]:
+                        - generic [ref=e1464] [cursor=pointer]: J
+                        - generic [ref=e1465]:
+                          - generic [ref=e1467] [cursor=pointer]: Jackson Jackson
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e1468]:
+                        - img [ref=e1469]
+                    - paragraph [ref=e1473]: Very interesting perspective.
+                    - generic [ref=e1474]:
+                      - button "👍 Like" [ref=e1476] [cursor=pointer]:
+                        - generic [ref=e1477]: 👍
+                        - generic [ref=e1478]: Like
+                      - button "Reply" [ref=e1479]:
+                        - img [ref=e1480]
+                        - text: Reply
+                  - generic [ref=e1484]:
+                    - generic [ref=e1485]:
+                      - generic [ref=e1486]:
+                        - generic [ref=e1487] [cursor=pointer]: V
+                        - generic [ref=e1488]:
+                          - generic [ref=e1490] [cursor=pointer]: Victoria Thomas
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e1491]:
+                        - img [ref=e1492]
+                    - paragraph [ref=e1496]: I totally agree with this.
+                    - generic [ref=e1497]:
+                      - button "👍 Like" [ref=e1499] [cursor=pointer]:
+                        - generic [ref=e1500]: 👍
+                        - generic [ref=e1501]: Like
+                      - button "Reply" [ref=e1502]:
+                        - img [ref=e1503]
+                        - text: Reply
+          - article [ref=e1506]:
+            - generic [ref=e1507]:
+              - heading "Weekend Vibes and Relaxation" [level=2] [ref=e1508]
+              - paragraph [ref=e1509]: It is the weekend! Time to relax and unwind. What are your plans? Share your weekend vibes by reacting to this post. We hope you all have a wonderful time!
+              - generic [ref=e1511]:
+                - button "👍 Like" [ref=e1512] [cursor=pointer]:
+                  - generic [ref=e1513]: 👍
+                  - generic [ref=e1514]: Like
+                - generic [ref=e1515]:
+                  - button "😢 3" [ref=e1516] [cursor=pointer]:
+                    - generic [ref=e1517]: 😢
+                    - generic [ref=e1518]: "3"
+                  - button "👍 2" [ref=e1519] [cursor=pointer]:
+                    - generic [ref=e1520]: 👍
+                    - generic [ref=e1521]: "2"
+                  - button "😂 2" [ref=e1522] [cursor=pointer]:
+                    - generic [ref=e1523]: 😂
+                    - generic [ref=e1524]: "2"
+                  - button "😮 1" [ref=e1525] [cursor=pointer]:
+                    - generic [ref=e1526]: 😮
+                    - generic [ref=e1527]: "1"
+                  - button "See who reacted" [ref=e1528]:
+                    - img [ref=e1529]
+              - generic [ref=e1532]:
+                - generic [ref=e1533]:
+                  - generic [ref=e1534]:
+                    - img [ref=e1535]
+                    - heading "Comments (5)" [level=3] [ref=e1537]
+                  - button "Add Comment" [ref=e1538]
+                - generic [ref=e1539]:
+                  - generic [ref=e1540]:
+                    - generic [ref=e1541]:
+                      - generic [ref=e1542]:
+                        - generic [ref=e1543]:
+                          - generic [ref=e1544] [cursor=pointer]: J
+                          - generic [ref=e1545]:
+                            - generic [ref=e1547] [cursor=pointer]: John Doe
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e1548]:
+                          - img [ref=e1549]
+                      - paragraph [ref=e1553]: This deserves more attention.
+                      - generic [ref=e1554]:
+                        - button "👍 Like" [ref=e1556] [cursor=pointer]:
+                          - generic [ref=e1557]: 👍
+                          - generic [ref=e1558]: Like
+                        - button "Reply" [ref=e1559]:
+                          - img [ref=e1560]
+                          - text: Reply
+                    - generic [ref=e1565]:
+                      - generic [ref=e1566]:
+                        - generic [ref=e1567]:
+                          - generic [ref=e1568] [cursor=pointer]: L
+                          - generic [ref=e1569]:
+                            - generic [ref=e1571] [cursor=pointer]: Luke Garcia
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e1572]:
+                          - img [ref=e1573]
+                      - paragraph [ref=e1577]: I agree with you!
+                      - button "👍 Like" [ref=e1580] [cursor=pointer]:
+                        - generic [ref=e1581]: 👍
+                        - generic [ref=e1582]: Like
+                  - generic [ref=e1583]:
+                    - generic [ref=e1584]:
+                      - generic [ref=e1585]:
+                        - generic [ref=e1586]:
+                          - generic [ref=e1587] [cursor=pointer]: A
+                          - generic [ref=e1588]:
+                            - generic [ref=e1590] [cursor=pointer]: Addison Martinez
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e1591]:
+                          - img [ref=e1592]
+                      - paragraph [ref=e1596]: Brilliant insights here.
+                      - generic [ref=e1597]:
+                        - button "👍 Like" [ref=e1599] [cursor=pointer]:
+                          - generic [ref=e1600]: 👍
+                          - generic [ref=e1601]: Like
+                        - button "Reply" [ref=e1602]:
+                          - img [ref=e1603]
+                          - text: Reply
+                    - generic [ref=e1606]:
+                      - generic [ref=e1608]:
+                        - generic [ref=e1609]:
+                          - generic [ref=e1610]:
+                            - generic [ref=e1611] [cursor=pointer]: M
+                            - generic [ref=e1612]:
+                              - generic [ref=e1614] [cursor=pointer]: Mia Davis
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e1615]:
+                            - img [ref=e1616]
+                        - paragraph [ref=e1620]: Interesting perspective!
+                        - button "👍 Like" [ref=e1623] [cursor=pointer]:
+                          - generic [ref=e1624]: 👍
+                          - generic [ref=e1625]: Like
+                      - generic [ref=e1627]:
+                        - generic [ref=e1628]:
+                          - generic [ref=e1629]:
+                            - generic [ref=e1630] [cursor=pointer]: S
+                            - generic [ref=e1631]:
+                              - generic [ref=e1633] [cursor=pointer]: Sofia Anderson
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e1634]:
+                            - img [ref=e1635]
+                        - paragraph [ref=e1639]: Thanks for your comment!
+                        - button "👍 Like" [ref=e1642] [cursor=pointer]:
+                          - generic [ref=e1643]: 👍
+                          - generic [ref=e1644]: Like
+                  - generic [ref=e1645]:
+                    - generic [ref=e1646]:
+                      - generic [ref=e1647]:
+                        - generic [ref=e1648]:
+                          - generic [ref=e1649] [cursor=pointer]: L
+                          - generic [ref=e1650]:
+                            - generic [ref=e1652] [cursor=pointer]: Lily Martinez
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e1653]:
+                          - img [ref=e1654]
+                      - paragraph [ref=e1658]: Could you elaborate more on this?
+                      - generic [ref=e1659]:
+                        - button "👍 Like" [ref=e1661] [cursor=pointer]:
+                          - generic [ref=e1662]: 👍
+                          - generic [ref=e1663]: Like
+                        - button "Reply" [ref=e1664]:
+                          - img [ref=e1665]
+                          - text: Reply
+                    - generic [ref=e1670]:
+                      - generic [ref=e1671]:
+                        - generic [ref=e1672]:
+                          - generic [ref=e1673] [cursor=pointer]: O
+                          - generic [ref=e1674]:
+                            - generic [ref=e1676] [cursor=pointer]: Owen Anderson
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e1677]:
+                          - img [ref=e1678]
+                      - paragraph [ref=e1682]: Thanks for clarifying.
+                      - button "👍 Like" [ref=e1685] [cursor=pointer]:
+                        - generic [ref=e1686]: 👍
+                        - generic [ref=e1687]: Like
+                  - generic [ref=e1689]:
+                    - generic [ref=e1690]:
+                      - generic [ref=e1691]:
+                        - generic [ref=e1692] [cursor=pointer]: C
+                        - generic [ref=e1693]:
+                          - generic [ref=e1695] [cursor=pointer]: Charlotte Johnson
+                          - text: Nov 30, 2025, 06:17 PM
+                      - button [ref=e1696]:
+                        - img [ref=e1697]
+                    - paragraph [ref=e1701]: I have some thoughts on this...
+                    - generic [ref=e1702]:
+                      - button "👍 Like" [ref=e1704] [cursor=pointer]:
+                        - generic [ref=e1705]: 👍
+                        - generic [ref=e1706]: Like
+                      - button "Reply" [ref=e1707]:
+                        - img [ref=e1708]
+                        - text: Reply
+                  - generic [ref=e1711]:
+                    - generic [ref=e1712]:
+                      - generic [ref=e1713]:
+                        - generic [ref=e1714]:
+                          - generic [ref=e1715] [cursor=pointer]: L
+                          - generic [ref=e1716]:
+                            - generic [ref=e1718] [cursor=pointer]: Luke Wilson
+                            - text: Nov 30, 2025, 06:17 PM
+                        - button [ref=e1719]:
+                          - img [ref=e1720]
+                      - paragraph [ref=e1724]: This is exactly what I needed to hear.
+                      - generic [ref=e1725]:
+                        - button "👍 Like" [ref=e1727] [cursor=pointer]:
+                          - generic [ref=e1728]: 👍
+                          - generic [ref=e1729]: Like
+                        - button "Reply" [ref=e1730]:
+                          - img [ref=e1731]
+                          - text: Reply
+                    - generic [ref=e1734]:
+                      - generic [ref=e1736]:
+                        - generic [ref=e1737]:
+                          - generic [ref=e1738]:
+                            - generic [ref=e1739] [cursor=pointer]: L
+                            - generic [ref=e1740]:
+                              - generic [ref=e1742] [cursor=pointer]: Liam Garcia
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e1743]:
+                            - img [ref=e1744]
+                        - paragraph [ref=e1748]: Great addition to the discussion!
+                        - button "👍 Like" [ref=e1751] [cursor=pointer]:
+                          - generic [ref=e1752]: 👍
+                          - generic [ref=e1753]: Like
+                      - generic [ref=e1755]:
+                        - generic [ref=e1756]:
+                          - generic [ref=e1757]:
+                            - generic [ref=e1758] [cursor=pointer]: A
+                            - generic [ref=e1759]:
+                              - generic [ref=e1761] [cursor=pointer]: Addison Garcia
+                              - text: Nov 30, 2025, 06:17 PM
+                          - button [ref=e1762]:
+                            - img [ref=e1763]
+                        - paragraph [ref=e1767]: I see what you mean.
+                        - button "👍 Like" [ref=e1770] [cursor=pointer]:
+                          - generic [ref=e1771]: 👍
+                          - generic [ref=e1772]: Like
+      - contentinfo [ref=e1773]:
+        - paragraph [ref=e1775]: Built with Laravel, Inertia.js, React & shadcn/ui
+    - region "Notifications (F8)":
+      - list
+  - generic [ref=e1776]:
+    - generic [ref=e1778]:
+      - generic [ref=e1780]:
+        - generic [ref=e1781] [cursor=pointer]:
+          - text: 
+          - generic: Request
+        - text: 
+        - generic [ref=e1782] [cursor=pointer]:
+          - text: 
+          - generic: Timeline
+        - text: 
+        - generic [ref=e1783] [cursor=pointer]:
+          - text: 
+          - generic: Views
+          - generic [ref=e1784]: "1"
+        - generic [ref=e1785] [cursor=pointer]:
+          - text: 
+          - generic: Queries
+          - generic [ref=e1786]: "153"
+        - generic [ref=e1787] [cursor=pointer]:
+          - text: 
+          - generic: Models
+          - generic [ref=e1788]: "196"
+        - text:  
+      - generic [ref=e1789]:
+        - generic [ref=e1791] [cursor=pointer]:
+          - generic: 
+        - generic [ref=e1794] [cursor=pointer]:
+          - generic: 
+          - generic [ref=e1795]: "2"
+        - combobox [ref=e1796] [cursor=pointer]:
+          - option "#1 login (stacked) (15:24:14)"
+          - option "#2 / (15:24:17)" [selected]
+        - generic [ref=e1797] [cursor=pointer]:
+          - generic: 
+          - generic: 159ms
+        - generic [ref=e1798]:
+          - generic: 
+          - generic: 3MB
+        - generic [ref=e1799]:
+          - generic: 
+          - generic: 12.x
+        - generic [ref=e1800] [cursor=pointer]:
+          - generic: 
+          - generic: GET /
+    - text:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+  - text: 
+```

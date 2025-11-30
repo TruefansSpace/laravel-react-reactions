@@ -2,13 +2,15 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Reactions and Comments Integration', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('/test');
-        await page.waitForLoadState('networkidle');
-        
+        // Login first
+        await page.goto('/login');
         await page.fill('input[name="email"]', 'test@example.com');
         await page.fill('input[name="password"]', 'password');
         await page.click('button[type="submit"]');
-        await page.waitForURL('/test');
+        await page.waitForURL('/');
+        
+        // Ensure we are on the test page
+        await page.waitForLoadState('networkidle');
     });
 
     test('can react to comments', async ({ page }) => {
@@ -41,3 +43,4 @@ test.describe('Reactions and Comments Integration', () => {
         await expect(page.locator('[data-testid="post-reaction-like"]')).toContainText('1');
         await expect(page.locator('[data-testid="comment-reaction-love"]')).toContainText('1');
     });
+});
