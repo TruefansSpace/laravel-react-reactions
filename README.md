@@ -1391,16 +1391,158 @@ Or in config:
 
 ### Queue Configuration
 
-Notifications are queued by default for better performance. Make sure your queue is running:
+Notifications are queued by default for better performance. **You must run a queue worker** for notifications to be sent.
+
+#### Option 1: Run Queue Worker (Recommended for Production)
+
+Start a queue worker in a separate terminal:
 
 ```bash
+# In your Laravel application
 php artisan queue:work
+
+# Or with specific options
+php artisan queue:work --tries=3 --timeout=60
 ```
 
-For development, you can use the sync driver in `.env`:
+**Keep this running in the background.** In production, use a process manager like Supervisor to keep the queue worker running.
+
+#### Option 2: Use Sync Queue (Development Only)
+
+For development/testing, you can process queues synchronously (no worker needed):
+
 ```env
+# .env
 QUEUE_CONNECTION=sync
 ```
+
+With `sync`, notifications are sent immediately without needing a queue worker. **Not recommended for production** as it will slow down your application.
+
+#### Supervisor Configuration (Production)
+
+Create `/etc/supervisor/conf.d/laravel-worker.conf`:
+
+```ini
+[program:laravel-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /path/to/your/app/artisan queue:work --sleep=3 --tries=3 --max-time=3600
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+numprocs=2
+redirect_stderr=true
+stdout_logfile=/path/to/your/app/storage/logs/worker.log
+stopwaitsecs=3600
+```
+
+Then reload Supervisor:
+```bash
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start laravel-worker:*
+```
+
+#### Viewing Queued Jobs
+
+Check pending jobs:
+```bash
+php artisan queue:monitor
+```
+
+Process a single job (useful for testing):
+```bash
+php artisan queue:work --once
+```
+
+#### Viewing Email Logs (Development)
+
+When using `MAIL_MAILER=log`, emails are written to `storage/logs/laravel.log`:
+
+```bash
+# View recent emails
+tail -100 storage/logs/laravel.log | grep -A 50 "Message-ID:"
+
+# Watch log in real-time
+tail -f storage/logs/laravel.log
+```
+
+## Troubleshooting
+
+### Email Notifications Not Sending
+
+**Symptom:** Comments are created but no emails are sent.
+
+**Solution:** Make sure the queue worker is running!
+
+```bash
+# Check if queue worker is running
+ps aux | grep "queue:work"
+
+# Start queue worker
+php artisan queue:work
+
+# Or use sync queue for development (add to .env)
+QUEUE_CONNECTION=sync
+```
+
+**Check the queue:**
+```bash
+# See failed jobs
+php artisan queue:failed
+
+# Retry failed jobs
+php artisan queue:retry all
+
+# Clear failed jobs
+php artisan queue:flush
+```
+
+**Verify configuration:**
+```env
+# .env
+REACTIONS_NOTIFICATIONS_ENABLED=true
+REACTIONS_ADMIN_EMAIL=admin@example.com
+MAIL_MAILER=log  # or smtp, mailgun, etc.
+QUEUE_CONNECTION=database  # or redis, sync
+```
+
+**Test email manually:**
+```php
+// In tinker: php artisan tinker
+use TrueFans\LaravelReactReactions\Notifications\NewCommentNotification;
+use TrueFans\LaravelReactReactions\Models\Comment;
+use Illuminate\Support\Facades\Notification;
+
+$comment = Comment::first();
+Notification::route('mail', 'test@example.com')
+    ->notify(new NewCommentNotification($comment));
+```
+
+### Reactions Not Working
+- Check if routes are registered: `php artisan route:list | grep reactions`
+- Verify middleware is configured in `config/react-reactions.php`
+- Check browser console for JavaScript errors
+- Ensure user is authenticated
+
+### Comments Not Showing
+- Verify comments are loaded in controller with `withReactionsData()`
+- Check `initialComments` prop is passed to Comments component
+- Ensure user is authenticated for protected routes
+- Check browser console for errors
+
+### Toast Not Appearing
+- Verify `<Toaster />` component is in your layout
+- Check Inertia middleware shares flash messages
+- Verify `useEffect` hook is set up correctly in layout
+- Check browser console for errors
+
+### N+1 Query Issues
+- Always use `withReactionsData()` scope when loading multiple models
+- Monitor queries with Laravel Debugbar
+- Check `storage/logs/laravel.log` for query logs
+- Use `DB::enableQueryLog()` to debug queries
 
 ## Best Practices
 
@@ -1412,7 +1554,8 @@ QUEUE_CONNECTION=sync
 6. **Cache comment counts** for better performance
 7. **Monitor queries** with Laravel Debugbar in development
 8. **Configure email notifications** for comment moderation
-9. **Use queues** for sending notification emails
+9. **Run queue workers** for sending notification emails
+10. **Use Supervisor** in production to keep queue workers running
 
 ## License
 
