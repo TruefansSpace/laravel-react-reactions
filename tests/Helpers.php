@@ -1,14 +1,14 @@
 <?php
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User;
 
 /**
  * Create a test user for authentication in tests
  */
-function createUser(): User
+function createUser(): Authenticatable
 {
-    $userModel = config('auth.providers.users.model', 'App\Models\User');
+    $userModel = config('auth.providers.users.model', \Workbench\App\Models\User::class);
     
     return Model::unguarded(function () use ($userModel) {
         return $userModel::create([

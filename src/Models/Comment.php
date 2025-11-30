@@ -109,4 +109,22 @@ class Comment extends Model
     {
         return $this->commentable->canManageComment($this);
     }
+
+    /**
+     * Add a reply to this comment
+     *
+     * @param int $userId
+     * @param string $content
+     * @return Comment
+     */
+    public function addReply(int $userId, string $content): Comment
+    {
+        return self::create([
+            'commentable_type' => $this->commentable_type,
+            'commentable_id' => $this->commentable_id,
+            'user_id' => $userId,
+            'parent_id' => $this->id,
+            'content' => $content,
+        ]);
+    }
 }

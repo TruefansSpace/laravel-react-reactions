@@ -28,6 +28,11 @@ class CommentController extends Controller
         try {
             // Fix double-escaped backslashes from JavaScript
             $commentableClass = stripslashes($validated['commentable_type']);
+            
+            // If stripslashes removed too much, try the original
+            if (!class_exists($commentableClass)) {
+                $commentableClass = $validated['commentable_type'];
+            }
 
             // Validate commentable class exists
             if (!class_exists($commentableClass)) {
@@ -215,16 +220,14 @@ class CommentController extends Controller
     }
 
     /**
-     * Load replies for a comment
+     * Get replies for a comment
      */
     public function replies(Comment $comment)
     {
         try {
-            $userId = auth()->id();
-
             $replies = $comment->replies()
                 ->with('user')
-                ->withReactionsData($userId)
+                ->withReactionsData(auth()->id())
                 ->latest()
                 ->get()
                 ->map(function ($reply) {

@@ -2,15 +2,12 @@
 
 namespace TrueFans\LaravelReactReactions\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use TrueFans\LaravelReactReactions\Models\Comment;
 
-class NewCommentNotification extends Notification implements ShouldQueue
+class NewCommentNotification extends Notification
 {
-    use Queueable;
 
     public Comment $comment;
 

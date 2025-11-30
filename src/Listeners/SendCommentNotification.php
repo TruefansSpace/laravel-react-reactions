@@ -2,12 +2,11 @@
 
 namespace TrueFans\LaravelReactReactions\Listeners;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Notification;
 use TrueFans\LaravelReactReactions\Events\CommentCreated;
 use TrueFans\LaravelReactReactions\Notifications\NewCommentNotification;
 
-class SendCommentNotification implements ShouldQueue
+class SendCommentNotification
 {
     /**
      * Handle the event.

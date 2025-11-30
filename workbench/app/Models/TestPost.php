@@ -13,6 +13,7 @@ class TestPost extends Model
     protected $fillable = [
         'title',
         'content',
+        'user_id',
     ];
 
     protected $appends = [
@@ -24,6 +25,14 @@ class TestPost extends Model
     {
         // For testing purposes, we assume user ID 1
         return $this->userReaction(1);
+    }
+
+    /**
+     * Get the user that owns the post
+     */
+    public function user()
+    {
+        return $this->belongsTo(config('auth.providers.users.model'), 'user_id');
     }
 
     /**

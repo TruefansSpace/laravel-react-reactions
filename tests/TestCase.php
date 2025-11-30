@@ -41,12 +41,19 @@ class TestCase extends Orchestra
     public function getEnvironmentSetUp($app): void
     {
         config()->set('database.default', 'testing');
+        config()->set('database.connections.testing', [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+        ]);
         config()->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
-
-        /*
-         foreach (\Illuminate\Support\Facades\File::allFiles(__DIR__ . '/../database/migrations') as $migration) {
-            (include $migration->getRealPath())->up();
-         }
-         */
+        
+        // Configure auth to use Workbench User model
+        config()->set('auth.providers.users.model', \Workbench\App\Models\User::class);
+        
+        // Define login route for tests
+        $app['router']->get('/login', function () {
+            return 'login';
+        })->name('login');
     }
 }

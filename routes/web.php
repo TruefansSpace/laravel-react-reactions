@@ -14,4 +14,5 @@ Route::middleware(['web', 'auth'])->prefix('comments')->name('comments.')->group
     Route::put('/{comment}', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'update'])->name('update');
     Route::delete('/{comment}', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'destroy'])->name('destroy');
     Route::get('/list/{commentableType}/{commentableId}', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'list'])->name('list');
+    Route::get('/{comment}/replies', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'replies'])->name('replies');
 });

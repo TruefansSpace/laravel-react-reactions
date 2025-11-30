@@ -41,7 +41,7 @@ class ReactionController extends Controller
         );
 
         // Inertia automatically converts POST redirects to GET with 303
-        return redirect()->back(303);
+        return redirect()->back(303)->with('message', 'Reaction added successfully');
     }
 
     public function destroy(Request $request)
@@ -70,7 +70,7 @@ class ReactionController extends Controller
         $deleted = $reactable->unreact(auth()->id());
 
         // Return 303 redirect to force GET request (prevents method not allowed error)
-        return redirect()->back(303);
+        return redirect()->back(303)->with('message', 'Reaction removed successfully');
     }
 
     public function list(Request $request, string $reactableType, int $reactableId)
