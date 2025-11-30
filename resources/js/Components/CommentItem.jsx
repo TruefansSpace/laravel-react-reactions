@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
-import { MoreVertical, Edit2, Trash2, Reply, Clock, AlertCircle } from 'lucide-react';
+import { MoreVertical, Edit2, Trash2, Reply, Clock } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import Reactions from './Reactions';
@@ -22,7 +22,6 @@ export default function CommentItem({
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
 
     const isOwner = currentUserId === comment.user_id;
     const formattedDate = new Date(comment.created_at).toLocaleDateString('en-US', {
@@ -49,10 +48,11 @@ export default function CommentItem({
             preserveScroll: true,
             onSuccess: () => {
                 onCommentDeleted(comment.id);
+                // Toast will be shown by Layout's flash message handler
             },
-            onError: (errors) => {
+            onError: () => {
                 setIsDeleting(false);
-                setErrorMessage(errors?.error || 'Failed to delete comment');
+                // Toast will be shown by Layout's error handler
             },
             onFinish: () => {
                 setIsDeleting(false);
@@ -224,26 +224,6 @@ export default function CommentItem({
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
                             Delete
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-
-            {/* Error Dialog */}
-            <AlertDialog open={!!errorMessage} onOpenChange={() => setErrorMessage('')}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2 text-red-600">
-                            <AlertCircle className="w-5 h-5" />
-                            Error
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            {errorMessage}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogAction onClick={() => setErrorMessage('')}>
-                            OK
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
