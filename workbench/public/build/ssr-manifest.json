@@ -11,6 +11,9 @@
   "workbench/resources/js/components/ui/button.jsx": [],
   "workbench/resources/js/components/ui/card.jsx": [],
   "workbench/resources/js/components/ui/dropdown-menu.jsx": [],
+  "workbench/resources/js/components/ui/toast.jsx": [],
+  "workbench/resources/js/components/ui/toaster.jsx": [],
+  "workbench/resources/js/hooks/use-toast.js": [],
   "workbench/resources/js/lib/utils.js": [],
   "workbench/resources/js/ssr.jsx": []
 }

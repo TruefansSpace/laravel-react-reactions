@@ -93,21 +93,9 @@ class Comment extends Model
      * @param int|null $userId
      * @return bool
      */
-    public function canEdit(?int $userId = null): bool
+    public function canEdit(): bool
     {
-        if (! $userId) {
-            return false;
-        }
-        if(!$this->commentable()->canComment()){
-            return false;
-        }
-
-        // Default: only comment owner can edit
-        // Override for custom logic, e.g.:
-        // - Allow admins to edit any comment
-        // - Allow moderators to edit comments in their groups
-        // - Disable editing after certain time period
-        return $this->user_id === $userId;
+        return $this->commentable->canManageComment($this);
     }
 
     /**
@@ -117,20 +105,8 @@ class Comment extends Model
      * @param int|null $userId
      * @return bool
      */
-    public function canDelete(?int $userId = null): bool
+    public function canDelete(): bool
     {
-        if(!$this->commentable()->canComment()){
-            return false;
-        }
-        if (! $userId) {
-            return false;
-        }
-
-        // Default: only comment owner can delete
-        // Override for custom logic, e.g.:
-        // - Allow admins to delete any comment
-        // - Allow post owner to delete comments on their post
-        // - Allow moderators to delete comments
-        return $this->user_id === $userId;
+        return $this->commentable->canManageComment($this);
     }
 }

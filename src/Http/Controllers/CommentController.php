@@ -44,7 +44,7 @@ class CommentController extends Controller
         }
 
         // Check if user can comment on this model
-        if (! $commentable->canComment(auth()->id())) {
+        if (! $commentable->canManageComment()) {
             return back()->withErrors(['error' => 'You are not allowed to comment on this item']);
         }
 
@@ -60,14 +60,14 @@ class CommentController extends Controller
     public function update(Request $request, Comment $comment)
     {
         // Check if user can edit this comment
-        if (! $comment->canEdit(auth()->id())) {
-            return back()->withErrors(['error' => 'You are not allowed to edit this comment']);
+        if (! $comment->canEdit()) {
+            return back(303)->withErrors(['error' => 'You are not allowed to edit this comment']);
         }
 
         // Check edit timeout
         $editTimeout = config('react-reactions.comments.edit_timeout', 0);
         if ($editTimeout > 0 && $comment->created_at->addSeconds($editTimeout)->isPast()) {
-            return redirect()->back()->withErrors(['error' => 'Edit time expired']);
+            return redirect()->back(303)->withErrors(['error' => 'Edit time expired']);
         }
 
         $validator = Validator::make($request->all(), [
@@ -75,7 +75,7 @@ class CommentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator->errors());
+            return redirect()->back(303)->withErrors($validator->errors());
         }
 
         $comment->update([
@@ -90,7 +90,7 @@ class CommentController extends Controller
     public function destroy(Comment $comment)
     {
         // Check if user can delete this comment
-        if (! $comment->canDelete(auth()->id())) {
+        if (! $comment->canDelete()) {
             return redirect()->back(303)->withErrors(['errors' => 'You are not allowed to delete this comment']);
         }
 

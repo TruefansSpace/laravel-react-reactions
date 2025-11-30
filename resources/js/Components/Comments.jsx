@@ -49,19 +49,19 @@ export default function Comments({
     };
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-3">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <MessageSquare className="w-5 h-5 text-gray-600" />
-                    <h3 className="text-lg font-semibold text-gray-900">
+                    <MessageSquare className="w-4 h-4 text-gray-600" />
+                    <h3 className="text-base font-semibold text-gray-900">
                         Comments ({comments.length})
                     </h3>
                 </div>
                 {!showForm && (
                     <button
                         onClick={() => setShowForm(true)}
-                        className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors"
+                        className="px-3 py-1.5 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 transition-colors"
                     >
                         Add Comment
                     </button>
@@ -79,7 +79,7 @@ export default function Comments({
             )}
 
             {/* Comments List */}
-            <div className="space-y-4">
+            <div className="space-y-2">
                 {comments.length === 0 ? (
                     <div className="text-center py-12 bg-gray-50 rounded-lg">
                         <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />

@@ -9,6 +9,7 @@ import { cva } from "class-variance-authority";
 import { X, AlertCircle, Loader2, ChevronDown, Send, Clock, MoreVertical, Edit2, Trash2, Reply, MessageSquare, LogOut, User } from "lucide-react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
+import * as ToastPrimitives from "@radix-ui/react-toast";
 import createServer from "@inertiajs/react/server";
 import ReactDOMServer from "react-dom/server";
 function cn(...inputs) {
@@ -374,10 +375,10 @@ function ReactionsModal({
   }, [isOpen, reactions]);
   const tabs = [
     { key: "all", label: "All", count: Object.values(reactionsSummary).reduce((a, b) => a + b, 0) },
-    ...Object.entries(reactionsSummary).filter(([, count]) => count > 0).map(([type, count]) => ({
+    ...Object.entries(reactionsSummary).filter(([, count2]) => count2 > 0).map(([type, count2]) => ({
       key: type,
       label: REACTION_TYPES$1[type],
-      count
+      count: count2
     }))
   ];
   const loadReactions = async (pageNum, append = false) => {
@@ -637,7 +638,7 @@ function Reactions({
       router.post("/reactions", data, options);
     }
   };
-  const totalReactions = Object.values(reactions).reduce((sum, count) => sum + count, 0);
+  const totalReactions = Object.values(reactions).reduce((sum, count2) => sum + count2, 0);
   const handleMouseEnter = () => {
     if (isProcessing) return;
     if (hoverTimeoutRef.current) {
@@ -701,7 +702,7 @@ function Reactions({
       )
     ] }),
     totalReactions > 0 && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1.5", children: [
-      Object.entries(reactions).sort(([, a], [, b]) => b - a).map(([type, count]) => /* @__PURE__ */ jsxs(
+      Object.entries(reactions).sort(([, a], [, b]) => b - a).map(([type, count2]) => /* @__PURE__ */ jsxs(
         "button",
         {
           onClick: () => handleReaction(type),
@@ -713,7 +714,7 @@ function Reactions({
                                 `,
           children: [
             /* @__PURE__ */ jsx("span", { className: "text-base", children: REACTION_TYPES[type] }),
-            /* @__PURE__ */ jsx("span", { children: count })
+            /* @__PURE__ */ jsx("span", { children: count2 })
           ]
         },
         type
@@ -889,7 +890,6 @@ function CommentForm({
     if (isEditing && commentId) {
       router.put(`/comments/${commentId}`, data, {
         preserveScroll: true,
-        preserveState: true,
         onSuccess: () => {
           onSuccess(content.trim());
           setContent("");
@@ -905,6 +905,10 @@ function CommentForm({
     } else {
       router.post("/comments", data, {
         preserveScroll: true,
+        onSuccess: () => {
+          setContent("");
+          if (onCancel) onCancel();
+        },
         onError: (errors) => {
           setError(errors.content || errors.error || "Failed to add comment");
           setIsSubmitting(false);
@@ -1011,7 +1015,6 @@ function CommentItem({
     setShowDeleteConfirm(false);
     router.delete(`/comments/${comment.id}`, {
       preserveScroll: true,
-      preserveState: true,
       onSuccess: () => {
         onCommentDeleted(comment.id);
       },
@@ -1182,8 +1185,10 @@ function Comments({
 }) {
   const [comments, setComments] = useState(initialComments);
   const [showForm, setShowForm] = useState(false);
-  const handleCommentAdded = (newComment) => {
-    setComments((prev) => [newComment, ...prev]);
+  useEffect(() => {
+    setComments(initialComments);
+  }, [initialComments]);
+  const handleCommentAdded = () => {
     setShowForm(false);
   };
   const handleCommentUpdated = (commentId, updatedContent) => {
@@ -1254,8 +1259,236 @@ function Comments({
     )) })
   ] });
 }
+const TOAST_LIMIT = 5;
+const TOAST_REMOVE_DELAY = 5e3;
+let count = 0;
+function genId() {
+  count = (count + 1) % Number.MAX_VALUE;
+  return count.toString();
+}
+const toastTimeouts = /* @__PURE__ */ new Map();
+const addToRemoveQueue = (toastId) => {
+  if (toastTimeouts.has(toastId)) {
+    return;
+  }
+  const timeout = setTimeout(() => {
+    toastTimeouts.delete(toastId);
+    dispatch({
+      type: "REMOVE_TOAST",
+      toastId
+    });
+  }, TOAST_REMOVE_DELAY);
+  toastTimeouts.set(toastId, timeout);
+};
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "ADD_TOAST":
+      return {
+        ...state,
+        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT)
+      };
+    case "UPDATE_TOAST":
+      return {
+        ...state,
+        toasts: state.toasts.map(
+          (t) => t.id === action.toast.id ? { ...t, ...action.toast } : t
+        )
+      };
+    case "DISMISS_TOAST": {
+      const { toastId } = action;
+      if (toastId) {
+        addToRemoveQueue(toastId);
+      } else {
+        state.toasts.forEach((toast2) => {
+          addToRemoveQueue(toast2.id);
+        });
+      }
+      return {
+        ...state,
+        toasts: state.toasts.map(
+          (t) => t.id === toastId || toastId === void 0 ? {
+            ...t,
+            open: false
+          } : t
+        )
+      };
+    }
+    case "REMOVE_TOAST":
+      if (action.toastId === void 0) {
+        return {
+          ...state,
+          toasts: []
+        };
+      }
+      return {
+        ...state,
+        toasts: state.toasts.filter((t) => t.id !== action.toastId)
+      };
+  }
+};
+const listeners = [];
+let memoryState = { toasts: [] };
+function dispatch(action) {
+  memoryState = reducer(memoryState, action);
+  listeners.forEach((listener) => {
+    listener(memoryState);
+  });
+}
+function toast({ ...props }) {
+  const id = genId();
+  const update = (props2) => dispatch({
+    type: "UPDATE_TOAST",
+    toast: { ...props2, id }
+  });
+  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id });
+  dispatch({
+    type: "ADD_TOAST",
+    toast: {
+      ...props,
+      id,
+      open: true,
+      onOpenChange: (open) => {
+        if (!open) dismiss();
+      }
+    }
+  });
+  return {
+    id,
+    dismiss,
+    update
+  };
+}
+function useToast() {
+  const [state, setState] = React.useState(memoryState);
+  React.useEffect(() => {
+    listeners.push(setState);
+    return () => {
+      const index = listeners.indexOf(setState);
+      if (index > -1) {
+        listeners.splice(index, 1);
+      }
+    };
+  }, [state]);
+  return {
+    ...state,
+    toast,
+    dismiss: (toastId) => dispatch({ type: "DISMISS_TOAST", toastId })
+  };
+}
+const ToastProvider = ToastPrimitives.Provider;
+const ToastViewport = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  ToastPrimitives.Viewport,
+  {
+    ref,
+    className: cn(
+      "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
+      className
+    ),
+    ...props
+  }
+));
+ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
+const Toast = React.forwardRef(({ className, variant, ...props }, ref) => {
+  return /* @__PURE__ */ jsx(
+    ToastPrimitives.Root,
+    {
+      ref,
+      className: cn(
+        "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+        variant === "destructive" && "destructive group border-red-500 bg-red-500 text-white",
+        variant === "success" && "border-green-500 bg-green-500 text-white",
+        !variant && "border bg-white text-gray-900",
+        className
+      ),
+      ...props
+    }
+  );
+});
+Toast.displayName = ToastPrimitives.Root.displayName;
+const ToastAction = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  ToastPrimitives.Action,
+  {
+    ref,
+    className: cn(
+      "inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-white transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+      className
+    ),
+    ...props
+  }
+));
+ToastAction.displayName = ToastPrimitives.Action.displayName;
+const ToastClose = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  ToastPrimitives.Close,
+  {
+    ref,
+    className: cn(
+      "absolute right-2 top-2 rounded-md p-1 text-white/50 opacity-0 transition-opacity hover:text-white focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100",
+      className
+    ),
+    "toast-close": "",
+    ...props,
+    children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" })
+  }
+));
+ToastClose.displayName = ToastPrimitives.Close.displayName;
+const ToastTitle = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  ToastPrimitives.Title,
+  {
+    ref,
+    className: cn("text-sm font-semibold", className),
+    ...props
+  }
+));
+ToastTitle.displayName = ToastPrimitives.Title.displayName;
+const ToastDescription = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
+  ToastPrimitives.Description,
+  {
+    ref,
+    className: cn("text-sm opacity-90", className),
+    ...props
+  }
+));
+ToastDescription.displayName = ToastPrimitives.Description.displayName;
+function Toaster() {
+  const { toasts } = useToast();
+  return /* @__PURE__ */ jsxs(ToastProvider, { children: [
+    toasts.map(function({ id, title, description, action, ...props }) {
+      return /* @__PURE__ */ jsxs(Toast, { ...props, children: [
+        /* @__PURE__ */ jsxs("div", { className: "grid gap-1", children: [
+          title && /* @__PURE__ */ jsx(ToastTitle, { children: title }),
+          description && /* @__PURE__ */ jsx(ToastDescription, { children: description })
+        ] }),
+        action,
+        /* @__PURE__ */ jsx(ToastClose, {})
+      ] }, id);
+    }),
+    /* @__PURE__ */ jsx(ToastViewport, {})
+  ] });
+}
 function TestPage({ posts }) {
-  const { auth } = usePage().props;
+  const page = usePage();
+  const { auth, flash, errors } = page.props;
+  useEffect(() => {
+    console.log("All props:", page.props);
+    console.log("Flash:", flash, "Errors:", errors);
+    if (flash == null ? void 0 : flash.success) {
+      console.log("Showing success toast:", flash.success);
+      toast({
+        title: "Success",
+        description: flash.success,
+        variant: "success"
+      });
+    }
+    if (errors && Object.keys(errors).length > 0) {
+      const errorMessage = Object.values(errors)[0];
+      console.log("Showing error toast:", errorMessage);
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    }
+  }, [flash, errors]);
   const handleLogout = (e) => {
     e.preventDefault();
     router.post("/logout");
@@ -1357,7 +1590,8 @@ function TestPage({ posts }) {
         ] })
       ] }),
       /* @__PURE__ */ jsx("footer", { className: "mt-16 py-8 border-t border-gray-200 bg-white", children: /* @__PURE__ */ jsx("div", { className: "max-w-5xl mx-auto px-4 text-center text-sm text-gray-500", children: /* @__PURE__ */ jsx("p", { children: "Built with Laravel, Inertia.js, React & shadcn/ui" }) }) })
-    ] })
+    ] }),
+    /* @__PURE__ */ jsx(Toaster, {})
   ] });
 }
 const __vite_glob_0_1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
@@ -1381,9 +1615,9 @@ createServer((page) => {
       return page2;
     },
     defaults: {
-        future: {
-            useDialogForErrorModal: true,
-        },
+      future: {
+        useDialogForErrorModal: true
+      }
     },
     setup: ({ App, props }) => /* @__PURE__ */ jsx(App, { ...props })
   });

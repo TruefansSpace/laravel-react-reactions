@@ -71,13 +71,15 @@ trait HasComments
      * @param int|null $userId
      * @return bool
      */
-    public function canComment(?int $userId = null): bool
+    public function canManageComment(\TrueFans\LaravelReactReactions\Models\Comment $comment = null): bool
     {
-        // Default: anyone can comment
-        // Override in your model for custom logic, e.g.:
-        // - Only allow comments if post is published
-        // - Only allow comments from followers
-        // - Only allow comments if user is member of group
-        return true;
+        $user = auth()->user()->id;
+        if(!$user) {
+            return false;
+        }
+        if($comment && !auth()->user()->is_admin && $comment->user_id !== auth()->user()->id){
+            return false;
+        }
+         return true;
     }
 }

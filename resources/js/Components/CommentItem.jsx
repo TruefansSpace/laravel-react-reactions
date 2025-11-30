@@ -72,44 +72,44 @@ export default function CommentItem({
 
     if (isDeleting) {
         return (
-            <div className="animate-pulse bg-gray-50 rounded-lg p-4">
+            <div className="animate-pulse bg-gray-50 rounded-md p-3">
                 <p className="text-sm text-gray-500">Deleting...</p>
             </div>
         );
     }
 
     return (
-        <div className={`${isReply ? 'ml-12' : ''}`}>
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className={`${isReply ? 'ml-10' : ''}`}>
+            <div className="bg-white rounded-md border border-gray-200 p-3">
                 {/* Header */}
-                <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
+                <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
                         <div 
                             onClick={() => onUserClick?.(comment.user?.id)}
-                            className={`w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 ${
-                                onUserClick ? 'cursor-pointer hover:ring-2 hover:ring-gray-900 hover:ring-offset-2 transition-all' : ''
+                            className={`w-8 h-8 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 ${
+                                onUserClick ? 'cursor-pointer hover:ring-2 hover:ring-gray-900 hover:ring-offset-1 transition-all' : ''
                             }`}
                         >
                             {comment.user?.name?.charAt(0).toUpperCase() || '?'}
                         </div>
                         <div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1.5">
                                 <span 
                                     onClick={() => onUserClick?.(comment.user?.id)}
-                                    className={`font-semibold text-gray-900 ${
+                                    className={`text-sm font-semibold text-gray-900 ${
                                         onUserClick ? 'cursor-pointer hover:underline' : ''
                                     }`}
                                 >
                                     {comment.user?.name || 'Unknown User'}
                                 </span>
                                 {comment.is_edited && (
-                                    <span className="text-xs text-gray-400 flex items-center gap-1">
-                                        <Clock className="w-3 h-3" />
+                                    <span className="text-xs text-gray-400 flex items-center gap-0.5">
+                                        <Clock className="w-2.5 h-2.5" />
                                         edited
                                     </span>
                                 )}
                             </div>
-                            <span className="text-sm text-gray-500">{formattedDate}</span>
+                            <span className="text-xs text-gray-500">{formattedDate}</span>
                         </div>
                     </div>
 
@@ -148,10 +148,10 @@ export default function CommentItem({
                     />
                 ) : (
                     <>
-                        <p className="text-gray-800 whitespace-pre-wrap mb-3">{comment.content}</p>
+                        <p className="text-sm text-gray-800 whitespace-pre-wrap mb-2">{comment.content}</p>
 
                         {/* Actions Bar */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                             {reactionsEnabled && (
                                 <Reactions
                                     reactableType="TrueFans\\LaravelReactReactions\\Models\\Comment"
@@ -192,7 +192,7 @@ export default function CommentItem({
 
             {/* Replies */}
             {comment.replies && comment.replies.length > 0 && (
-                <div className="mt-3 space-y-3">
+                <div className="mt-2 space-y-2">
                     {comment.replies.map(reply => (
                         <CommentItem
                             key={reply.id}

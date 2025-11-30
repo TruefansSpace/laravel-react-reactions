@@ -149,7 +149,7 @@ export default function Reactions({
                         onMouseLeave={handleMouseLeave}
                         disabled={isProcessing}
                         className={`
-                            group inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200
+                            group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium text-sm transition-all duration-200
                             ${currentUserReaction 
                                 ? 'bg-gray-900 text-white hover:bg-gray-800 shadow-sm' 
                                 : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
@@ -157,10 +157,10 @@ export default function Reactions({
                             ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-105'}
                         `}
                     >
-                        <span className="text-lg">
+                        <span className="text-base">
                             {currentUserReaction ? REACTION_TYPES[currentUserReaction] : '👍'}
                         </span>
-                        <span className="font-medium">
+                        <span className="font-medium text-sm">
                             {currentUserReaction ? REACTION_LABELS[currentUserReaction] : 'Like'}
                         </span>
                     </button>
@@ -202,7 +202,7 @@ export default function Reactions({
                                 onClick={() => handleReaction(type)}
                                 disabled={isProcessing}
                                 className={`
-                                    inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all
+                                    inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all
                                     ${currentUserReaction === type
                                         ? 'bg-gray-900 text-white shadow-sm'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
