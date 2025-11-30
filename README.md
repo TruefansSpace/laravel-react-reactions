@@ -74,39 +74,39 @@ class Post extends Model
     }
 
     /**
-     * Determine who can comment on this post
+     * Determine who can create or manage comments
      * Customize this based on your business logic
+     * 
+     * @param Comment|null $comment - null when creating, Comment instance when editing/deleting
      */
-    public function canComment(?int $userId = null): bool
+    public function canManageComment($comment = null): bool
     {
-        // Example: Any authenticated user can comment
-        return $userId !== null;
+        $user = auth()->user();
         
-        // Or: Only verified users can comment
-        // return $userId && User::find($userId)?->hasVerifiedEmail();
-        
-        // Or: Only followers can comment
-        // return $userId && $this->user->followers()->where('id', $userId)->exists();
-    }
+        if (!$user) {
+            return false;
+        }
 
-    /**
-     * Determine who can edit/delete comments
-     * Customize this based on your business logic
-     */
-    public function canManageComment($comment): bool
-    {
-        $userId = auth()->id();
-        
+        // If no comment provided, check if user can CREATE a new comment
+        if ($comment === null) {
+            // Example: Only verified users can create comments
+            return $user->hasVerifiedEmail();
+            
+            // Or: Only post author can allow comments
+            // return $this->user_id === $user->id;
+            
+            // Or: Anyone authenticated can comment
+            // return true;
+        }
+
+        // If comment provided, check if user can EDIT/DELETE it
         // Post author can manage all comments on their post
-        if ($this->user_id === $userId) {
+        if ($this->user_id === $user->id) {
             return true;
         }
         
         // Users can manage their own comments
-        return $comment->user_id === $userId;
-        
-        // Or: Add admin override
-        // if (auth()->user()->isAdmin()) return true;
+        return $comment->user_id === $user->id;
     }
 }
 ```
@@ -323,7 +323,6 @@ class PostController extends Controller
         return Inertia::render('Posts/Show', [
             'post' => $postData,
             'comments' => $comments,
-            'can_comment' => $post->canComment($userId),
         ]);
     }
 }
@@ -386,7 +385,7 @@ import AppLayout from '@/Layouts/AppLayout';
 import Reactions from '@/Components/Reactions/Reactions';
 import Comments from '@/Components/Comments/Comments';
 
-export default function Show({ post, comments, can_comment }) {
+export default function Show({ post, comments }) {
     return (
         <AppLayout>
             <div className="max-w-4xl mx-auto">
@@ -429,7 +428,6 @@ export default function Show({ post, comments, can_comment }) {
                         commentableType="App\\Models\\Post"
                         commentableId={post.id}
                         initialComments={comments}
-                        canComment={can_comment}
                     />
                 </div>
             </div>
@@ -482,12 +480,6 @@ class Event extends Model
     use HasReactions, HasComments;
     
     protected $appends = ['reactions_summary', 'user_reaction'];
-    
-    public function canComment(?int $userId = null): bool
-    {
-        // Only allow comments if event hasn't ended
-        return $userId && $this->end_date->isFuture();
-    }
 }
 ```
 
@@ -791,7 +783,6 @@ class PostController extends Controller
         return Inertia::render('Posts/Show', [
             'post' => $post,
             'comments' => $comments,
-            'can_comment' => $post->canComment($userId),
         ]);
     }
 }
@@ -916,17 +907,6 @@ Override permission methods in your model for custom logic:
 class Post extends Model
 {
     use HasComments;
-
-    /**
-     * Only verified users can comment
-     */
-    public function canComment(?int $userId = null): bool
-    {
-        if (!$userId) return false;
-        
-        $user = User::find($userId);
-        return $user->hasVerifiedEmail();
-    }
 
     /**
      * Post author can manage all comments, users can manage their own
@@ -1063,7 +1043,17 @@ return [
     // Comments configuration
     'comments' => [
         'reactions_enabled' => true, // Enable reactions on comments
-        'max_depth' => null,         // Max nesting depth (null = unlimited)
+        'max_depth' => 3,            // Max nesting depth (0 = unlimited)
+        'edit_timeout' => 300,       // Seconds to allow editing (0 = unlimited)
+    ],
+
+    // Notification configuration
+    'notifications' => [
+        'enabled' => true,                    // Enable/disable notifications
+        'admin_email' => env('REACTIONS_ADMIN_EMAIL'), // Admin email for notifications
+        'notify_owner' => true,               // Notify content owner
+        'notify_parent_author' => true,       // Notify parent comment author on replies
+        'notify_on_replies' => true,          // Send notifications for replies
     ],
 
     // UI configuration
@@ -1072,6 +1062,16 @@ return [
         'animation_duration' => 200, // ms for animations
     ],
 ];
+```
+
+### Environment Variables
+
+Add these to your `.env` file:
+
+```env
+# Email notifications for new comments
+REACTIONS_NOTIFICATIONS_ENABLED=true
+REACTIONS_ADMIN_EMAIL=admin@example.com
 ```
 
 ## API Reference
@@ -1112,7 +1112,6 @@ $model->addComment(int $userId, string $content): Comment
 $model->comments(): MorphMany
 
 // Check permissions
-$model->canComment(?int $userId): bool
 $model->canManageComment(Comment $comment): bool
 ```
 
@@ -1159,7 +1158,6 @@ Comment::topLevel() // Only top-level comments (no parent)
     commentableType="App\\Models\\Post"  // Required: Model class name
     commentableId={post.id}              // Required: Model ID
     initialComments={[...]}              // Required: Array of comments
-    canComment={true}                    // Required: Permission flag
 />
 ```
 
@@ -1309,6 +1307,101 @@ The package includes multiple security layers:
 - ✅ Input validation
 - ✅ Soft deletes for data preservation
 
+## Email Notifications
+
+The package automatically sends email notifications when new comments are posted.
+
+### Setup
+
+1. **Configure your mail settings** in `.env`:
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your-username
+MAIL_PASSWORD=your-password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@example.com
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+2. **Set admin email** for notifications:
+```env
+REACTIONS_ADMIN_EMAIL=admin@example.com
+```
+
+3. **Configure notification settings** in `config/react-reactions.php`:
+```php
+'notifications' => [
+    'enabled' => true,                    // Enable/disable all notifications
+    'admin_email' => env('REACTIONS_ADMIN_EMAIL'), // Admin receives all comments
+    'notify_owner' => true,               // Notify post/content owner
+    'notify_parent_author' => true,       // Notify parent comment author on replies
+    'notify_on_replies' => true,          // Include reply notifications
+],
+```
+
+### Who Gets Notified?
+
+- **Admin**: Receives notification for every new comment (if `admin_email` is set)
+- **Content Owner**: Receives notification when someone comments on their content (if `notify_owner` is true)
+- **Parent Comment Author**: Receives notification when someone replies to their comment (if `notify_parent_author` is true)
+
+### Customizing Notifications
+
+You can customize the notification by extending the `NewCommentNotification` class:
+
+```php
+<?php
+
+namespace App\Notifications;
+
+use TrueFans\LaravelReactReactions\Notifications\NewCommentNotification as BaseNotification;
+
+class CustomCommentNotification extends BaseNotification
+{
+    public function toMail(object $notifiable): MailMessage
+    {
+        return (new MailMessage)
+            ->subject('New Comment Alert!')
+            ->line('Someone commented on your post')
+            ->line($this->comment->content)
+            ->action('View Comment', url('/posts/' . $this->comment->commentable_id))
+            ->line('Thank you!');
+    }
+}
+```
+
+Then update your listener to use the custom notification.
+
+### Disabling Notifications
+
+To disable notifications entirely:
+
+```env
+REACTIONS_NOTIFICATIONS_ENABLED=false
+```
+
+Or in config:
+```php
+'notifications' => [
+    'enabled' => false,
+],
+```
+
+### Queue Configuration
+
+Notifications are queued by default for better performance. Make sure your queue is running:
+
+```bash
+php artisan queue:work
+```
+
+For development, you can use the sync driver in `.env`:
+```env
+QUEUE_CONNECTION=sync
+```
+
 ## Best Practices
 
 1. **Always use `withReactionsData()`** when loading multiple models
@@ -1318,6 +1411,8 @@ The package includes multiple security layers:
 5. **Add rate limiting** to prevent spam
 6. **Cache comment counts** for better performance
 7. **Monitor queries** with Laravel Debugbar in development
+8. **Configure email notifications** for comment moderation
+9. **Use queues** for sending notification emails
 
 ## License
 

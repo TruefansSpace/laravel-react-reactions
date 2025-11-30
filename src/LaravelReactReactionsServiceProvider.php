@@ -2,33 +2,51 @@
 
 namespace TrueFans\LaravelReactReactions;
 
-use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
-use TrueFans\LaravelReactReactions\Commands\LaravelReactReactionsCommand;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\ServiceProvider;
+use TrueFans\LaravelReactReactions\Events\CommentCreated;
+use TrueFans\LaravelReactReactions\Listeners\SendCommentNotification;
 
-class LaravelReactReactionsServiceProvider extends PackageServiceProvider
+class LaravelReactReactionsServiceProvider extends ServiceProvider
 {
-    public function configurePackage(Package $package): void
+    /**
+     * Register services.
+     */
+    public function register(): void
     {
-        /*
-         * This class is a Package Service Provider
-         *
-         * More info: https://github.com/spatie/laravel-package-tools
-         */
-        $package
-            ->name('react-reactions')
-            ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_react_reactions_table')
-            ->hasRoute('web')
-            ->hasCommand(LaravelReactReactionsCommand::class);
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/react-reactions.php',
+            'react-reactions'
+        );
     }
 
-    public function packageRegistered(): void
+    /**
+     * Bootstrap services.
+     */
+    public function boot(): void
     {
-        // Register publishable React components
+        // Publish config
+        $this->publishes([
+            __DIR__.'/../config/react-reactions.php' => config_path('react-reactions.php'),
+        ], 'react-reactions-config');
+
+        // Publish migrations
+        $this->publishes([
+            __DIR__.'/../database/migrations' => database_path('migrations'),
+        ], 'react-reactions-migrations');
+
+        // Publish React components
         $this->publishes([
             __DIR__.'/../resources/js/Components' => resource_path('js/Components/Reactions'),
         ], 'react-reactions-components');
+
+        // Load routes
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+
+        // Register event listeners
+        Event::listen(
+            CommentCreated::class,
+            SendCommentNotification::class
+        );
     }
 }

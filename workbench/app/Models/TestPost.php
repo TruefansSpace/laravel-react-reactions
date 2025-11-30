@@ -27,12 +27,12 @@ class TestPost extends Model
     }
 
     /**
-     * Example: Override canComment to implement custom permission logic
+     * Example: Override canManageComment to implement custom permission logic
      * Uncomment and modify this method to add your own rules
      */
-    // public function canComment(?int $userId = null): bool
+    // public function canManageComment($comment): bool
     // {
-    //     // Example 1: Only allow comments if post is published
+    //     // Example 1: Post author can manage all comments
     //     // if (!$this->is_published) {
     //     //     return false;
     //     // }

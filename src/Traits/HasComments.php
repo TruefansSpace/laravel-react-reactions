@@ -65,21 +65,31 @@ trait HasComments
     }
 
     /**
-     * Check if a user can comment on this model
+     * Check if a user can create or manage comments
      * Override this method in your model to implement custom logic
      *
-     * @param int|null $userId
+     * @param \TrueFans\LaravelReactReactions\Models\Comment|null $comment
      * @return bool
      */
-    public function canManageComment(\TrueFans\LaravelReactReactions\Models\Comment $comment = null): bool
+    public function canManageComment(?\TrueFans\LaravelReactReactions\Models\Comment $comment = null): bool
     {
-        $user = auth()->user()->id;
-        if(!$user) {
+        $user = auth()->user();
+        
+        if (!$user) {
             return false;
         }
-        if($comment && !auth()->user()->is_admin && $comment->user_id !== auth()->user()->id){
-            return false;
+
+        // If no comment is provided, check if user can create a new comment
+        if ($comment === null) {
+            return true; // Any authenticated user can create comments by default
         }
-         return true;
+
+        // If comment is provided, check if user can edit/delete it
+        // Allow if user is admin or comment author
+        if (isset($user->is_admin) && $user->is_admin) {
+            return true;
+        }
+
+        return $comment->user_id === $user->id;
     }
 }

@@ -41,5 +41,17 @@ return [
         'edit_timeout' => 300, // Seconds user can edit their comment (0 = unlimited)
         'require_approval' => false, // Require admin approval before showing
     ],
+
+    /*
+     * Notification configuration
+     */
+    'notifications' => [
+        'enabled' => env('REACTIONS_NOTIFICATIONS_ENABLED', true),
+        'admin_email' => env('REACTIONS_ADMIN_EMAIL', env('MAIL_FROM_ADDRESS')),
+        'notify_owner' => true, // Notify the owner of the commentable item
+        'notify_parent_author' => true, // Notify parent comment author on replies
+        'notify_on_replies' => true, // Send notifications for replies (not just top-level comments)
+        'queue' => true, // Queue notification emails
+    ],
 ];
 
