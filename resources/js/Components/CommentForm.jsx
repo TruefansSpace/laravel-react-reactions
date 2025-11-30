@@ -111,6 +111,7 @@ export default function CommentForm({
                     }}
                     placeholder={placeholder}
                     disabled={isSubmitting}
+                    data-testid={isEditing ? "edit-comment-input" : "comment-input"}
                     className={`w-full px-4 py-3 pr-12 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all ${
                         error ? 'border-red-500' : 'border-gray-300'
                     } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -138,6 +139,7 @@ export default function CommentForm({
                 <button
                     type="submit"
                     disabled={isSubmitting || !content.trim()}
+                    data-testid={isEditing ? "save-edit" : "submit-comment"}
                     className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {isSubmitting ? (

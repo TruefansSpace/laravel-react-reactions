@@ -122,11 +122,11 @@ export default function CommentItem({
                                 </button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={handleEdit} className="cursor-pointer">
+                                <DropdownMenuItem onClick={handleEdit} className="cursor-pointer" data-testid="edit-comment">
                                     <Edit2 className="w-4 h-4 mr-2" />
                                     Edit
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleDelete} className="cursor-pointer text-red-600">
+                                <DropdownMenuItem onClick={handleDelete} className="cursor-pointer text-red-600" data-testid="delete-comment">
                                     <Trash2 className="w-4 h-4 mr-2" />
                                     Delete
                                 </DropdownMenuItem>
@@ -165,6 +165,7 @@ export default function CommentItem({
                             {!isReply && (
                                 <button
                                     onClick={() => setShowReplyForm(!showReplyForm)}
+                                    data-testid="reply-button"
                                     className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
                                 >
                                     <Reply className="w-4 h-4" />
@@ -222,7 +223,7 @@ export default function CommentItem({
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+                        <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700" data-testid="confirm-delete">
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>

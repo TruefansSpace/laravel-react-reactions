@@ -163,6 +163,7 @@ export default function ReactionsModal({
                 isOpen && isAnimating ? 'bg-black/50' : 'bg-black/0'
             }`}
             onClick={handleClose}
+            data-testid="modal-overlay"
         >
             <div 
                 ref={modalRef}
@@ -182,6 +183,7 @@ export default function ReactionsModal({
                     <button
                         onClick={onClose}
                         className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                        data-testid="close-modal"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -193,6 +195,7 @@ export default function ReactionsModal({
                         <button
                             key={tab.key}
                             onClick={() => setActiveTab(tab.key)}
+                            data-testid={`reaction-tab-${tab.key}`}
                             className={`
                                 flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors
                                 ${activeTab === tab.key
@@ -252,6 +255,7 @@ export default function ReactionsModal({
                                     role={onUserClick ? "button" : undefined}
                                     tabIndex={onUserClick ? 0 : undefined}
                                     onClick={() => onUserClick?.(reaction.user?.id)}
+                                    data-testid="user-reaction-item"
                                     onKeyDown={(e) => {
                                         if (onUserClick && (e.key === 'Enter' || e.key === ' ')) {
                                             e.preventDefault();
@@ -274,7 +278,7 @@ export default function ReactionsModal({
                                             {reaction.user?.email}
                                         </div>
                                     </div>
-                                    <div className="text-2xl flex-shrink-0">
+                                    <div className="text-2xl flex-shrink-0" data-testid="user-reaction-type">
                                         {REACTION_TYPES[reaction.type]}
                                     </div>
                                 </div>

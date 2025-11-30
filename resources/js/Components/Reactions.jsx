@@ -148,6 +148,7 @@ export default function Reactions({
                         onMouseEnter={handleMouseEnter}
                         onMouseLeave={handleMouseLeave}
                         disabled={isProcessing}
+                        data-testid={`reaction-button-${currentUserReaction || 'like'}`}
                         className={`
                             group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium text-sm transition-all duration-200
                             ${currentUserReaction 
@@ -177,6 +178,7 @@ export default function Reactions({
                             <DropdownMenuItem
                                 key={type}
                                 onClick={() => handleReaction(type)}
+                                data-testid={`reaction-button-${type}`}
                                 className={`
                                     group relative flex flex-col items-center gap-1 p-2.5 rounded-lg transition-all duration-200
                                     hover:bg-gray-100 hover:scale-125 cursor-pointer
@@ -201,6 +203,7 @@ export default function Reactions({
                                 key={type}
                                 onClick={() => handleReaction(type)}
                                 disabled={isProcessing}
+                                data-testid={`reaction-count-${type}`}
                                 className={`
                                     inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all
                                     ${currentUserReaction === type

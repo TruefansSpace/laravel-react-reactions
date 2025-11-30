@@ -2,14 +2,15 @@ import { test, expect } from '@playwright/test';
 
 test.describe('ReactionsModal', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('/test');
-        await page.waitForLoadState('networkidle');
-        
-        // Login
+        // Login first
+        await page.goto('/login');
         await page.fill('input[name="email"]', 'test@example.com');
         await page.fill('input[name="password"]', 'password');
         await page.click('button[type="submit"]');
-        await page.waitForURL('/test');
+        await page.waitForURL('/');
+        
+        // Ensure we are on the test page
+        await page.waitForLoadState('networkidle');
     });
 
     test('opens modal when clicking reaction count', async ({ page }) => {

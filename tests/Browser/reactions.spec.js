@@ -6,8 +6,12 @@ test.describe('Reactions Component', () => {
         page.on('console', msg => console.log(`BROWSER LOG: ${msg.text()}`));
         page.on('pageerror', exception => console.log(`BROWSER ERROR: ${exception}`));
 
-        // Navigate to the test page
-        await page.goto('/');
+        // Login first
+        await page.goto('/login');
+        await page.fill('input[name="email"]', 'test@example.com');
+        await page.fill('input[name="password"]', 'password');
+        await page.click('button[type="submit"]');
+        await page.waitForURL('/');
         
         // Log page content for debugging
         console.log('PAGE CONTENT:', await page.content());

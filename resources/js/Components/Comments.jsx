@@ -131,6 +131,7 @@ export default function Comments({
                 {!showForm && (
                     <button
                         onClick={() => setShowForm(true)}
+                        data-testid="add-comment-button"
                         className="px-3 py-1.5 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 transition-colors"
                     >
                         Add Comment
