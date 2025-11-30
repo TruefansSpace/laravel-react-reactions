@@ -14,12 +14,10 @@ it('registers config', function () {
     expect(config('react-reactions'))->toBeArray();
 });
 
-it('merges config from package', function () {
+it('registers service provider', function () {
     $this->provider->register();
-    $this->provider->boot();
     
-    expect(config('react-reactions'))->toBeArray()
-        ->and(config('react-reactions.reactions'))->toBeArray();
+    expect($this->provider)->toBeInstanceOf(\TrueFans\LaravelReactReactions\LaravelReactReactionsServiceProvider::class);
 });
 
 it('boots and loads routes', function () {

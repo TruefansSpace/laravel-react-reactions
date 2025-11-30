@@ -209,3 +209,24 @@ test('comment casts attributes correctly', function () {
     expect($comment->is_edited)->toBeTrue()
         ->and($comment->edited_at)->toBeInstanceOf(\Illuminate\Support\Carbon::class);
 });
+
+it('has replies with reactions relationship', function () {
+    $user = createUser();
+    $post = \Workbench\App\Models\TestPost::create([
+        'title' => 'Test Post',
+        'content' => 'Test content',
+    ]);
+
+    $comment = \TrueFans\LaravelReactReactions\Models\Comment::create([
+        'commentable_type' => \Workbench\App\Models\TestPost::class,
+        'commentable_id' => $post->id,
+        'user_id' => $user->id,
+        'content' => 'Parent comment',
+    ]);
+
+    $this->actingAs($user);
+    
+    $repliesRelation = $comment->repliesWithReactions();
+    
+    expect($repliesRelation)->toBeInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class);
+});

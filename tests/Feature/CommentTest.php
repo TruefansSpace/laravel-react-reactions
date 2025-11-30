@@ -303,3 +303,73 @@ test('validates parent comment belongs to same commentable', function () {
 
     $response->assertSessionHasErrors('parent_id');
 });
+
+test('validates commentable type class exists', function () {
+    $this->actingAs($this->user);
+
+    $response = $this->post('/comments', [
+        'commentable_type' => 'NonExistentClass',
+        'commentable_id' => 1,
+        'content' => 'Test comment',
+    ]);
+
+    $response->assertSessionHasErrors('commentable_type');
+});
+
+test('validates commentable model exists', function () {
+    $this->actingAs($this->user);
+
+    $response = $this->post('/comments', [
+        'commentable_type' => TestPost::class,
+        'commentable_id' => 99999,
+        'content' => 'Test comment',
+    ]);
+
+    $response->assertSessionHasErrors('commentable_id');
+});
+
+test('validates commentable has HasComments trait', function () {
+    $this->actingAs($this->user);
+    
+    // Create a model without HasComments trait
+    $user = createUser();
+
+    $response = $this->post('/comments', [
+        'commentable_type' => User::class,
+        'commentable_id' => $user->id,
+        'content' => 'Test comment',
+    ]);
+
+    $response->assertSessionHasErrors('commentable_type');
+});
+
+test('handles stripslashes for commentable type', function () {
+    $this->actingAs($this->user);
+
+    // Simulate double-escaped backslashes from JavaScript
+    $escapedClass = addslashes(TestPost::class);
+
+    $response = $this->post('/comments', [
+        'commentable_type' => $escapedClass,
+        'commentable_id' => $this->post->id,
+        'content' => 'Test comment',
+    ]);
+
+    $response->assertRedirect();
+    $response->assertSessionHas('success');
+});
+
+test('handles database transaction rollback on error', function () {
+    $this->actingAs($this->user);
+
+    // Force an error by using invalid data after validation
+    $response = $this->post('/comments', [
+        'commentable_type' => TestPost::class,
+        'commentable_id' => $this->post->id,
+        'content' => str_repeat('a', 10000), // Exceeds max length
+    ]);
+
+    $response->assertSessionHasErrors();
+});
+
+

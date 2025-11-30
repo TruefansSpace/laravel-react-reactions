@@ -183,3 +183,98 @@ test('reaction scope by user', function () {
     expect(Reaction::where('user_id', $this->user->id)->count())->toBe(1)
         ->and(Reaction::where('user_id', $user2->id)->count())->toBe(1);
 });
+
+it('reaction model has correct table name', function () {
+    $reaction = new \TrueFans\LaravelReactReactions\Models\Reaction();
+    
+    expect($reaction->getTable())->toBe('reactions');
+});
+
+it('reaction model uses timestamps', function () {
+    $reaction = new \TrueFans\LaravelReactReactions\Models\Reaction();
+    
+    expect($reaction->timestamps)->toBeTrue();
+});
+
+it('reaction model has correct casts', function () {
+    $reaction = new \TrueFans\LaravelReactReactions\Models\Reaction();
+    
+    expect($reaction->getCasts())->toHaveKey('created_at')
+        ->and($reaction->getCasts())->toHaveKey('updated_at');
+});
+
+it('reaction can be created with all attributes', function () {
+    $user = createUser();
+    $post = \Workbench\App\Models\TestPost::create([
+        'title' => 'Test Post',
+        'content' => 'Test content',
+    ]);
+
+    $reaction = \TrueFans\LaravelReactReactions\Models\Reaction::create([
+        'reactable_type' => \Workbench\App\Models\TestPost::class,
+        'reactable_id' => $post->id,
+        'user_id' => $user->id,
+        'type' => 'like',
+    ]);
+
+    expect($reaction)->toBeInstanceOf(\TrueFans\LaravelReactReactions\Models\Reaction::class)
+        ->and($reaction->reactable_type)->toBe(\Workbench\App\Models\TestPost::class)
+        ->and($reaction->reactable_id)->toBe($post->id)
+        ->and($reaction->user_id)->toBe($user->id)
+        ->and($reaction->type)->toBe('like');
+});
+
+it('can use ofType scope', function () {
+    $user = createUser();
+    $post = \Workbench\App\Models\TestPost::create([
+        'title' => 'Test Post',
+        'content' => 'Test content',
+    ]);
+
+    \TrueFans\LaravelReactReactions\Models\Reaction::create([
+        'reactable_type' => \Workbench\App\Models\TestPost::class,
+        'reactable_id' => $post->id,
+        'user_id' => $user->id,
+        'type' => 'like',
+    ]);
+
+    \TrueFans\LaravelReactReactions\Models\Reaction::create([
+        'reactable_type' => \Workbench\App\Models\TestPost::class,
+        'reactable_id' => $post->id,
+        'user_id' => createUser()->id,
+        'type' => 'love',
+    ]);
+
+    $likes = \TrueFans\LaravelReactReactions\Models\Reaction::ofType('like')->get();
+    
+    expect($likes)->toHaveCount(1)
+        ->and($likes->first()->type)->toBe('like');
+});
+
+it('can use byUser scope', function () {
+    $user1 = createUser();
+    $user2 = createUser();
+    $post = \Workbench\App\Models\TestPost::create([
+        'title' => 'Test Post',
+        'content' => 'Test content',
+    ]);
+
+    \TrueFans\LaravelReactReactions\Models\Reaction::create([
+        'reactable_type' => \Workbench\App\Models\TestPost::class,
+        'reactable_id' => $post->id,
+        'user_id' => $user1->id,
+        'type' => 'like',
+    ]);
+
+    \TrueFans\LaravelReactReactions\Models\Reaction::create([
+        'reactable_type' => \Workbench\App\Models\TestPost::class,
+        'reactable_id' => $post->id,
+        'user_id' => $user2->id,
+        'type' => 'love',
+    ]);
+
+    $user1Reactions = \TrueFans\LaravelReactReactions\Models\Reaction::byUser($user1->id)->get();
+    
+    expect($user1Reactions)->toHaveCount(1)
+        ->and($user1Reactions->first()->user_id)->toBe($user1->id);
+});

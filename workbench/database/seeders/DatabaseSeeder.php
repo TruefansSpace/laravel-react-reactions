@@ -123,7 +123,8 @@ class DatabaseSeeder extends Seeder
             }
 
             // Add comments to posts
-            $numComments = rand(2, 5);
+            // First post gets 25 comments for infinite scroll demo (5 per page)
+            $numComments = ($index === 0) ? 25 : rand(2, 5);
             $commentUsers = collect($users)->random(min($numComments, count($users)));
             
             $commentTexts = [

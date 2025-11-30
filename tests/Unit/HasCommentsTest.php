@@ -144,3 +144,24 @@ test('comment tracks edit status', function () {
     expect($comment->fresh()->is_edited)->toBeTrue()
         ->and($comment->fresh()->edited_at)->not->toBeNull();
 });
+
+it('can create reply using comment model', function () {
+    $user = createUser();
+    $post = \Workbench\App\Models\TestPost::create([
+        'title' => 'Test Post',
+        'content' => 'Test content',
+    ]);
+
+    $comment = \TrueFans\LaravelReactReactions\Models\Comment::create([
+        'commentable_type' => \Workbench\App\Models\TestPost::class,
+        'commentable_id' => $post->id,
+        'user_id' => $user->id,
+        'content' => 'Parent comment',
+    ]);
+
+    $reply = $comment->addReply($user->id, 'Reply content');
+    
+    expect($reply)->toBeInstanceOf(\TrueFans\LaravelReactReactions\Models\Comment::class)
+        ->and($reply->content)->toBe('Reply content')
+        ->and($reply->parent_id)->toBe($comment->id);
+});

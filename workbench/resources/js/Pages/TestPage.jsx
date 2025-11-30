@@ -140,8 +140,10 @@ export default function TestPage({ posts }) {
                                             commentableType="Workbench\\App\\Models\\TestPost"
                                             commentableId={post.id}
                                             initialComments={post.comments || []}
+                                            totalComments={post.total_comments}
                                             reactionsEnabled={true}
                                             currentUserId={auth?.user?.id}
+                                            perPage={5}
                                             onUserClick={(userId) => {
                                                 console.log('User clicked from comment:', userId);
                                             }}

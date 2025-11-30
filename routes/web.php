@@ -9,10 +9,15 @@ Route::middleware(['web', 'auth'])->prefix('reactions')->name('reactions.')->gro
     Route::get('/list/{reactableType}/{reactableId}', [ReactionController::class, 'list'])->name('list');
 });
 
-Route::middleware(['web', 'auth'])->prefix('comments')->name('comments.')->group(function () {
-    Route::post('/', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'store'])->name('store');
-    Route::put('/{comment}', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'update'])->name('update');
-    Route::delete('/{comment}', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'destroy'])->name('destroy');
+Route::middleware(['web'])->prefix('comments')->name('comments.')->group(function () {
+    // Public routes (no auth required)
     Route::get('/list/{commentableType}/{commentableId}', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'list'])->name('list');
     Route::get('/{comment}/replies', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'replies'])->name('replies');
+    
+    // Protected routes (auth required)
+    Route::middleware(['auth'])->group(function () {
+        Route::post('/', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'store'])->name('store');
+        Route::put('/{comment}', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'update'])->name('update');
+        Route::delete('/{comment}', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'destroy'])->name('destroy');
+    });
 });

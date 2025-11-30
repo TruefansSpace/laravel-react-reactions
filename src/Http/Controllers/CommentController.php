@@ -267,4 +267,103 @@ class CommentController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get paginated comments list
+     **/
+    public function list(Request $request, string $commentableType, int $commentableId)
+    {
+        try {
+            $perPage = $request->query('per_page', 5);
+            $page = $request->query('page', 1);
+
+            // Decode the commentable type from base64
+            $commentableClass = base64_decode($commentableType);
+            
+            // Fix double-escaped backslashes
+            $commentableClass = stripslashes($commentableClass);
+            
+            Log::info('Comment list request', [
+                'original' => $commentableType,
+                'decoded' => $commentableClass,
+                'exists' => class_exists($commentableClass),
+            ]);
+
+            // Validate commentable class exists
+            if (!class_exists($commentableClass)) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Invalid commentable type.',
+                    'debug' => [
+                        'received' => $commentableType,
+                        'decoded' => $commentableClass,
+                    ]
+                ], 400);
+            }
+
+            // Find commentable model
+            $commentable = $commentableClass::find($commentableId);
+
+            if (!$commentable) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Commentable not found.',
+                ], 404);
+            }
+
+            // Get paginated comments
+            $comments = $commentable->comments()
+                ->topLevel()
+                ->withReactionsData(auth()->id())
+                ->with('user')
+                ->latest()
+                ->paginate($perPage, ['*'], 'page', $page);
+
+            // Format comments
+            $formattedComments = $comments->map(function ($comment) {
+                return [
+                    'id' => $comment->id,
+                    'content' => $comment->content,
+                    'created_at' => $comment->created_at,
+                    'is_edited' => $comment->is_edited,
+                    'edited_at' => $comment->edited_at,
+                    'user' => [
+                        'id' => $comment->user->id,
+                        'name' => $comment->user->name,
+                        'avatar' => $comment->user->avatar ?? null,
+                    ],
+                    'reactions_summary' => $comment->parseReactionsSummary(),
+                    'user_reaction' => $comment->parseUserReaction(),
+                    'can_edit' => $comment->canEdit(),
+                    'can_delete' => $comment->canDelete(),
+                    'replies_count' => $comment->replies()->count(),
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'comments' => $formattedComments,
+                'pagination' => [
+                    'current_page' => $comments->currentPage(),
+                    'last_page' => $comments->lastPage(),
+                    'per_page' => $comments->perPage(),
+                    'total' => $comments->total(),
+                    'has_more' => $comments->hasMorePages(),
+                ],
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to load comments', [
+                'error' => $e->getMessage(),
+                'commentable_type' => $commentableType,
+                'commentable_id' => $commentableId,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to load comments.',
+            ], 500);
+        }
+    }
+
 }
