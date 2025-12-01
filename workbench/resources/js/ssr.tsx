@@ -12,11 +12,11 @@ createServer((page) => {
     render: ReactDOMServer.renderToString,
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => {
-      const pages = import.meta.glob('./Pages/**/*.jsx', { eager: true });
-      const page = pages[`./Pages/${name}.jsx`];
+      const pages = import.meta.glob('./Pages/**/*.tsx', { eager: true });
+      const page = pages[`./Pages/${name}.tsx`];
       if (!page) {
-        console.error(`Page not found: ./Pages/${name}.jsx`);
-        throw new Error(`Page not found: ./Pages/${name}.jsx`);
+        console.error(`Page not found: ./Pages/${name}.tsx`);
+        throw new Error(`Page not found: ./Pages/${name}.tsx`);
       }
       return page;
     },

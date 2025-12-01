@@ -12,9 +12,10 @@ A complete Facebook-like reaction and commenting system for Laravel with Inertia
 - 🔔 **Toast Notifications**: Built-in toast system for user feedback
 - 🔒 **Flexible Permissions**: Customizable permission system for comments
 - 🚀 **Query Optimized**: Database subqueries eliminate N+1 problems (1 query for any dataset size)
-- 📝 **TypeScript Support**: All React components are written in TypeScript
+- 📝 **Full TypeScript**: All React components are written in TypeScript with proper type definitions
+- ⚙️ **Configurable**: Reaction types and emojis are fully configurable via config file
 - ♿ **Accessible**: Full keyboard navigation and screen reader support
-- 🧪 **Fully Tested**: Comprehensive unit, feature, and E2E tests
+- 🧪 **Fully Tested**: Comprehensive unit, feature, and E2E tests (151 passing tests)
 
 ## Requirements
 
@@ -22,7 +23,7 @@ A complete Facebook-like reaction and commenting system for Laravel with Inertia
 - Laravel ^11.0 || ^12.0
 - Inertia.js v2
 - React 19
-- TypeScript (optional but recommended)
+- TypeScript ^5.0 (recommended for type safety)
 
 ## Installation
 
@@ -298,32 +299,54 @@ $allComments = Comment::whereIn('commentable_id', $postIds)
 
 ## Configuration
 
-Customize reaction types and behavior in `config/react-reactions.php`:
+### Customizing Reaction Types
+
+All reaction types are configurable in `config/react-reactions.php`. The frontend automatically reads from this config:
 
 ```php
 return [
     // Customize reaction types and emojis
     'types' => [
         'like' => '👍',
-        'adore' => '🥰',  // Changed from 'love'
+        'adore' => '🥰',  // You can change this to 'love' => '❤️'
         'haha' => '😂',
         'wow' => '😮',
         'sad' => '😢',
         'angry' => '😠',
+        // Add your own:
+        // 'fire' => '🔥',
+        // 'celebrate' => '🎉',
     ],
 
     'comments' => [
         'reactions_enabled' => true,
         'max_depth' => 3,
         'edit_timeout' => 300, // seconds
+        'per_page' => 10,
     ],
 
     'notifications' => [
         'enabled' => true,
         'admin_email' => env('REACTIONS_ADMIN_EMAIL'),
+        'notify_owner' => true,
+        'notify_parent_author' => true,
     ],
 ];
 ```
+
+**Important**: The reaction types are shared with the frontend via Inertia middleware. Make sure to add this to your `HandleInertiaRequests`:
+
+```php
+public function share(Request $request): array
+{
+    return [
+        ...parent::share($request),
+        'reactionTypes' => config('react-reactions.types', []),
+    ];
+}
+```
+
+This ensures the frontend always uses the same reaction types as the backend, maintaining consistency across your application.
 
 ## API Reference
 
@@ -382,9 +405,17 @@ Comment::topLevel() // Only top-level comments
 
 ## TypeScript Support
 
-All React components are written in TypeScript with proper type definitions:
+All React components are written in TypeScript with full type safety. The package includes:
+
+- ✅ TypeScript definitions for all components
+- ✅ Proper type inference for props
+- ✅ Type-safe event handlers
+- ✅ Configurable reaction types with type safety
+
+### Component Type Definitions
 
 ```tsx
+// Reactions Component
 interface ReactionsProps {
     reactableType: string;
     reactableId: number;
@@ -393,13 +424,67 @@ interface ReactionsProps {
     onUserClick?: (userId: number) => void;
 }
 
+// Comments Component
 interface CommentsProps {
     commentableType: string;
     commentableId: number;
     initialComments?: Comment[];
     totalComments?: number | null;
     reactionsEnabled?: boolean;
+    onUserClick?: (userId: number) => void;
     currentUserId: number;
+    perPage?: number;
+}
+
+// Comment Type
+interface Comment {
+    id: number;
+    content: string;
+    user_id: number;
+    user?: User;
+    created_at: string;
+    is_edited?: boolean;
+    reactions_summary?: Record<string, number>;
+    user_reaction?: string | null;
+    replies?: Comment[];
+}
+```
+
+### Using with TypeScript
+
+```tsx
+import Reactions from '@/Components/Reactions/Reactions';
+import Comments from '@/Components/Comments/Comments';
+import type { Comment } from '@/types'; // Define your types
+
+interface Post {
+    id: number;
+    title: string;
+    reactions_summary: Record<string, number>;
+    user_reaction: string | null;
+}
+
+export default function PostShow({ post, comments }: { 
+    post: Post; 
+    comments: Comment[];
+}) {
+    return (
+        <div>
+            <Reactions
+                reactableType="App\\Models\\Post"
+                reactableId={post.id}
+                initialReactions={post.reactions_summary}
+                userReaction={post.user_reaction}
+            />
+            
+            <Comments
+                commentableType="App\\Models\\Post"
+                commentableId={post.id}
+                initialComments={comments}
+                currentUserId={1}
+            />
+        </div>
+    );
 }
 ```
 

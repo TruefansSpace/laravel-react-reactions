@@ -7,8 +7,8 @@ import { resolve } from 'path';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['workbench/resources/css/app.css', 'workbench/resources/js/app.jsx'],
-            ssr: 'workbench/resources/js/ssr.jsx',
+            input: ['workbench/resources/css/app.css', 'workbench/resources/js/app.tsx'],
+            ssr: 'workbench/resources/js/ssr.tsx',
             refresh: true,
             publicDirectory: 'workbench/public',
         }),

@@ -2,8 +2,30 @@ import { useState, useEffect } from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 
+interface Query {
+    sql: string;
+    duration: string;
+}
+
+interface DebugData {
+    queries?: Query[];
+    memory?: {
+        peak_usage_str?: string;
+    };
+}
+
+declare global {
+    interface Window {
+        phpdebugbar?: {
+            openHandler?: {
+                load: (callback: (data: DebugData) => void) => void;
+            };
+        };
+    }
+}
+
 export default function DebugPanel() {
-    const [debugData, setDebugData] = useState(null);
+    const [debugData, setDebugData] = useState<DebugData | null>(null);
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
@@ -12,7 +34,7 @@ export default function DebugPanel() {
             if (window.phpdebugbar) {
                 const openHandler = window.phpdebugbar.openHandler;
                 if (openHandler) {
-                    openHandler.load((data) => {
+                    openHandler.load((data: DebugData) => {
                         setDebugData(data);
                     });
                 }

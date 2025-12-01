@@ -6,8 +6,50 @@ import { Toaster } from '@/components/ui/toaster';
 import { toast } from '@/hooks/use-toast';
 import { useEffect } from 'react';
 
-export default function TestPage({ posts }) {
-    const page = usePage();
+interface User {
+    id: number;
+    name: string;
+    email: string;
+}
+
+interface Comment {
+    id: number;
+    content: string;
+    user: User;
+    user_id: number;
+    created_at: string;
+    is_edited: boolean;
+    edited_at?: string;
+    can_edit: boolean;
+    can_delete: boolean;
+    replies_count: number;
+    replies: Comment[];
+}
+
+interface Post {
+    id: number;
+    title: string;
+    content: string;
+    reactions_summary: Record<string, number>;
+    user_reaction: string | null;
+    comments: Comment[];
+    total_comments: number;
+}
+
+interface PageProps {
+    posts: Post[];
+    auth: {
+        user: User | null;
+    };
+    flash: {
+        success?: string;
+        error?: string;
+    };
+    errors: Record<string, string>;
+}
+
+export default function TestPage({ posts }: { posts: Post[] }) {
+    const page = usePage<PageProps>();
     const { auth, flash, errors } = page.props;
 
     // Show flash messages as toasts
@@ -34,7 +76,7 @@ export default function TestPage({ posts }) {
         }
     }, [flash, errors]);
 
-    const handleLogout = (e) => {
+    const handleLogout = (e: React.MouseEvent) => {
         e.preventDefault();
         router.post('/logout');
     };
@@ -42,7 +84,7 @@ export default function TestPage({ posts }) {
     return (
         <>
             <Head title="Reactions Demo" />
-            <div data-auth_user={JSON.stringify(auth?.user) ||''} className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+            <div data-auth_user={JSON.stringify(auth?.user) || ''} className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
                 {/* Header */}
                 <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
                     <div className="max-w-5xl mx-auto px-4 py-4">
@@ -122,14 +164,12 @@ export default function TestPage({ posts }) {
                                     
                                     <div className="pt-4 border-t border-gray-100">
                                         <Reactions
-                                            reactableType={post.constructor.name === 'Object' ? 'Workbench\\App\\Models\\TestPost' : post.constructor.name}
+                                            reactableType="Workbench\\App\\Models\\TestPost"
                                             reactableId={post.id}
                                             initialReactions={post.reactions_summary || {}}
                                             userReaction={post.user_reaction}
                                             onUserClick={(userId) => {
                                                 console.log('User clicked from TestPage:', userId);
-                                                // You can add custom logic here, e.g.:
-                                                // router.visit(`/users/${userId}`);
                                             }}
                                         />
                                     </div>
@@ -141,7 +181,7 @@ export default function TestPage({ posts }) {
                                             initialComments={post.comments || []}
                                             totalComments={post.total_comments}
                                             reactionsEnabled={true}
-                                            currentUserId={auth?.user?.id}
+                                            currentUserId={auth?.user?.id || 0}
                                             perPage={5}
                                             onUserClick={(userId) => {
                                                 console.log('User clicked from comment:', userId);

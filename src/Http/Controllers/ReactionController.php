@@ -23,7 +23,13 @@ class ReactionController extends Controller
             return redirect()->back()->withErrors($validator->errors());
         }
 
-        $reactableClass = $request->input('reactable_type');
+        // Fix double-escaped backslashes from JavaScript
+        $reactableClass = stripslashes($request->input('reactable_type'));
+        
+        // If stripslashes removed too much, try the original
+        if (!class_exists($reactableClass)) {
+            $reactableClass = $request->input('reactable_type');
+        }
         
         if (! class_exists($reactableClass)) {
             return redirect()->back()->withErrors(['reactable_type' => 'Invalid reactable type']);
@@ -52,19 +58,25 @@ class ReactionController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator->errors());
+            return redirect()->back(303)->withErrors($validator->errors());
         }
 
-        $reactableClass = $request->input('reactable_type');
+        // Fix double-escaped backslashes from JavaScript
+        $reactableClass = stripslashes($request->input('reactable_type'));
+        
+        // If stripslashes removed too much, try the original
+        if (!class_exists($reactableClass)) {
+            $reactableClass = $request->input('reactable_type');
+        }
         
         if (! class_exists($reactableClass)) {
-            return redirect()->back()->withErrors(['reactable_type' => 'Invalid reactable type']);
+            return redirect()->back(303)->withErrors(['reactable_type' => 'Invalid reactable type']);
         }
 
         $reactable = $reactableClass::find($request->input('reactable_id'));
 
         if (! $reactable) {
-            return redirect()->back()->withErrors(['reactable_id' => 'Reactable not found']);
+            return redirect()->back(303)->withErrors(['reactable_id' => 'Reactable not found']);
         }
 
         $deleted = $reactable->unreact(auth()->id());

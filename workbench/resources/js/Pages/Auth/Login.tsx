@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import DebugPanel from '../../components/DebugPanel';
 
@@ -9,7 +9,7 @@ export default function Login() {
         remember: false,
     });
 
-    const submit = (e) => {
+    const submit = (e: React.FormEvent) => {
         e.preventDefault();
         post('/login');
     };

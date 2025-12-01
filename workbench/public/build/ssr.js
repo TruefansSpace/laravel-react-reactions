@@ -1,7 +1,7 @@
 import { jsx, jsxs, Fragment } from "react/jsx-runtime";
+import { useForm, Head, usePage, router, Link, createInertiaApp } from "@inertiajs/react";
 import * as React from "react";
 import React__default, { useState, useEffect, useRef } from "react";
-import { useForm, Head, usePage, router, Link, createInertiaApp } from "@inertiajs/react";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Slot } from "@radix-ui/react-slot";
@@ -91,17 +91,19 @@ const buttonVariants = cva(
     }
   }
 );
-const Button = React.forwardRef(({ className, variant, size, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button";
-  return /* @__PURE__ */ jsx(
-    Comp,
-    {
-      className: cn(buttonVariants({ variant, size, className })),
-      ref,
-      ...props
-    }
-  );
-});
+const Button = React.forwardRef(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button";
+    return /* @__PURE__ */ jsx(
+      Comp,
+      {
+        className: cn(buttonVariants({ variant, size, className })),
+        ref,
+        ...props
+      }
+    );
+  }
+);
 Button.displayName = "Button";
 function DebugPanel() {
   var _a;
@@ -1419,7 +1421,7 @@ function dispatch(action) {
     listener(memoryState);
   });
 }
-function toast({ ...props }) {
+function toast(props) {
   const id = genId();
   const update = (props2) => dispatch({
     type: "UPDATE_TOAST",
@@ -1640,7 +1642,7 @@ function TestPage({ posts }) {
                 /* @__PURE__ */ jsx("div", { className: "pt-4 border-t border-gray-100", children: /* @__PURE__ */ jsx(
                   Reactions,
                   {
-                    reactableType: post.constructor.name === "Object" ? "Workbench\\App\\Models\\TestPost" : post.constructor.name,
+                    reactableType: "Workbench\\\\App\\\\Models\\\\TestPost",
                     reactableId: post.id,
                     initialReactions: post.reactions_summary || {},
                     userReaction: post.user_reaction,
@@ -1657,7 +1659,7 @@ function TestPage({ posts }) {
                     initialComments: post.comments || [],
                     totalComments: post.total_comments,
                     reactionsEnabled: true,
-                    currentUserId: (_a = auth == null ? void 0 : auth.user) == null ? void 0 : _a.id,
+                    currentUserId: ((_a = auth == null ? void 0 : auth.user) == null ? void 0 : _a.id) || 0,
                     perPage: 5,
                     onUserClick: (userId) => {
                       console.log("User clicked from comment:", userId);
@@ -1692,11 +1694,11 @@ createServer((page) => {
     render: ReactDOMServer.renderToString,
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => {
-      const pages = /* @__PURE__ */ Object.assign({ "./Pages/Auth/Login.jsx": __vite_glob_0_0, "./Pages/TestPage.jsx": __vite_glob_0_1 });
-      const page2 = pages[`./Pages/${name}.jsx`];
+      const pages = /* @__PURE__ */ Object.assign({ "./Pages/Auth/Login.tsx": __vite_glob_0_0, "./Pages/TestPage.tsx": __vite_glob_0_1 });
+      const page2 = pages[`./Pages/${name}.tsx`];
       if (!page2) {
-        console.error(`Page not found: ./Pages/${name}.jsx`);
-        throw new Error(`Page not found: ./Pages/${name}.jsx`);
+        console.error(`Page not found: ./Pages/${name}.tsx`);
+        throw new Error(`Page not found: ./Pages/${name}.tsx`);
       }
       return page2;
     },
