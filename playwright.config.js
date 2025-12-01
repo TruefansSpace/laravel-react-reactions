@@ -9,8 +9,8 @@ export default defineConfig({
   reporter: 'html',
   use: {
     baseURL: 'http://127.0.0.1:8000',
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
+    trace: 'off', // Disable traces to save space
+    screenshot: 'on', // Always take screenshots
   },
   projects: [
     {
