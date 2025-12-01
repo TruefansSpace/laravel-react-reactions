@@ -93,8 +93,11 @@ class ReactionController extends Controller
         // Decode the reactable type (it's URL encoded)
         $reactableClass = urldecode($reactableType);
         
-        // Fix double-escaped backslashes
-        $reactableClass = stripslashes($reactableClass);
+        // Handle double-escaped backslashes from JavaScript
+        // If the class doesn't exist, try with stripslashes
+        if (!class_exists($reactableClass)) {
+            $reactableClass = stripslashes($reactableClass);
+        }
 
         $query = \TrueFans\LaravelReactReactions\Models\Reaction::query()
             ->where('reactable_type', $reactableClass)
