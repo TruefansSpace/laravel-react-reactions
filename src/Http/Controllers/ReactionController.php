@@ -90,8 +90,14 @@ class ReactionController extends Controller
         $type = $request->query('type', 'all');
         $perPage = 8;
 
+        // Decode the reactable type (it's URL encoded)
+        $reactableClass = urldecode($reactableType);
+        
+        // Fix double-escaped backslashes
+        $reactableClass = stripslashes($reactableClass);
+
         $query = \TrueFans\LaravelReactReactions\Models\Reaction::query()
-            ->where('reactable_type', $reactableType)
+            ->where('reactable_type', $reactableClass)
             ->where('reactable_id', $reactableId)
             ->with('user:id,name,email')
             ->latest();
