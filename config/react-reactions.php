@@ -7,7 +7,7 @@ return [
      */
     'types' => [
         'like' => '👍',
-        'love' => '❤️',
+        'adore' => '🥰',
         'haha' => '😂',
         'wow' => '😮',
         'sad' => '😢',

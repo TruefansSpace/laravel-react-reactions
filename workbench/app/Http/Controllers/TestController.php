@@ -15,67 +15,86 @@ class TestController extends Controller
         // Load posts with reactions data
         $posts = TestPost::withReactionsData(auth()->id())
             ->latest()
-            ->get()
-            ->map(function ($post) {
-                // Get total comments count
-                $totalComments = $post->comments()->whereNull('parent_id')->count();
-                
-                // Load only first 5 comments with their replies
-                $comments = $post->comments()
-                    ->whereNull('parent_id')
-                    ->with([
-                        'user:id,name,email',
-                        'replies' => function ($q) {
-                            $q->with('user:id,name,email')->latest();
-                        }
-                    ])
-                    ->latest()
-                    ->take(5)
-                    ->get();
+            ->get();
 
-                return [
-                    'id' => $post->id,
-                    'title' => $post->title,
-                    'content' => $post->content,
-                    'created_at' => $post->created_at,
-                    'reactions_summary' => $post->parseReactionsSummary(),
-                    'user_reaction' => $post->parseUserReaction(),
-                    'comments' => $comments->map(function ($comment) {
-                        return [
-                            'id' => $comment->id,
-                            'content' => $comment->content,
-                            'user' => $comment->user,
-                            'user_id' => $comment->user_id,
-                            'created_at' => $comment->created_at,
-                            'is_edited' => $comment->is_edited,
-                            'edited_at' => $comment->edited_at,
-                            'can_edit' => $comment->canEdit(),
-                            'can_delete' => $comment->canDelete(),
-                            'replies_count' => $comment->replies()->count(),
-                            'replies' => $comment->replies->map(function ($reply) {
-                                return [
-                                    'id' => $reply->id,
-                                    'content' => $reply->content,
-                                    'user' => $reply->user,
-                                    'user_id' => $reply->user_id,
-                                    'created_at' => $reply->created_at,
-                                    'is_edited' => $reply->is_edited,
-                                    'edited_at' => $reply->edited_at,
-                                    'can_edit' => $reply->canEdit(),
-                                    'can_delete' => $reply->canDelete(),
-                                ];
-                            }),
-                        ];
-                    }),
-                    'total_comments' => $totalComments,
-                ];
+        // Get all post IDs
+        $postIds = $posts->pluck('id');
+
+        // Load all top-level comments counts in one query
+        $commentCounts = \TrueFans\LaravelReactReactions\Models\Comment::query()
+            ->whereIn('commentable_id', $postIds)
+            ->where('commentable_type', TestPost::class)
+            ->whereNull('parent_id')
+            ->select('commentable_id', DB::raw('count(*) as total'))
+            ->groupBy('commentable_id')
+            ->pluck('total', 'commentable_id');
+
+        // Load all comments with their replies in one query
+        $allComments = \TrueFans\LaravelReactReactions\Models\Comment::query()
+            ->whereIn('commentable_id', $postIds)
+            ->where('commentable_type', TestPost::class)
+            ->whereNull('parent_id')
+            ->with([
+                'user:id,name,email',
+                'replies' => function ($q) {
+                    $q->with('user:id,name,email')->latest();
+                }
+            ])
+            ->withCount('replies')
+            ->latest()
+            ->get()
+            ->groupBy('commentable_id')
+            ->map(function ($comments) {
+                return $comments->take(5);
             });
+
+        // Map posts with their comments
+        $postsData = $posts->map(function ($post) use ($commentCounts, $allComments) {
+            $comments = $allComments->get($post->id, collect());
+            
+            return [
+                'id' => $post->id,
+                'title' => $post->title,
+                'content' => $post->content,
+                'created_at' => $post->created_at,
+                'reactions_summary' => $post->parseReactionsSummary(),
+                'user_reaction' => $post->parseUserReaction(),
+                'comments' => $comments->map(function ($comment) use ($post) {
+                    return [
+                        'id' => $comment->id,
+                        'content' => $comment->content,
+                        'user' => $comment->user,
+                        'user_id' => $comment->user_id,
+                        'created_at' => $comment->created_at,
+                        'is_edited' => $comment->is_edited,
+                        'edited_at' => $comment->edited_at,
+                        'can_edit' => auth()->check() && auth()->id() === $comment->user_id,
+                        'can_delete' => auth()->check() && auth()->id() === $comment->user_id,
+                        'replies_count' => $comment->replies_count,
+                        'replies' => $comment->replies->map(function ($reply) {
+                            return [
+                                'id' => $reply->id,
+                                'content' => $reply->content,
+                                'user' => $reply->user,
+                                'user_id' => $reply->user_id,
+                                'created_at' => $reply->created_at,
+                                'is_edited' => $reply->is_edited,
+                                'edited_at' => $reply->edited_at,
+                                'can_edit' => auth()->check() && auth()->id() === $reply->user_id,
+                                'can_delete' => auth()->check() && auth()->id() === $reply->user_id,
+                            ];
+                        }),
+                    ];
+                })->values(),
+                'total_comments' => $commentCounts->get($post->id, 0),
+            ];
+        });
 
         $errors = session()->get('errors');
         
         // Explicitly pass auth, flash, and errors since middleware sharing isn't working
         return Inertia::render('TestPage', [
-            'posts' => $posts,
+            'posts' => $postsData,
             'auth' => [
                 'user' => auth()->user() ? [
                     'id' => auth()->user()->id,

@@ -93,11 +93,11 @@ it('updates existing reaction when posting again', function () {
     $this->post('/reactions', [
         'reactable_type' => TestPost::class,
         'reactable_id' => $post->id,
-        'type' => 'love',
+        'type' => 'adore',
     ]);
 
     expect($post->reactions()->count())->toBe(1)
-        ->and($post->userReaction(auth()->id()))->toBe('love');
+        ->and($post->userReaction(auth()->id()))->toBe('adore');
 });
 
 it('can list all reactions for a reactable', function () {
@@ -110,7 +110,7 @@ it('can list all reactions for a reactable', function () {
     $user2 = createUser();
     
     $post->react($user1->id, 'like');
-    $post->react($user2->id, 'love');
+    $post->react($user2->id, 'adore');
 
     $response = $this->get("/reactions/list/" . urlencode(TestPost::class) . "/{$post->id}");
 
@@ -137,7 +137,7 @@ it('can filter reactions by type', function () {
     $user2 = createUser();
     
     $post->react($user1->id, 'like');
-    $post->react($user2->id, 'love');
+    $post->react($user2->id, 'adore');
 
     $response = $this->get("/reactions/list/" . urlencode(TestPost::class) . "/{$post->id}?type=like");
 

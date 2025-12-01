@@ -12,6 +12,7 @@ A complete Facebook-like reaction and commenting system for Laravel with Inertia
 - 🔔 **Toast Notifications**: Built-in toast system for user feedback
 - 🔒 **Flexible Permissions**: Customizable permission system for comments
 - 🚀 **Query Optimized**: Database subqueries eliminate N+1 problems (1 query for any dataset size)
+- 📝 **TypeScript Support**: All React components are written in TypeScript
 - ♿ **Accessible**: Full keyboard navigation and screen reader support
 - 🧪 **Fully Tested**: Comprehensive unit, feature, and E2E tests
 
@@ -21,616 +22,18 @@ A complete Facebook-like reaction and commenting system for Laravel with Inertia
 - Laravel ^11.0 || ^12.0
 - Inertia.js v2
 - React 19
+- TypeScript (optional but recommended)
 
 ## Installation
 
 ```bash
-# Install package
 composer require truefanspace/laravel-react-reactions
 
-# Publish migrations
 php artisan vendor:publish --tag=react-reactions-migrations
 php artisan migrate
 
-# Publish React components
 php artisan vendor:publish --tag=react-reactions-components
-
-# Publish config (optional)
 php artisan vendor:publish --tag=react-reactions-config
-```
-
-## How to Use
-
-This guide walks you through implementing reactions and comments in your Laravel application.
-
-### Complete Implementation Example
-
-Let's add reactions and comments to a blog post system.
-
-#### Step 1: Prepare Your Model
-
-```php
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use TrueFans\LaravelReactReactions\Traits\HasReactions;
-use TrueFans\LaravelReactReactions\Traits\HasComments;
-
-class Post extends Model
-{
-    use HasReactions, HasComments;
-
-    protected $fillable = ['title', 'content', 'user_id'];
-    
-    // Add these to automatically include reactions data
-    protected $appends = ['reactions_summary', 'user_reaction'];
-
-    // Define relationship to user
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Determine who can create or manage comments
-     * Customize this based on your business logic
-     * 
-     * @param Comment|null $comment - null when creating, Comment instance when editing/deleting
-     */
-    public function canManageComment($comment = null): bool
-    {
-        $user = auth()->user();
-        
-        if (!$user) {
-            return false;
-        }
-
-        // If no comment provided, check if user can CREATE a new comment
-        if ($comment === null) {
-            // Example: Only verified users can create comments
-            return $user->hasVerifiedEmail();
-            
-            // Or: Only post author can allow comments
-            // return $this->user_id === $user->id;
-            
-            // Or: Anyone authenticated can comment
-            // return true;
-        }
-
-        // If comment provided, check if user can EDIT/DELETE it
-        // Post author can manage all comments on their post
-        if ($this->user_id === $user->id) {
-            return true;
-        }
-        
-        // Users can manage their own comments
-        return $comment->user_id === $user->id;
-    }
-}
-```
-
-#### Step 2: Setup Inertia Middleware
-
-Create or update `app/Http/Middleware/HandleInertiaRequests.php`:
-
-```php
-<?php
-
-namespace App\Http\Middleware;
-
-use Illuminate\Http\Request;
-use Inertia\Middleware;
-
-class HandleInertiaRequests extends Middleware
-{
-    protected $rootView = 'app';
-
-    public function share(Request $request): array
-    {
-        return [
-            ...parent::share($request),
-            
-            // Share authenticated user
-            'auth' => [
-                'user' => $request->user() ? [
-                    'id' => $request->user()->id,
-                    'name' => $request->user()->name,
-                    'email' => $request->user()->email,
-                    'avatar' => $request->user()->avatar ?? null,
-                ] : null,
-            ],
-            
-            // Share flash messages for toast notifications
-            'flash' => [
-                'success' => fn () => $request->session()->get('success'),
-                'error' => fn () => $request->session()->get('error'),
-            ],
-        ];
-    }
-}
-```
-
-Register the middleware in `bootstrap/app.php`:
-
-```php
-->withMiddleware(function (Middleware $middleware) {
-    $middleware->web(append: [
-        \App\Http\Middleware\HandleInertiaRequests::class,
-    ]);
-})
-```
-
-#### Step 3: Install shadcn/ui Toast Components
-
-```bash
-# Install shadcn/ui toast (if not already installed)
-npx shadcn@latest add toast
-```
-
-This creates:
-- `resources/js/components/ui/toast.jsx`
-- `resources/js/components/ui/toaster.jsx`
-- `resources/js/hooks/use-toast.js`
-
-#### Step 4: Setup Your Layout with Toast
-
-Create or update `resources/js/Layouts/AppLayout.jsx`:
-
-```jsx
-import { Toaster } from '@/components/ui/toaster';
-import { useToast } from '@/hooks/use-toast';
-import { useEffect } from 'react';
-import { usePage } from '@inertiajs/react';
-
-export default function AppLayout({ children }) {
-    const { toast } = useToast();
-    const { flash } = usePage().props;
-
-    // Automatically display flash messages from server
-    useEffect(() => {
-        if (flash?.success) {
-            toast({
-                title: 'Success',
-                description: flash.success,
-            });
-        }
-
-        if (flash?.error) {
-            toast({
-                title: 'Error',
-                description: flash.error,
-                variant: 'destructive',
-            });
-        }
-    }, [flash, toast]);
-
-    return (
-        <div className="min-h-screen bg-gray-50">
-            <nav className="bg-white shadow">
-                {/* Your navigation */}
-            </nav>
-            
-            <main className="container mx-auto py-8">
-                {children}
-            </main>
-            
-            {/* Toast notifications will appear here */}
-            <Toaster />
-        </div>
-    );
-}
-```
-
-#### Step 5: Create Your Controller
-
-Create `app/Http/Controllers/PostController.php`:
-
-```php
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Post;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-
-class PostController extends Controller
-{
-    /**
-     * Display a listing of posts with reactions
-     */
-    public function index()
-    {
-        $userId = auth()->id();
-
-        // Load posts with optimized reactions data (1 query!)
-        $posts = Post::with('user')
-            ->withReactionsData($userId)
-            ->latest()
-            ->paginate(10)
-            ->through(function ($post) {
-                return [
-                    'id' => $post->id,
-                    'title' => $post->title,
-                    'content' => $post->content,
-                    'created_at' => $post->created_at->diffForHumans(),
-                    'user' => [
-                        'id' => $post->user->id,
-                        'name' => $post->user->name,
-                    ],
-                    'reactions_summary' => $post->parseReactionsSummary(),
-                    'user_reaction' => $post->parseUserReaction(),
-                ];
-            });
-
-        return Inertia::render('Posts/Index', [
-            'posts' => $posts,
-        ]);
-    }
-
-    /**
-     * Display a single post with comments
-     */
-    public function show(Post $post)
-    {
-        $userId = auth()->id();
-
-        // Load post with reactions
-        $post->load('user');
-        $postData = [
-            'id' => $post->id,
-            'title' => $post->title,
-            'content' => $post->content,
-            'created_at' => $post->created_at->format('M d, Y'),
-            'user' => [
-                'id' => $post->user->id,
-                'name' => $post->user->name,
-                'avatar' => $post->user->avatar,
-            ],
-            'reactions_summary' => $post->reactionsSummary(),
-            'user_reaction' => $post->userReaction($userId),
-        ];
-
-        // Load top-level comments with reactions (optimized)
-        $comments = $post->comments()
-            ->topLevel()
-            ->with('user')
-            ->withReactionsData($userId)
-            ->latest()
-            ->get()
-            ->map(function ($comment) {
-                return [
-                    'id' => $comment->id,
-                    'content' => $comment->content,
-                    'created_at' => $comment->created_at,
-                    'is_edited' => $comment->is_edited,
-                    'edited_at' => $comment->edited_at,
-                    'user' => [
-                        'id' => $comment->user->id,
-                        'name' => $comment->user->name,
-                        'avatar' => $comment->user->avatar ?? null,
-                    ],
-                    'reactions_summary' => $comment->parseReactionsSummary(),
-                    'user_reaction' => $comment->parseUserReaction(),
-                    'can_edit' => $comment->canEdit(),
-                    'can_delete' => $comment->canDelete(),
-                    'replies_count' => $comment->replies()->count(),
-                ];
-            });
-
-        return Inertia::render('Posts/Show', [
-            'post' => $postData,
-            'comments' => $comments,
-        ]);
-    }
-}
-```
-
-#### Step 6: Create Your React Pages
-
-**Posts Index Page** (`resources/js/Pages/Posts/Index.jsx`):
-
-```jsx
-import AppLayout from '@/Layouts/AppLayout';
-import Reactions from '@/Components/Reactions/Reactions';
-import { Link } from '@inertiajs/react';
-
-export default function Index({ posts }) {
-    return (
-        <AppLayout>
-            <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold mb-8">Blog Posts</h1>
-                
-                <div className="space-y-6">
-                    {posts.data.map((post) => (
-                        <div key={post.id} className="bg-white rounded-lg shadow p-6">
-                            <Link 
-                                href={`/posts/${post.id}`}
-                                className="text-2xl font-semibold hover:text-blue-600"
-                            >
-                                {post.title}
-                            </Link>
-                            
-                            <p className="text-gray-600 mt-2 mb-4">
-                                {post.content.substring(0, 200)}...
-                            </p>
-                            
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-500">
-                                    By {post.user.name} • {post.created_at}
-                                </span>
-                                
-                                <Reactions
-                                    reactableType="App\\Models\\Post"
-                                    reactableId={post.id}
-                                    initialReactions={post.reactions_summary}
-                                    userReaction={post.user_reaction}
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </AppLayout>
-    );
-}
-```
-
-**Post Show Page** (`resources/js/Pages/Posts/Show.jsx`):
-
-```jsx
-import AppLayout from '@/Layouts/AppLayout';
-import Reactions from '@/Components/Reactions/Reactions';
-import Comments from '@/Components/Comments/Comments';
-
-export default function Show({ post, comments }) {
-    return (
-        <AppLayout>
-            <div className="max-w-4xl mx-auto">
-                {/* Post Content */}
-                <article className="bg-white rounded-lg shadow p-8 mb-8">
-                    <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-                    
-                    <div className="flex items-center gap-3 mb-6">
-                        {post.user.avatar && (
-                            <img 
-                                src={post.user.avatar} 
-                                alt={post.user.name}
-                                className="w-10 h-10 rounded-full"
-                            />
-                        )}
-                        <div>
-                            <p className="font-medium">{post.user.name}</p>
-                            <p className="text-sm text-gray-500">{post.created_at}</p>
-                        </div>
-                    </div>
-                    
-                    <div className="prose max-w-none mb-6">
-                        {post.content}
-                    </div>
-                    
-                    {/* Reactions */}
-                    <Reactions
-                        reactableType="App\\Models\\Post"
-                        reactableId={post.id}
-                        initialReactions={post.reactions_summary}
-                        userReaction={post.user_reaction}
-                    />
-                </article>
-
-                {/* Comments Section */}
-                <div className="bg-white rounded-lg shadow p-8">
-                    <h2 className="text-2xl font-bold mb-6">Comments</h2>
-                    
-                    <Comments
-                        commentableType="App\\Models\\Post"
-                        commentableId={post.id}
-                        initialComments={comments}
-                    />
-                </div>
-            </div>
-        </AppLayout>
-    );
-}
-```
-
-#### Step 7: Setup Routes
-
-Add to `routes/web.php`:
-
-```php
-use App\Http\Controllers\PostController;
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
-    Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
-});
-```
-
-#### Step 8: Test Your Implementation
-
-1. **Create a test post:**
-```php
-php artisan tinker
->>> $post = Post::create(['title' => 'My First Post', 'content' => 'Hello World!', 'user_id' => 1]);
-```
-
-2. **Visit the page:**
-```
-http://your-app.test/posts/1
-```
-
-3. **Try the features:**
-   - Click reactions (like, love, etc.)
-   - Add a comment
-   - Reply to a comment
-   - Edit your comment
-   - Delete your comment
-   - React to comments
-
-### Usage in Different Scenarios
-
-#### Scenario 1: Events with Comments
-
-```php
-class Event extends Model
-{
-    use HasReactions, HasComments;
-    
-    protected $appends = ['reactions_summary', 'user_reaction'];
-}
-```
-
-#### Scenario 2: Media/Photos with Reactions Only
-
-```php
-class Photo extends Model
-{
-    use HasReactions; // Only reactions, no comments
-    
-    protected $appends = ['reactions_summary', 'user_reaction'];
-}
-```
-
-```jsx
-// In your component
-<Reactions
-    reactableType="App\\Models\\Photo"
-    reactableId={photo.id}
-    initialReactions={photo.reactions_summary}
-    userReaction={photo.user_reaction}
-/>
-```
-
-#### Scenario 3: Admin Moderation
-
-```php
-class Post extends Model
-{
-    use HasReactions, HasComments;
-    
-    public function canManageComment($comment): bool
-    {
-        $user = auth()->user();
-        
-        // Admins can delete any comment
-        if ($user->hasRole('admin')) {
-            return true;
-        }
-        
-        // Moderators can delete comments on any post
-        if ($user->hasRole('moderator')) {
-            return true;
-        }
-        
-        // Post authors can delete comments on their posts
-        if ($this->user_id === $user->id) {
-            return true;
-        }
-        
-        // Users can only edit/delete their own comments
-        return $comment->user_id === $user->id;
-    }
-}
-```
-
-#### Scenario 4: Time-Limited Editing
-
-```php
-public function canManageComment($comment): bool
-{
-    $user = auth()->user();
-    
-    // Not the comment author
-    if ($comment->user_id !== $user->id) {
-        return false;
-    }
-    
-    // Can only edit within 15 minutes of posting
-    $minutesSincePost = $comment->created_at->diffInMinutes(now());
-    return $minutesSincePost <= 15;
-}
-```
-
-### Manual Toast Notifications
-
-You can trigger toasts manually from your React components:
-
-```jsx
-import { useToast } from '@/hooks/use-toast';
-import { router } from '@inertiajs/react';
-
-export default function MyComponent() {
-    const { toast } = useToast();
-
-    const handleCustomAction = () => {
-        // Your logic here
-        
-        toast({
-            title: 'Action Completed',
-            description: 'Your custom action was successful!',
-        });
-    };
-
-    const handleDelete = (id) => {
-        router.delete(`/posts/${id}`, {
-            onSuccess: () => {
-                toast({
-                    title: 'Deleted',
-                    description: 'Post deleted successfully!',
-                });
-            },
-            onError: () => {
-                toast({
-                    title: 'Error',
-                    description: 'Failed to delete post.',
-                    variant: 'destructive',
-                });
-            },
-        });
-    };
-
-    return (
-        <div>
-            <button onClick={handleCustomAction}>Custom Action</button>
-            <button onClick={() => handleDelete(1)}>Delete Post</button>
-        </div>
-    );
-}
-```
-
-### Programmatic API Usage
-
-You can also use the reactions and comments programmatically:
-
-```php
-// In a controller or job
-$post = Post::find(1);
-
-// Add a reaction
-$post->react(auth()->id(), 'like');
-
-// Remove a reaction
-$post->unreact(auth()->id());
-
-// Toggle a reaction
-$post->toggleReaction(auth()->id(), 'love');
-
-// Add a comment
-$comment = $post->addComment(auth()->id(), 'Great post!');
-
-// Add a reply
-$reply = $comment->addReply(auth()->id(), 'Thanks!');
-
-// Get reactions summary
-$summary = $post->reactionsSummary();
-// ['like' => 5, 'love' => 3]
-
-// Get user's reaction
-$userReaction = $post->userReaction(auth()->id());
-// 'like' or null
 ```
 
 ## Quick Start
@@ -638,11 +41,6 @@ $userReaction = $post->userReaction(auth()->id());
 ### 1. Add Traits to Your Model
 
 ```php
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
 use TrueFans\LaravelReactReactions\Traits\HasReactions;
 use TrueFans\LaravelReactReactions\Traits\HasComments;
 
@@ -652,426 +50,279 @@ class Post extends Model
 
     protected $appends = ['reactions_summary', 'user_reaction'];
 
-    /**
-     * Check if a user can comment on this post
-     */
-    public function canComment(?int $userId = null): bool
-    {
-        return $userId !== null; // Any authenticated user can comment
-    }
-
-    /**
-     * Check if a user can manage (edit/delete) a comment
-     */
     public function canManageComment($comment): bool
     {
-        return $comment->user_id === auth()->id(); // Only comment author
+        // null = creating new comment, Comment instance = editing/deleting
+        if ($comment === null) {
+            return auth()->check(); // Anyone can comment
+        }
+        
+        // Users can manage their own comments
+        return $comment->user_id === auth()->id();
     }
 }
 ```
 
-### 2. Setup Inertia Middleware
+### 2. Setup Controller with Query Optimization
 
 ```php
-<?php
+use Illuminate\Support\Facades\DB;
 
-namespace App\Http\Middleware;
+class PostController extends Controller
+{
+    public function index()
+    {
+        $userId = auth()->id();
+        
+        // ✅ OPTIMIZED: Load all posts with reactions in 1 query
+        $posts = Post::withReactionsData($userId)
+            ->latest()
+            ->get()
+            ->map(fn($post) => [
+                'id' => $post->id,
+                'title' => $post->title,
+                'reactions_summary' => $post->parseReactionsSummary(),
+                'user_reaction' => $post->parseUserReaction(),
+            ]);
 
-use Illuminate\Http\Request;
-use Inertia\Middleware;
+        return Inertia::render('Posts/Index', ['posts' => $posts]);
+    }
 
+    public function show(Post $post)
+    {
+        $userId = auth()->id();
+        
+        // ✅ OPTIMIZED: Load all comments with reactions efficiently
+        $postIds = [$post->id];
+        
+        // Get comment counts in one query
+        $commentCounts = Comment::whereIn('commentable_id', $postIds)
+            ->where('commentable_type', Post::class)
+            ->whereNull('parent_id')
+            ->select('commentable_id', DB::raw('count(*) as total'))
+            ->groupBy('commentable_id')
+            ->pluck('total', 'commentable_id');
+        
+        // Load comments with replies in one query
+        $comments = Comment::where('commentable_id', $post->id)
+            ->where('commentable_type', Post::class)
+            ->whereNull('parent_id')
+            ->with(['user:id,name,email', 'replies.user:id,name,email'])
+            ->withCount('replies')
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(fn($comment) => [
+                'id' => $comment->id,
+                'content' => $comment->content,
+                'user' => $comment->user,
+                'user_id' => $comment->user_id,
+                'created_at' => $comment->created_at,
+                'is_edited' => $comment->is_edited,
+                'can_edit' => $userId === $comment->user_id,
+                'can_delete' => $userId === $comment->user_id,
+                'replies_count' => $comment->replies_count,
+                'replies' => $comment->replies->map(fn($reply) => [
+                    'id' => $reply->id,
+                    'content' => $reply->content,
+                    'user' => $reply->user,
+                    'user_id' => $reply->user_id,
+                    'created_at' => $reply->created_at,
+                    'is_edited' => $reply->is_edited,
+                    'can_edit' => $userId === $reply->user_id,
+                    'can_delete' => $userId === $reply->user_id,
+                ]),
+            ]);
+
+        return Inertia::render('Posts/Show', [
+            'post' => $post,
+            'comments' => $comments,
+            'total_comments' => $commentCounts->get($post->id, 0),
+        ]);
+    }
+}
+```
+
+### 3. Setup Inertia Middleware
+
+```php
 class HandleInertiaRequests extends Middleware
 {
     public function share(Request $request): array
     {
         return [
             ...parent::share($request),
-            
             'auth' => [
                 'user' => $request->user(),
             ],
-            
-            // Share flash messages for toast notifications
             'flash' => [
-                'success' => fn () => $request->session()->get('success'),
-                'error' => fn () => $request->session()->get('error'),
+                'success' => fn() => $request->session()->get('success'),
+                'error' => fn() => $request->session()->get('error'),
             ],
+            // Share reaction types from config
+            'reactionTypes' => config('react-reactions.types', []),
         ];
     }
 }
 ```
 
-### 3. Setup Toast Notifications in Layout
+### 4. Use React Components
 
 ```jsx
-// resources/js/Layouts/Layout.jsx
-import { Toaster } from '@/components/ui/toaster';
-import { useToast } from '@/hooks/use-toast';
-import { useEffect } from 'react';
-import { usePage } from '@inertiajs/react';
-
-export default function Layout({ children }) {
-    const { toast } = useToast();
-    const { flash } = usePage().props;
-
-    // Auto-display flash messages from server
-    useEffect(() => {
-        if (flash?.success) {
-            toast({
-                title: 'Success',
-                description: flash.success,
-            });
-        }
-
-        if (flash?.error) {
-            toast({
-                title: 'Error',
-                description: flash.error,
-                variant: 'destructive',
-            });
-        }
-    }, [flash, toast]);
-
-    return (
-        <>
-            {children}
-            <Toaster />
-        </>
-    );
-}
-```
-
-### 4. Controller Implementation
-
-```php
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\Post;
-use Inertia\Inertia;
-
-class PostController extends Controller
-{
-    public function show(Post $post)
-    {
-        $userId = auth()->id();
-
-        // Load comments with reactions data (optimized - single query)
-        $comments = $post->comments()
-            ->topLevel()
-            ->with('user')
-            ->withReactionsData($userId)
-            ->latest()
-            ->get()
-            ->map(function ($comment) {
-                return [
-                    'id' => $comment->id,
-                    'content' => $comment->content,
-                    'created_at' => $comment->created_at,
-                    'is_edited' => $comment->is_edited,
-                    'edited_at' => $comment->edited_at,
-                    'user' => $comment->user,
-                    'reactions_summary' => $comment->parseReactionsSummary(),
-                    'user_reaction' => $comment->parseUserReaction(),
-                    'can_edit' => $comment->canEdit(),
-                    'can_delete' => $comment->canDelete(),
-                    'replies_count' => $comment->replies()->count(),
-                ];
-            });
-
-        return Inertia::render('Posts/Show', [
-            'post' => $post,
-            'comments' => $comments,
-        ]);
-    }
-}
-```
-
-### 5. React Component Usage
-
-```jsx
-// resources/js/Pages/Posts/Show.jsx
 import Reactions from '@/Components/Reactions/Reactions';
 import Comments from '@/Components/Comments/Comments';
 
-export default function PostShow({ post, comments, can_comment }) {
+export default function PostShow({ post, comments, total_comments }) {
     return (
-        <div className="max-w-4xl mx-auto p-6">
-            {/* Post Content */}
-            <article className="mb-8">
-                <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-                <p className="text-gray-700 mb-6">{post.content}</p>
-                
-                {/* Reactions */}
-                <Reactions
-                    reactableType="App\\Models\\Post"
-                    reactableId={post.id}
-                    initialReactions={post.reactions_summary}
-                    userReaction={post.user_reaction}
-                />
-            </article>
+        <div>
+            <h1>{post.title}</h1>
+            
+            {/* Reactions */}
+            <Reactions
+                reactableType="App\\Models\\Post"
+                reactableId={post.id}
+                initialReactions={post.reactions_summary}
+                userReaction={post.user_reaction}
+            />
 
             {/* Comments */}
             <Comments
                 commentableType="App\\Models\\Post"
                 commentableId={post.id}
                 initialComments={comments}
-                canComment={can_comment}
+                totalComments={total_comments}
+                currentUserId={auth.user.id}
             />
         </div>
     );
 }
 ```
 
-## Reactions System
+## Query Optimization Guide
 
-### Basic Usage
+### The N+1 Problem
 
+**❌ BAD: This creates N+1 queries**
 ```php
-// Add or update a reaction
-$post->react($userId, 'like');
-
-// Remove a reaction
-$post->unreact($userId);
-
-// Toggle a reaction
-$post->toggleReaction($userId, 'love');
-
-// Get reactions summary
-$summary = $post->reactionsSummary();
-// Returns: ['like' => 5, 'love' => 3, 'haha' => 1]
-
-// Get user's reaction
-$reaction = $post->userReaction($userId);
-// Returns: 'like' or null
-```
-
-### Query Optimization
-
-**❌ Bad (N+1 Issue - 21 queries for 10 posts)**
-```php
+// Loading 10 posts = 21 queries (1 + 10*2)
 $posts = Post::latest()->get(); // Appended attributes cause N+1
 ```
 
-**✅ Good (1 query for any number of posts)**
+**✅ GOOD: This uses 1 query**
 ```php
+// Loading 10 posts = 1 query
+// Loading 1000 posts = still 1 query!
 $posts = Post::withReactionsData(auth()->id())
     ->latest()
     ->get()
-    ->map(function ($post) {
-        return [
-            'id' => $post->id,
-            'title' => $post->title,
-            'reactions_summary' => $post->parseReactionsSummary(),
-            'user_reaction' => $post->parseUserReaction(),
-        ];
-    });
+    ->map(fn($post) => [
+        'id' => $post->id,
+        'reactions_summary' => $post->parseReactionsSummary(),
+        'user_reaction' => $post->parseUserReaction(),
+    ]);
 ```
 
-The `withReactionsData()` scope uses database subqueries to aggregate reactions in a single query, regardless of dataset size.
+### How It Works
 
-## Comments System
+The `withReactionsData()` scope adds SQL subqueries to aggregate reactions at the database level:
 
-### Basic Usage
+```sql
+SELECT posts.*,
+  -- Aggregate all reactions into JSON
+  (SELECT JSON_OBJECT(
+    'like', COALESCE(SUM(CASE WHEN type = 'like' THEN 1 END), 0),
+    'love', COALESCE(SUM(CASE WHEN type = 'love' THEN 1 END), 0),
+    ...
+  ) FROM reactions 
+  WHERE reactable_id = posts.id 
+  AND reactable_type = 'App\\Models\\Post') as reactions_summary_json,
+  
+  -- Get current user's reaction
+  (SELECT type FROM reactions 
+  WHERE reactable_id = posts.id 
+  AND user_id = ? LIMIT 1) as user_reaction_type
+FROM posts
+```
 
+This executes as **one query** regardless of how many posts you load.
+
+### Performance Comparison
+
+| Dataset | Without Optimization | With `withReactionsData()` |
+|---------|---------------------|---------------------------|
+| 10 posts | 21 queries | 1 query |
+| 100 posts | 201 queries | 1 query |
+| 1000 posts | 2001 queries | 1 query |
+
+### Comments Optimization
+
+**❌ BAD: Loading comments per post in a loop**
 ```php
-// Add a comment
-$post->addComment($userId, 'Great post!');
-
-// Add a reply
-$comment->addReply($userId, 'Thanks!');
-
-// Update a comment
-$comment->update([
-    'content' => 'Updated content',
-    'is_edited' => true,
-    'edited_at' => now(),
-]);
-
-// Delete a comment (soft delete)
-$comment->delete();
-
-// Get top-level comments
-$post->comments()->topLevel()->get();
-
-// Get replies
-$comment->replies()->get();
-```
-
-### Permission System
-
-Override permission methods in your model for custom logic:
-
-```php
-class Post extends Model
-{
-    use HasComments;
-
-    /**
-     * Post author can manage all comments, users can manage their own
-     */
-    public function canManageComment($comment): bool
-    {
-        $userId = auth()->id();
-        
-        // Post author can manage all comments
-        if ($this->user_id === $userId) {
-            return true;
-        }
-        
-        // Users can manage their own comments
-        return $comment->user_id === $userId;
-    }
-}
-```
-
-### Advanced Permission Examples
-
-**Time-Limited Editing**
-```php
-public function canManageComment($comment): bool
-{
-    if ($comment->user_id !== auth()->id()) {
-        return false;
-    }
-    
-    // Can only edit within 15 minutes
-    return $comment->created_at->diffInMinutes(now()) <= 15;
-}
-```
-
-**Role-Based Permissions**
-```php
-public function canManageComment($comment): bool
-{
-    $user = auth()->user();
-    
-    // Admins and moderators can manage any comment
-    if ($user->hasRole(['admin', 'moderator'])) {
-        return true;
-    }
-    
-    // Users can manage their own comments
-    return $comment->user_id === $user->id;
-}
-```
-
-## Toast Notifications
-
-### From Laravel Controllers
-
-```php
-// Success message
-return redirect()->back()->with('success', 'Comment posted successfully!');
-
-// Error message
-return redirect()->back()->with('error', 'Failed to post comment.');
-
-// With Inertia
-return Inertia::render('Posts/Show', ['post' => $post])
-    ->with('success', 'Post created successfully!');
-```
-
-### From React Components
-
-```jsx
-import { useToast } from '@/hooks/use-toast';
-
-export default function MyComponent() {
-    const { toast } = useToast();
-
-    const handleAction = () => {
-        // Success toast
-        toast({
-            title: 'Success',
-            description: 'Action completed successfully!',
-        });
-
-        // Error toast
-        toast({
-            title: 'Error',
-            description: 'Something went wrong.',
-            variant: 'destructive',
-        });
-
-        // Custom duration
-        toast({
-            title: 'Info',
-            description: 'This will disappear in 2 seconds.',
-            duration: 2000,
-        });
-    };
-
-    return <button onClick={handleAction}>Do Something</button>;
-}
-```
-
-### Toast Options
-
-```jsx
-toast({
-    title: 'Title',              // Toast title
-    description: 'Message',      // Toast message
-    variant: 'default',          // 'default' | 'destructive'
-    duration: 5000,              // Duration in ms (default: 5000)
-    action: <Button>Undo</Button>, // Optional action button
+$posts->map(function($post) {
+    $comments = $post->comments()->get(); // N+1 query
+    $totalComments = $post->comments()->count(); // Another N+1
 });
 ```
 
+**✅ GOOD: Load all comments at once**
+```php
+$postIds = $posts->pluck('id');
+
+// Get all comment counts in 1 query
+$commentCounts = Comment::whereIn('commentable_id', $postIds)
+    ->where('commentable_type', Post::class)
+    ->whereNull('parent_id')
+    ->select('commentable_id', DB::raw('count(*) as total'))
+    ->groupBy('commentable_id')
+    ->pluck('total', 'commentable_id');
+
+// Load all comments with replies in 1 query
+$allComments = Comment::whereIn('commentable_id', $postIds)
+    ->where('commentable_type', Post::class)
+    ->whereNull('parent_id')
+    ->with(['user', 'replies.user'])
+    ->withCount('replies')
+    ->latest()
+    ->get()
+    ->groupBy('commentable_id');
+```
+
+### Key Optimization Rules
+
+1. **Always use `withReactionsData()`** when loading multiple models
+2. **Eager load relationships** with `with()` to avoid N+1
+3. **Use `withCount()`** instead of `count()` in loops
+4. **Batch load related data** before mapping
+5. **Avoid calling methods on models in loops** that trigger queries
+6. **Monitor queries** with Laravel Debugbar in development
+
 ## Configuration
 
+Customize reaction types and behavior in `config/react-reactions.php`:
+
 ```php
-// config/react-reactions.php
 return [
-    // Available reaction types
+    // Customize reaction types and emojis
     'types' => [
         'like' => '👍',
-        'love' => '❤️',
+        'adore' => '🥰',  // Changed from 'love'
         'haha' => '😂',
         'wow' => '😮',
         'sad' => '😢',
         'angry' => '😠',
     ],
 
-    // Route configuration
-    'route' => [
-        'prefix' => 'reactions',
-        'middleware' => ['web', 'auth'],
-    ],
-
-    // Comments configuration
     'comments' => [
-        'reactions_enabled' => true, // Enable reactions on comments
-        'max_depth' => 3,            // Max nesting depth (0 = unlimited)
-        'edit_timeout' => 300,       // Seconds to allow editing (0 = unlimited)
+        'reactions_enabled' => true,
+        'max_depth' => 3,
+        'edit_timeout' => 300, // seconds
     ],
 
-    // Notification configuration
     'notifications' => [
-        'enabled' => true,                    // Enable/disable notifications
-        'admin_email' => env('REACTIONS_ADMIN_EMAIL'), // Admin email for notifications
-        'notify_owner' => true,               // Notify content owner
-        'notify_parent_author' => true,       // Notify parent comment author on replies
-        'notify_on_replies' => true,          // Send notifications for replies
-    ],
-
-    // UI configuration
-    'ui' => [
-        'picker_delay' => 300,       // ms before showing picker on hover
-        'animation_duration' => 200, // ms for animations
+        'enabled' => true,
+        'admin_email' => env('REACTIONS_ADMIN_EMAIL'),
     ],
 ];
-```
-
-### Environment Variables
-
-Add these to your `.env` file:
-
-```env
-# Email notifications for new comments
-REACTIONS_NOTIFICATIONS_ENABLED=true
-REACTIONS_ADMIN_EMAIL=admin@example.com
 ```
 
 ## API Reference
@@ -1084,9 +335,6 @@ $model->react(int $userId, string $type): void
 
 // Remove reaction
 $model->unreact(int $userId): void
-
-// Toggle reaction (remove if same, otherwise update)
-$model->toggleReaction(int $userId, string $type): void
 
 // Get reactions summary
 $model->reactionsSummary(): array
@@ -1112,7 +360,7 @@ $model->addComment(int $userId, string $content): Comment
 $model->comments(): MorphMany
 
 // Check permissions
-$model->canManageComment(Comment $comment): bool
+$model->canManageComment(?Comment $comment): bool
 ```
 
 ### Comment Model
@@ -1124,67 +372,36 @@ $comment->addReply(int $userId, string $content): Comment
 // Get replies
 $comment->replies(): HasMany
 
-// Get replies with reactions
-$comment->repliesWithReactions(): HasMany
-
 // Check permissions
 $comment->canEdit(): bool
 $comment->canDelete(): bool
 
 // Query scope
-Comment::topLevel() // Only top-level comments (no parent)
+Comment::topLevel() // Only top-level comments
 ```
 
-## Component Props
+## TypeScript Support
 
-### Reactions Component
+All React components are written in TypeScript with proper type definitions:
 
-```jsx
-<Reactions
-    reactableType="App\\Models\\Post"  // Required: Model class name
-    reactableId={post.id}              // Required: Model ID
-    initialReactions={{                // Required: Reactions summary
-        like: 5,
-        love: 2
-    }}
-    userReaction="like"                // Optional: Current user's reaction
-/>
+```tsx
+interface ReactionsProps {
+    reactableType: string;
+    reactableId: number;
+    initialReactions?: Record<string, number>;
+    userReaction?: string | null;
+    onUserClick?: (userId: number) => void;
+}
+
+interface CommentsProps {
+    commentableType: string;
+    commentableId: number;
+    initialComments?: Comment[];
+    totalComments?: number | null;
+    reactionsEnabled?: boolean;
+    currentUserId: number;
+}
 ```
-
-### Comments Component
-
-```jsx
-<Comments
-    commentableType="App\\Models\\Post"  // Required: Model class name
-    commentableId={post.id}              // Required: Model ID
-    initialComments={[...]}              // Required: Array of comments
-/>
-```
-
-## Performance
-
-### Query Optimization Results
-
-| Approach | Queries for 10 posts | Queries for 100 posts | Queries for 1000 posts |
-|----------|---------------------|----------------------|------------------------|
-| ❌ Appended attributes | 21 queries | 201 queries | 2001 queries |
-| ✅ withReactionsData() | 1 query | 1 query | 1 query |
-
-### How It Works
-
-The `withReactionsData()` scope adds SQL subqueries to your main query:
-
-```sql
-SELECT posts.*,
-  (SELECT JSON_OBJECT('like', COUNT(*), 'love', COUNT(*), ...)
-   FROM reactions WHERE reactable_id = posts.id
-   GROUP BY type) as reactions_summary_json,
-  (SELECT type FROM reactions 
-   WHERE reactable_id = posts.id AND user_id = ?) as user_reaction_type
-FROM posts
-```
-
-This executes as a single query with database-level aggregation, handling millions of reactions efficiently.
 
 ## Testing
 
@@ -1192,383 +409,34 @@ This executes as a single query with database-level aggregation, handling millio
 # Run PHP tests
 composer test
 
-# Run specific test suite
-vendor/bin/pest --filter=HasReactionsTest
-
-# Run E2E tests with Playwright
-npx playwright install
+# Run E2E tests
 npm run build
 npm run test:e2e
 ```
 
-## Development
-
-### Workbench
-
-The package includes a workbench for isolated testing:
-
-```bash
-# Build workbench
-php vendor/bin/testbench workbench:build
-
-# Serve workbench
-php vendor/bin/testbench serve
-
-# Run migrations
-php vendor/bin/testbench migrate:fresh --seed
-```
-
-### Frontend Development
-
-```bash
-# Install dependencies
-npm install
-
-# Build assets
-npm run build
-
-# Watch for changes
-npm run dev
-```
-
-## Database Schema
-
-### Reactions Table
-
-```sql
-CREATE TABLE reactions (
-    id BIGINT UNSIGNED PRIMARY KEY,
-    reactable_type VARCHAR(255),
-    reactable_id BIGINT UNSIGNED,
-    user_id BIGINT UNSIGNED,
-    type VARCHAR(50),
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    
-    UNIQUE KEY unique_reaction (reactable_type, reactable_id, user_id),
-    INDEX idx_reactable (reactable_type, reactable_id),
-    INDEX idx_user (user_id)
-);
-```
-
-### Comments Table
-
-```sql
-CREATE TABLE comments (
-    id BIGINT UNSIGNED PRIMARY KEY,
-    commentable_type VARCHAR(255),
-    commentable_id BIGINT UNSIGNED,
-    user_id BIGINT UNSIGNED,
-    parent_id BIGINT UNSIGNED NULLABLE,
-    content TEXT,
-    is_edited BOOLEAN DEFAULT FALSE,
-    edited_at TIMESTAMP NULLABLE,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP NULLABLE,
-    
-    INDEX idx_commentable (commentable_type, commentable_id),
-    INDEX idx_parent (parent_id),
-    INDEX idx_user (user_id)
-);
-```
-
 ## Troubleshooting
 
+### N+1 Query Issues
+- Always use `withReactionsData()` when loading multiple models
+- Use `with()` to eager load relationships
+- Use `withCount()` instead of `count()` in loops
+- Monitor queries with Laravel Debugbar
+
 ### Reactions Not Working
-- Check if routes are registered: `php artisan route:list | grep reactions`
-- Verify middleware is configured in config
+- Check routes: `php artisan route:list | grep reactions`
+- Verify user is authenticated
 - Check browser console for errors
 
 ### Comments Not Showing
-- Verify comments are loaded in controller
-- Check `initialComments` prop is passed to component
-- Ensure user is authenticated for protected routes
-
-### Toast Not Appearing
-- Verify `<Toaster />` is in your layout
-- Check Inertia middleware shares flash messages
-- Ensure `useEffect` hook is set up correctly
-
-### N+1 Query Issues
-- Use `withReactionsData()` scope when loading multiple models
-- Monitor queries with Laravel Debugbar
-- Check the query log in development
-
-## Security
-
-The package includes multiple security layers:
-
-- ✅ Authentication via middleware
-- ✅ Authorization via permission methods
-- ✅ CSRF protection (Inertia)
-- ✅ XSS prevention (React escaping)
-- ✅ SQL injection protection (Eloquent ORM)
-- ✅ Input validation
-- ✅ Soft deletes for data preservation
-
-## Email Notifications
-
-The package automatically sends email notifications when new comments are posted.
-
-### Setup
-
-1. **Configure your mail settings** in `.env`:
-```env
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.mailtrap.io
-MAIL_PORT=2525
-MAIL_USERNAME=your-username
-MAIL_PASSWORD=your-password
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=noreply@example.com
-MAIL_FROM_NAME="${APP_NAME}"
-```
-
-2. **Set admin email** for notifications:
-```env
-REACTIONS_ADMIN_EMAIL=admin@example.com
-```
-
-3. **Configure notification settings** in `config/react-reactions.php`:
-```php
-'notifications' => [
-    'enabled' => true,                    // Enable/disable all notifications
-    'admin_email' => env('REACTIONS_ADMIN_EMAIL'), // Admin receives all comments
-    'notify_owner' => true,               // Notify post/content owner
-    'notify_parent_author' => true,       // Notify parent comment author on replies
-    'notify_on_replies' => true,          // Include reply notifications
-],
-```
-
-### Who Gets Notified?
-
-- **Admin**: Receives notification for every new comment (if `admin_email` is set)
-- **Content Owner**: Receives notification when someone comments on their content (if `notify_owner` is true)
-- **Parent Comment Author**: Receives notification when someone replies to their comment (if `notify_parent_author` is true)
-
-### Customizing Notifications
-
-You can customize the notification by extending the `NewCommentNotification` class:
-
-```php
-<?php
-
-namespace App\Notifications;
-
-use TrueFans\LaravelReactReactions\Notifications\NewCommentNotification as BaseNotification;
-
-class CustomCommentNotification extends BaseNotification
-{
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->subject('New Comment Alert!')
-            ->line('Someone commented on your post')
-            ->line($this->comment->content)
-            ->action('View Comment', url('/posts/' . $this->comment->commentable_id))
-            ->line('Thank you!');
-    }
-}
-```
-
-Then update your listener to use the custom notification.
-
-### Disabling Notifications
-
-To disable notifications entirely:
-
-```env
-REACTIONS_NOTIFICATIONS_ENABLED=false
-```
-
-Or in config:
-```php
-'notifications' => [
-    'enabled' => false,
-],
-```
-
-### Queue Configuration
-
-Notifications are queued by default for better performance. **You must run a queue worker** for notifications to be sent.
-
-#### Option 1: Run Queue Worker (Recommended for Production)
-
-Start a queue worker in a separate terminal:
-
-```bash
-# In your Laravel application
-php artisan queue:work
-
-# Or with specific options
-php artisan queue:work --tries=3 --timeout=60
-```
-
-**Keep this running in the background.** In production, use a process manager like Supervisor to keep the queue worker running.
-
-#### Option 2: Use Sync Queue (Development Only)
-
-For development/testing, you can process queues synchronously (no worker needed):
-
-```env
-# .env
-QUEUE_CONNECTION=sync
-```
-
-With `sync`, notifications are sent immediately without needing a queue worker. **Not recommended for production** as it will slow down your application.
-
-#### Supervisor Configuration (Production)
-
-Create `/etc/supervisor/conf.d/laravel-worker.conf`:
-
-```ini
-[program:laravel-worker]
-process_name=%(program_name)s_%(process_num)02d
-command=php /path/to/your/app/artisan queue:work --sleep=3 --tries=3 --max-time=3600
-autostart=true
-autorestart=true
-stopasgroup=true
-killasgroup=true
-user=www-data
-numprocs=2
-redirect_stderr=true
-stdout_logfile=/path/to/your/app/storage/logs/worker.log
-stopwaitsecs=3600
-```
-
-Then reload Supervisor:
-```bash
-sudo supervisorctl reread
-sudo supervisorctl update
-sudo supervisorctl start laravel-worker:*
-```
-
-#### Viewing Queued Jobs
-
-Check pending jobs:
-```bash
-php artisan queue:monitor
-```
-
-Process a single job (useful for testing):
-```bash
-php artisan queue:work --once
-```
-
-#### Viewing Email Logs (Development)
-
-When using `MAIL_MAILER=log`, emails are written to `storage/logs/laravel.log`:
-
-```bash
-# View recent emails
-tail -100 storage/logs/laravel.log | grep -A 50 "Message-ID:"
-
-# Watch log in real-time
-tail -f storage/logs/laravel.log
-```
-
-## Troubleshooting
-
-### Email Notifications Not Sending
-
-**Symptom:** Comments are created but no emails are sent.
-
-**Solution:** Make sure the queue worker is running!
-
-```bash
-# Check if queue worker is running
-ps aux | grep "queue:work"
-
-# Start queue worker
-php artisan queue:work
-
-# Or use sync queue for development (add to .env)
-QUEUE_CONNECTION=sync
-```
-
-**Check the queue:**
-```bash
-# See failed jobs
-php artisan queue:failed
-
-# Retry failed jobs
-php artisan queue:retry all
-
-# Clear failed jobs
-php artisan queue:flush
-```
-
-**Verify configuration:**
-```env
-# .env
-REACTIONS_NOTIFICATIONS_ENABLED=true
-REACTIONS_ADMIN_EMAIL=admin@example.com
-MAIL_MAILER=log  # or smtp, mailgun, etc.
-QUEUE_CONNECTION=database  # or redis, sync
-```
-
-**Test email manually:**
-```php
-// In tinker: php artisan tinker
-use TrueFans\LaravelReactReactions\Notifications\NewCommentNotification;
-use TrueFans\LaravelReactReactions\Models\Comment;
-use Illuminate\Support\Facades\Notification;
-
-$comment = Comment::first();
-Notification::route('mail', 'test@example.com')
-    ->notify(new NewCommentNotification($comment));
-```
-
-### Reactions Not Working
-- Check if routes are registered: `php artisan route:list | grep reactions`
-- Verify middleware is configured in `config/react-reactions.php`
-- Check browser console for JavaScript errors
-- Ensure user is authenticated
-
-### Comments Not Showing
-- Verify comments are loaded in controller with `withReactionsData()`
-- Check `initialComments` prop is passed to Comments component
-- Ensure user is authenticated for protected routes
-- Check browser console for errors
-
-### Toast Not Appearing
-- Verify `<Toaster />` component is in your layout
-- Check Inertia middleware shares flash messages
-- Verify `useEffect` hook is set up correctly in layout
-- Check browser console for errors
-
-### N+1 Query Issues
-- Always use `withReactionsData()` scope when loading multiple models
-- Monitor queries with Laravel Debugbar
-- Check `storage/logs/laravel.log` for query logs
-- Use `DB::enableQueryLog()` to debug queries
-
-## Best Practices
-
-1. **Always use `withReactionsData()`** when loading multiple models
-2. **Implement proper permissions** in your models
-3. **Validate comment content** before saving
-4. **Use soft deletes** to preserve conversation context
-5. **Add rate limiting** to prevent spam
-6. **Cache comment counts** for better performance
-7. **Monitor queries** with Laravel Debugbar in development
-8. **Configure email notifications** for comment moderation
-9. **Run queue workers** for sending notification emails
-10. **Use Supervisor** in production to keep queue workers running
+- Verify `initialComments` prop is passed
+- Check user authentication
+- Ensure `canManageComment()` is implemented
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+MIT License. See [License File](LICENSE.md) for details.
 
 ## Credits
 
 - [Vahan Drnoyan](https://github.com/truefanspace)
-- Built with Laravel 11, Inertia.js v2, React 19, and shadcn/ui
-- [All Contributors](../../contributors)
-
-## Support
-
-- **GitHub Issues**: Report bugs or request features
-- **GitHub Discussions**: Ask questions and share ideas
-- **Examples**: Check the `workbench/` folder for working examples
+- Built with Laravel 11, Inertia.js v2, React 19, TypeScript, and shadcn/ui

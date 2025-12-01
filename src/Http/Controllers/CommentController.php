@@ -226,7 +226,7 @@ class CommentController extends Controller
     {
         try {
             $replies = $comment->replies()
-                ->with('user')
+                ->with(['user', 'commentable'])
                 ->withReactionsData(auth()->id())
                 ->latest()
                 ->get()
@@ -315,7 +315,8 @@ class CommentController extends Controller
             $comments = $commentable->comments()
                 ->topLevel()
                 ->withReactionsData(auth()->id())
-                ->with('user')
+                ->with(['user', 'commentable'])
+                ->withCount('replies')
                 ->latest()
                 ->paginate($perPage, ['*'], 'page', $page);
 
@@ -336,7 +337,7 @@ class CommentController extends Controller
                     'user_reaction' => $comment->parseUserReaction(),
                     'can_edit' => $comment->canEdit(),
                     'can_delete' => $comment->canDelete(),
-                    'replies_count' => $comment->replies()->count(),
+                    'replies_count' => $comment->replies_count,
                 ];
             });
 

@@ -52,6 +52,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => $request->session()->get('error'),
             ],
             'errors' => $errors ? $errors->getBag('default')->getMessages() : [],
+            'reactionTypes' => config('react-reactions.types', []),
         ];
     }
 }

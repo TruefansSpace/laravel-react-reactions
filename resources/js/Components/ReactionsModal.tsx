@@ -1,14 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { usePage } from '@inertiajs/react';
 import { X, AlertCircle, Loader2 } from 'lucide-react';
-
-const REACTION_TYPES: Record<string, string> = {
-    like: '👍',
-    love: '❤️',
-    haha: '😂',
-    wow: '😮',
-    sad: '😢',
-    angry: '😠',
-};
 
 interface User {
     id: number;
@@ -43,6 +35,11 @@ interface Tab {
     count: number;
 }
 
+interface PageProps {
+    reactionTypes: Record<string, string>;
+    [key: string]: any;
+}
+
 export default function ReactionsModal({ 
     isOpen, 
     onClose, 
@@ -51,6 +48,16 @@ export default function ReactionsModal({
     reactionsSummary,
     onUserClick
 }: ReactionsModalProps) {
+    const pageProps = usePage<PageProps>().props;
+    const reactionTypes = pageProps.reactionTypes || {
+        like: '👍',
+        adore: '🥰',
+        haha: '😂',
+        wow: '😮',
+        sad: '😢',
+        angry: '😠',
+    };
+    
     const [activeTab, setActiveTab] = useState('all');
     const [isAnimating, setIsAnimating] = useState(false);
     const [reactions, setReactions] = useState<Reaction[]>([]);
@@ -120,7 +127,7 @@ export default function ReactionsModal({
             .filter(([, count]) => count > 0)
             .map(([type, count]) => ({
                 key: type,
-                label: REACTION_TYPES[type],
+                label: reactionTypes[type] || type,
                 count
             }))
     ];
@@ -307,7 +314,7 @@ export default function ReactionsModal({
                                         </div>
                                     </div>
                                     <div className="text-2xl flex-shrink-0" data-testid="user-reaction-type">
-                                        {REACTION_TYPES[reaction.type]}
+                                        {reactionTypes[reaction.type] || reaction.type}
                                     </div>
                                 </div>
                             ))}

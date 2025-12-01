@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { ChevronDown } from 'lucide-react';
 import {
     DropdownMenu,
@@ -9,30 +9,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import ReactionsModal from './ReactionsModal';
 
-const REACTION_TYPES: Record<string, string> = {
-    like: '👍',
-    love: '❤️',
-    haha: '😂',
-    wow: '😮',
-    sad: '😢',
-    angry: '😠',
-};
-
-const REACTION_LABELS: Record<string, string> = {
-    like: 'Like',
-    love: 'Love',
-    haha: 'Haha',
-    wow: 'Wow',
-    sad: 'Sad',
-    angry: 'Angry',
-};
-
 interface ReactionsProps {
     reactableType: string;
     reactableId: number;
     initialReactions?: Record<string, number>;
     userReaction?: string | null;
     onUserClick?: (userId: number) => void;
+}
+
+interface PageProps {
+    reactionTypes: Record<string, string>;
+    [key: string]: any;
 }
 
 export default function Reactions({ 
@@ -42,12 +29,31 @@ export default function Reactions({
     userReaction = null,
     onUserClick
 }: ReactionsProps) {
+    const pageProps = usePage<PageProps>().props;
+    const reactionTypes = pageProps.reactionTypes || {
+        like: '👍',
+        adore: '🥰',
+        haha: '😂',
+        wow: '😮',
+        sad: '😢',
+        angry: '😠',
+    };
+    
     const [reactions, setReactions] = useState(initialReactions);
     const [currentUserReaction, setCurrentUserReaction] = useState(userReaction);
     const [isProcessing, setIsProcessing] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const hoverTimeoutRef = React.useRef<number | null>(null);
+
+    // Generate labels from reaction types (capitalize first letter)
+    const reactionLabels = Object.keys(reactionTypes).reduce((acc, key) => {
+        acc[key] = key.charAt(0).toUpperCase() + key.slice(1);
+        return acc;
+    }, {} as Record<string, string>);
+
+    // Get first reaction type as default
+    const defaultReactionType = Object.keys(reactionTypes)[0] || 'like';
 
     const handleReaction = (type: string) => {
         if (isProcessing) return;
@@ -152,11 +158,11 @@ export default function Reactions({
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen} modal={false}>
                 <DropdownMenuTrigger asChild>
                     <button
-                        onClick={() => handleReaction(currentUserReaction || 'like')}
+                        onClick={() => handleReaction(currentUserReaction || defaultReactionType)}
                         onMouseEnter={handleMouseEnter}
                         onMouseLeave={handleMouseLeave}
                         disabled={isProcessing}
-                        data-testid={`reaction-button-${currentUserReaction || 'like'}`}
+                        data-testid={`reaction-button-${currentUserReaction || defaultReactionType}`}
                         className={`
                             group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium text-sm transition-all duration-200
                             ${currentUserReaction 
@@ -167,10 +173,10 @@ export default function Reactions({
                         `}
                     >
                         <span className="text-base">
-                            {currentUserReaction ? REACTION_TYPES[currentUserReaction] : '👍'}
+                            {currentUserReaction ? reactionTypes[currentUserReaction] : reactionTypes[defaultReactionType]}
                         </span>
                         <span className="font-medium text-sm">
-                            {currentUserReaction ? REACTION_LABELS[currentUserReaction] : 'Like'}
+                            {currentUserReaction ? reactionLabels[currentUserReaction] : reactionLabels[defaultReactionType]}
                         </span>
                     </button>
                 </DropdownMenuTrigger>
@@ -182,7 +188,7 @@ export default function Reactions({
                     onMouseLeave={handleMouseLeave}
                 >
                     <div className="flex gap-1">
-                        {Object.entries(REACTION_TYPES).map(([type, emoji]) => (
+                        {Object.entries(reactionTypes).map(([type, emoji]) => (
                             <DropdownMenuItem
                                 key={type}
                                 onClick={() => handleReaction(type)}
@@ -192,7 +198,7 @@ export default function Reactions({
                                     hover:bg-gray-100 hover:scale-125 cursor-pointer
                                     ${currentUserReaction === type ? 'bg-gray-100' : ''}
                                 `}
-                                title={REACTION_LABELS[type]}
+                                title={reactionLabels[type]}
                             >
                                 <span className="text-2xl">{emoji}</span>
                             </DropdownMenuItem>
@@ -221,7 +227,7 @@ export default function Reactions({
                                     ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-105'}
                                 `}
                             >
-                                <span className="text-base">{REACTION_TYPES[type]}</span>
+                                <span className="text-base">{reactionTypes[type]}</span>
                                 <span>{count}</span>
                             </button>
                         ))}

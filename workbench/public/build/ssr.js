@@ -1,7 +1,7 @@
 import { jsx, jsxs, Fragment } from "react/jsx-runtime";
 import * as React from "react";
 import React__default, { useState, useEffect, useRef } from "react";
-import { useForm, Head, router, usePage, Link, createInertiaApp } from "@inertiajs/react";
+import { useForm, Head, usePage, router, Link, createInertiaApp } from "@inertiajs/react";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Slot } from "@radix-ui/react-slot";
@@ -306,14 +306,6 @@ const DropdownMenuItem = React.forwardRef(({ className, inset, ...props }, ref) 
   }
 ));
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
-const REACTION_TYPES$1 = {
-  like: "👍",
-  love: "❤️",
-  haha: "😂",
-  wow: "😮",
-  sad: "😢",
-  angry: "😠"
-};
 function ReactionsModal({
   isOpen,
   onClose,
@@ -322,6 +314,15 @@ function ReactionsModal({
   reactionsSummary,
   onUserClick
 }) {
+  const pageProps = usePage().props;
+  const reactionTypes = pageProps.reactionTypes || {
+    like: "👍",
+    adore: "🥰",
+    haha: "😂",
+    wow: "😮",
+    sad: "😢",
+    angry: "😠"
+  };
   const [activeTab, setActiveTab] = useState("all");
   const [isAnimating, setIsAnimating] = useState(false);
   const [reactions, setReactions] = useState([]);
@@ -376,7 +377,7 @@ function ReactionsModal({
     { key: "all", label: "All", count: Object.values(reactionsSummary).reduce((a, b) => a + b, 0) },
     ...Object.entries(reactionsSummary).filter(([, count2]) => count2 > 0).map(([type, count2]) => ({
       key: type,
-      label: REACTION_TYPES$1[type],
+      label: reactionTypes[type] || type,
       count: count2
     }))
   ];
@@ -532,7 +533,7 @@ function ReactionsModal({
                             /* @__PURE__ */ jsx("div", { className: "font-medium text-gray-900 truncate", children: ((_c = reaction.user) == null ? void 0 : _c.name) || "Unknown User" }),
                             /* @__PURE__ */ jsx("div", { className: "text-sm text-gray-500 truncate", children: (_d = reaction.user) == null ? void 0 : _d.email })
                           ] }),
-                          /* @__PURE__ */ jsx("div", { className: "text-2xl flex-shrink-0", "data-testid": "user-reaction-type", children: REACTION_TYPES$1[reaction.type] })
+                          /* @__PURE__ */ jsx("div", { className: "text-2xl flex-shrink-0", "data-testid": "user-reaction-type", children: reactionTypes[reaction.type] || reaction.type })
                         ]
                       },
                       reaction.id
@@ -552,22 +553,6 @@ function ReactionsModal({
     }
   );
 }
-const REACTION_TYPES = {
-  like: "👍",
-  love: "❤️",
-  haha: "😂",
-  wow: "😮",
-  sad: "😢",
-  angry: "😠"
-};
-const REACTION_LABELS = {
-  like: "Like",
-  love: "Love",
-  haha: "Haha",
-  wow: "Wow",
-  sad: "Sad",
-  angry: "Angry"
-};
 function Reactions({
   reactableType,
   reactableId,
@@ -575,12 +560,26 @@ function Reactions({
   userReaction = null,
   onUserClick
 }) {
+  const pageProps = usePage().props;
+  const reactionTypes = pageProps.reactionTypes || {
+    like: "👍",
+    adore: "🥰",
+    haha: "😂",
+    wow: "😮",
+    sad: "😢",
+    angry: "😠"
+  };
   const [reactions, setReactions] = useState(initialReactions);
   const [currentUserReaction, setCurrentUserReaction] = useState(userReaction);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const hoverTimeoutRef = React__default.useRef(null);
+  const reactionLabels = Object.keys(reactionTypes).reduce((acc, key) => {
+    acc[key] = key.charAt(0).toUpperCase() + key.slice(1);
+    return acc;
+  }, {});
+  const defaultReactionType = Object.keys(reactionTypes)[0] || "like";
   const handleReaction = (type) => {
     if (isProcessing) return;
     setIsProcessing(true);
@@ -664,19 +663,19 @@ function Reactions({
       /* @__PURE__ */ jsx(DropdownMenuTrigger, { asChild: true, children: /* @__PURE__ */ jsxs(
         "button",
         {
-          onClick: () => handleReaction(currentUserReaction || "like"),
+          onClick: () => handleReaction(currentUserReaction || defaultReactionType),
           onMouseEnter: handleMouseEnter,
           onMouseLeave: handleMouseLeave,
           disabled: isProcessing,
-          "data-testid": `reaction-button-${currentUserReaction || "like"}`,
+          "data-testid": `reaction-button-${currentUserReaction || defaultReactionType}`,
           className: `
                             group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium text-sm transition-all duration-200
                             ${currentUserReaction ? "bg-gray-900 text-white hover:bg-gray-800 shadow-sm" : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-300"}
                             ${isProcessing ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:scale-105"}
                         `,
           children: [
-            /* @__PURE__ */ jsx("span", { className: "text-base", children: currentUserReaction ? REACTION_TYPES[currentUserReaction] : "👍" }),
-            /* @__PURE__ */ jsx("span", { className: "font-medium text-sm", children: currentUserReaction ? REACTION_LABELS[currentUserReaction] : "Like" })
+            /* @__PURE__ */ jsx("span", { className: "text-base", children: currentUserReaction ? reactionTypes[currentUserReaction] : reactionTypes[defaultReactionType] }),
+            /* @__PURE__ */ jsx("span", { className: "font-medium text-sm", children: currentUserReaction ? reactionLabels[currentUserReaction] : reactionLabels[defaultReactionType] })
           ]
         }
       ) }),
@@ -688,7 +687,7 @@ function Reactions({
           className: "bg-white rounded-xl shadow-xl border border-gray-200 p-2",
           onMouseEnter: handleMouseEnter,
           onMouseLeave: handleMouseLeave,
-          children: /* @__PURE__ */ jsx("div", { className: "flex gap-1", children: Object.entries(REACTION_TYPES).map(([type, emoji]) => /* @__PURE__ */ jsx(
+          children: /* @__PURE__ */ jsx("div", { className: "flex gap-1", children: Object.entries(reactionTypes).map(([type, emoji]) => /* @__PURE__ */ jsx(
             DropdownMenuItem,
             {
               onClick: () => handleReaction(type),
@@ -698,7 +697,7 @@ function Reactions({
                                     hover:bg-gray-100 hover:scale-125 cursor-pointer
                                     ${currentUserReaction === type ? "bg-gray-100" : ""}
                                 `,
-              title: REACTION_LABELS[type],
+              title: reactionLabels[type],
               children: /* @__PURE__ */ jsx("span", { className: "text-2xl", children: emoji })
             },
             type
@@ -719,7 +718,7 @@ function Reactions({
                                     ${isProcessing ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:scale-105"}
                                 `,
           children: [
-            /* @__PURE__ */ jsx("span", { className: "text-base", children: REACTION_TYPES[type] }),
+            /* @__PURE__ */ jsx("span", { className: "text-base", children: reactionTypes[type] }),
             /* @__PURE__ */ jsx("span", { children: count2 })
           ]
         },

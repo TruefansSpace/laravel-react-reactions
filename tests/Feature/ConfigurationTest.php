@@ -16,7 +16,7 @@ test('reactions config has enabled types', function () {
     
     expect($reactions)->toBeArray()
         ->and($reactions)->toHaveKey('like')
-        ->and($reactions)->toHaveKey('love')
+        ->and($reactions)->toHaveKey('adore')
         ->and($reactions)->toHaveKey('haha')
         ->and($reactions)->toHaveKey('wow')
         ->and($reactions)->toHaveKey('sad')
