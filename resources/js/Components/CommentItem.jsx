@@ -80,11 +80,13 @@ export default function CommentItem({
 
     return (
         <div className={`${isReply ? 'ml-10' : ''}`}>
-            <div className="bg-white rounded-md border border-gray-200 p-3">
+            <div data-content_id={comment.id} data-content_owner_id={`container_${comment.user?.id}`} className="bg-white rounded-md border border-gray-200 p-3">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
                         <div 
+                        data-user_id={comment.user_id}
+                        role="avatar"
                             onClick={() => onUserClick?.(comment.user?.id)}
                             className={`w-8 h-8 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 ${
                                 onUserClick ? 'cursor-pointer hover:ring-2 hover:ring-gray-900 hover:ring-offset-1 transition-all' : ''
@@ -117,7 +119,7 @@ export default function CommentItem({
                     {isOwner && !isEditing && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <button className="p-1 hover:bg-gray-100 rounded-full transition-colors">
+                                <button data-content_owner_id={`view_more_button_${comment.user?.id}`} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
                                     <MoreVertical className="w-4 h-4 text-gray-600" />
                                 </button>
                             </DropdownMenuTrigger>

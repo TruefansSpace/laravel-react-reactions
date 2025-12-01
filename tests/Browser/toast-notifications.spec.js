@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Toast Notifications', () => {
+    let authUser;
+
     test.beforeEach(async ({ page }) => {
         // Login first
         await page.goto('/login');
@@ -11,6 +13,11 @@ test.describe('Toast Notifications', () => {
         
         // Ensure we are on the test page
         await page.waitForLoadState('networkidle');
+        
+        // Extract auth user data from data attribute
+        const authUserData = await page.getAttribute('[data-auth_user]', 'data-auth_user');
+        authUser = authUserData ? JSON.parse(authUserData) : null;
+        console.log('Authenticated user:', authUser);
     });
 
     test('shows success toast when adding reaction', async ({ page }) => {

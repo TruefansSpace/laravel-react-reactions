@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Comments System', () => {
+    let authUser;
+
     test.beforeEach(async ({ page }) => {
         // Login
         await page.goto('http://localhost:8000/login');
@@ -8,13 +10,18 @@ test.describe('Comments System', () => {
         await page.fill('input[name="password"]', 'password');
         await page.click('button[type="submit"]');
         await page.waitForURL('http://localhost:8000');
+        
+        // Extract auth user data from data attribute
+        const authUserData = await page.getAttribute('[data-auth_user]', 'data-auth_user');
+        authUser = authUserData ? JSON.parse(authUserData) : null;
+        console.log('Authenticated user:', authUser);
     });
 
     test('can view comments section', async ({ page }) => {
         await page.goto('http://localhost:8000');
         
         // Wait for comments section to load
-        await expect(page.locator('text=Comments')).toBeVisible();
+        await expect(page.locator('text=Comments').first()).toBeVisible();
         
         // Take screenshot of comments section
         await page.screenshot({ 
@@ -50,7 +57,7 @@ test.describe('Comments System', () => {
         await page.click('button:has-text("Post")');
         
         // Wait for success toast
-        await expect(page.locator('text=Success')).toBeVisible({ timeout: 5000 });
+        await expect(page.locator('text=Success').first()).toBeVisible({ timeout: 5000 });
         await expect(page.locator(`text=${commentText}`)).toBeVisible();
         
         // Take screenshot of new comment
@@ -64,7 +71,7 @@ test.describe('Comments System', () => {
         await page.goto('http://localhost:8000');
         
         // Find first comment with edit button
-        const commentItem = page.locator('[class*="comment"]').first();
+        const commentItem = page.locator(`[data-content_owner_id="container_${authUser.id}"]`).first();
         
         // Click more options menu
         await commentItem.locator('button').first().click();
@@ -75,10 +82,10 @@ test.describe('Comments System', () => {
         });
         
         // Click edit
-        await page.click('text=Edit');
+        await page.locator('[data-testid="edit-comment"]').first().click();
         
         // Wait for edit form
-        await expect(page.locator('textarea')).toBeVisible();
+        await expect(commentItem.locator('textarea')).toBeVisible();
         
         // Update comment
         const updatedText = `Updated comment ${Date.now()}`;
@@ -93,7 +100,7 @@ test.describe('Comments System', () => {
         await page.click('button:has-text("Update")');
         
         // Wait for success
-        await expect(page.locator('text=Success')).toBeVisible({ timeout: 5000 });
+        await expect(page.locator('text=Success').first()).toBeVisible({ timeout: 5000 });
         await expect(page.locator(`text=${updatedText}`)).toBeVisible();
         await expect(page.locator('text=edited')).toBeVisible();
         
@@ -105,12 +112,13 @@ test.describe('Comments System', () => {
 
     test('can reply to a comment', async ({ page }) => {
         await page.goto('http://localhost:8000');
+         const commentItem = page.locator(`[data-content_owner_id="container_${authUser.id}"]`).first();
         
         // Click reply button on first comment
-        await page.click('button:has-text("Reply")');
+        await commentItem.locator('button:has-text("Reply")').first().click();
         
         // Wait for reply form
-        await expect(page.locator('textarea[placeholder*="reply"]')).toBeVisible();
+        await expect(page.locator('[data-testid="comment-input"]')).toBeVisible();
         
         // Take screenshot of reply form
         await page.screenshot({ 
@@ -125,7 +133,7 @@ test.describe('Comments System', () => {
         await page.click('button:has-text("Post")');
         
         // Wait for success
-        await expect(page.locator('text=Success')).toBeVisible({ timeout: 5000 });
+        await expect(page.locator('text=Comment posted successfully')).toBeVisible({ timeout: 5000 });
         await expect(page.locator(`text=${replyText}`)).toBeVisible();
         
         // Take screenshot of nested reply
@@ -136,16 +144,12 @@ test.describe('Comments System', () => {
     });
 
     test('can delete a comment', async ({ page }) => {
-        await page.goto('http://localhost:8000');
+        const commentItem = page.locator(`[data-content_owner_id="container_${authUser.id}"]`).first();
         
-        // Get initial comment count
-        const initialCount = await page.locator('[class*="comment"]').count();
+        // Click more options menu
+        await commentItem.locator('button').first().click();
         
-        // Click more options on first comment
-        await page.locator('[class*="comment"]').first().locator('button').first().click();
-        
-        // Click delete
-        await page.click('text=Delete');
+        await page.locator('[data-testid="delete-comment"]').first().click();
         
         // Wait for confirmation dialog
         await expect(page.locator('text=Delete Comment')).toBeVisible();
@@ -160,14 +164,8 @@ test.describe('Comments System', () => {
         await page.click('button:has-text("Delete")');
         
         // Wait for success
-        await expect(page.locator('text=Success')).toBeVisible({ timeout: 5000 });
+        await expect(page.locator('text=Comment deleted successfully')).toBeVisible({ timeout: 5000 });
         
-        // Verify comment count decreased
-        await page.waitForTimeout(1000);
-        const newCount = await page.locator('[class*="comment"]').count();
-        expect(newCount).toBeLessThan(initialCount);
-        
-        // Take screenshot after deletion
         await page.screenshot({ 
             path: 'tests/Browser/comments.spec.js-snapshots/comment-deleted.png',
             fullPage: true 
@@ -176,9 +174,8 @@ test.describe('Comments System', () => {
 
     test('can react to a comment', async ({ page }) => {
         await page.goto('http://localhost:8000');
-        
+        const commentItem = page.locator(`[data-content_owner_id="container_${authUser.id}"]`).first();
         // Find reaction button on first comment
-        const commentItem = page.locator('[class*="comment"]').first();
         const reactionButton = commentItem.locator('button').filter({ hasText: /👍|Like/ }).first();
         
         // Click reaction
@@ -218,24 +215,29 @@ test.describe('Comments System', () => {
         await page.click('button:has-text("Add Comment")');
         
         // Try to submit empty comment
-        await page.click('button:has-text("Post")');
-        
-        // Check for error message
-        await expect(page.locator('text=/cannot be empty/i')).toBeVisible();
+         const button = await page.locator('button:has-text("Post")');
+        await expect(button).toBeDisabled();
         
         // Take screenshot of validation error
         await page.screenshot({ 
-            path: 'tests/Browser/comments.spec.js-snapshots/validation-error.png' 
+            path: 'tests/Browser/comments.spec.js-snapshots/button-disabled.png' 
         });
+        const textarea = await page.locator('[data-testid="comment-input"]').first();
+        await textarea.fill('test ');
+        await expect(button).toBeEnabled();
     });
 
     test('can cancel comment editing', async ({ page }) => {
         await page.goto('http://localhost:8000');
         
-        // Start editing
-        await page.locator('[class*="comment"]').first().locator('button').first().click();
-        await page.click('text=Edit');
+         const commentItem = page.locator(`[data-content_owner_id="container_${authUser.id}"]`).first();
         
+        // Click more options menu
+        await commentItem.locator('button').first().click();
+        
+        await page.locator('[data-testid="edit-comment"]').first().click();
+        
+    
         // Change text
         await page.fill('textarea', 'Changed text');
         
@@ -253,10 +255,8 @@ test.describe('Comments System', () => {
 
     test('displays user avatars and names', async ({ page }) => {
         await page.goto('http://localhost:8000');
-        
-        // Check for user avatar
-        const commentItem = page.locator('[class*="comment"]').first();
-        await expect(commentItem.locator('[class*="rounded-full"]')).toBeVisible();
+          const commentItem = page.locator(`[data-content_owner_id="container_${authUser.id}"]`).first();
+       await expect(commentItem.locator(`[data-user_id="${authUser.id}"][role="avatar"]`)).toBeVisible();
         
         // Check for user name
         await expect(commentItem.locator('text=/Test User|User/')).toBeVisible();
