@@ -369,10 +369,8 @@ function ReactionsModal({
       }
     };
     modalRef.current.addEventListener("keydown", handleTabKey);
-    return () => {
-      var _a;
-      return (_a = modalRef.current) == null ? void 0 : _a.removeEventListener("keydown", handleTabKey);
-    };
+    const currentModalRef = modalRef.current;
+    return () => currentModalRef == null ? void 0 : currentModalRef.removeEventListener("keydown", handleTabKey);
   }, [isOpen, reactions]);
   const tabs = [
     { key: "all", label: "All", count: Object.values(reactionsSummary).reduce((a, b) => a + b, 0) },
@@ -421,7 +419,7 @@ function ReactionsModal({
     }
   };
   const handleScroll = (e) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
     if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasMore && !isLoading) {
       loadReactions(page + 1, true);
     }
@@ -1040,7 +1038,7 @@ function CommentItem({
     setIsEditing(false);
   };
   const handleReplySuccess = (newReply) => {
-    onReplyAdded(comment.id, newReply);
+    onReplyAdded(comment.id, { ...comment, content: newReply });
     setShowReplyForm(false);
   };
   if (isDeleting) {
@@ -1053,6 +1051,8 @@ function CommentItem({
           /* @__PURE__ */ jsx(
             "div",
             {
+              "data-user_id": comment.user_id,
+              role: "avatar",
               onClick: () => {
                 var _a2;
                 return onUserClick == null ? void 0 : onUserClick((_a2 = comment.user) == null ? void 0 : _a2.id);
@@ -1189,7 +1189,6 @@ function Comments({
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
-  useRef(null);
   useEffect(() => {
     console.log("Comments initialized:", {
       initialCount: initialComments.length,
@@ -1206,7 +1205,7 @@ function Comments({
   };
   const handleCommentUpdated = (commentId, updatedContent) => {
     setComments((prev) => prev.map(
-      (comment) => comment.id === commentId ? { ...comment, content: updatedContent, is_edited: true, edited_at: /* @__PURE__ */ new Date() } : comment
+      (comment) => comment.id === commentId ? { ...comment, content: updatedContent, is_edited: true, edited_at: (/* @__PURE__ */ new Date()).toISOString() } : comment
     ));
   };
   const handleCommentDeleted = (commentId) => {
@@ -1258,7 +1257,9 @@ function Comments({
       }
     } catch (error) {
       console.error("Failed to load more comments:", error);
-      console.error("Error details:", (_a = error.response) == null ? void 0 : _a.data);
+      if (axios.isAxiosError(error)) {
+        console.error("Error details:", (_a = error.response) == null ? void 0 : _a.data);
+      }
       setHasMore(false);
     } finally {
       setLoading(false);

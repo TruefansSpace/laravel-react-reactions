@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, AlertCircle, Loader2 } from 'lucide-react';
 
-const REACTION_TYPES = {
+const REACTION_TYPES: Record<string, string> = {
     like: '👍',
     love: '❤️',
     haha: '😂',
@@ -10,6 +10,39 @@ const REACTION_TYPES = {
     angry: '😠',
 };
 
+interface User {
+    id: number;
+    name: string;
+    email: string;
+}
+
+interface Reaction {
+    id: number;
+    type: string;
+    user?: User;
+}
+
+interface PaginatedReactions {
+    data: Reaction[];
+    current_page: number;
+    last_page: number;
+}
+
+interface ReactionsModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    reactableType: string;
+    reactableId: number;
+    reactionsSummary: Record<string, number>;
+    onUserClick?: (userId: number) => void;
+}
+
+interface Tab {
+    key: string;
+    label: string;
+    count: number;
+}
+
 export default function ReactionsModal({ 
     isOpen, 
     onClose, 
@@ -17,17 +50,17 @@ export default function ReactionsModal({
     reactableId,
     reactionsSummary,
     onUserClick
-}) {
+}: ReactionsModalProps) {
     const [activeTab, setActiveTab] = useState('all');
     const [isAnimating, setIsAnimating] = useState(false);
-    const [reactions, setReactions] = useState([]);
+    const [reactions, setReactions] = useState<Reaction[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [page, setPage] = useState(1);
-    const [error, setError] = useState(null);
-    const scrollRef = useRef(null);
-    const modalRef = useRef(null);
+    const [error, setError] = useState<string | null>(null);
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (isOpen) {
@@ -38,7 +71,7 @@ export default function ReactionsModal({
 
     // Handle ESC key to close modal
     useEffect(() => {
-        const handleEscape = (e) => {
+        const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && isOpen) {
                 handleClose();
             }
@@ -52,10 +85,10 @@ export default function ReactionsModal({
     useEffect(() => {
         if (!isOpen || !modalRef.current) return;
 
-        const handleTabKey = (e) => {
+        const handleTabKey = (e: KeyboardEvent) => {
             if (e.key !== 'Tab') return;
 
-            const focusableElements = modalRef.current.querySelectorAll(
+            const focusableElements = modalRef.current!.querySelectorAll<HTMLElement>(
                 'button:not([disabled]), [tabindex="0"]'
             );
             const firstElement = focusableElements[0];
@@ -77,10 +110,11 @@ export default function ReactionsModal({
         };
 
         modalRef.current.addEventListener('keydown', handleTabKey);
-        return () => modalRef.current?.removeEventListener('keydown', handleTabKey);
+        const currentModalRef = modalRef.current;
+        return () => currentModalRef?.removeEventListener('keydown', handleTabKey);
     }, [isOpen, reactions]);
 
-    const tabs = [
+    const tabs: Tab[] = [
         { key: 'all', label: 'All', count: Object.values(reactionsSummary).reduce((a, b) => a + b, 0) },
         ...Object.entries(reactionsSummary)
             .filter(([, count]) => count > 0)
@@ -91,7 +125,7 @@ export default function ReactionsModal({
             }))
     ];
 
-    const loadReactions = async (pageNum, append = false) => {
+    const loadReactions = async (pageNum: number, append = false) => {
         if (isLoading || isLoadingMore) return;
         
         if (append) {
@@ -117,7 +151,7 @@ export default function ReactionsModal({
             const data = await response.json();
             
             if (data.reactions) {
-                const paginatedData = data.reactions;
+                const paginatedData: PaginatedReactions = data.reactions;
                 if (append) {
                     setReactions(prev => [...prev, ...paginatedData.data]);
                 } else {
@@ -135,14 +169,8 @@ export default function ReactionsModal({
         }
     };
 
-    const handleTabChange = (type) => {
-        setActiveTab(type);
-        setPage(1);
-        setHasMore(true);
-    };
-
-    const handleScroll = (e) => {
-        const { scrollTop, scrollHeight, clientHeight } = e.target;
+    const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
         if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasMore && !isLoading) {
             loadReactions(page + 1, true);
         }
@@ -254,12 +282,12 @@ export default function ReactionsModal({
                                     key={reaction.id}
                                     role={onUserClick ? "button" : undefined}
                                     tabIndex={onUserClick ? 0 : undefined}
-                                    onClick={() => onUserClick?.(reaction.user?.id)}
+                                    onClick={() => onUserClick?.(reaction.user?.id!)}
                                     data-testid="user-reaction-item"
                                     onKeyDown={(e) => {
                                         if (onUserClick && (e.key === 'Enter' || e.key === ' ')) {
                                             e.preventDefault();
-                                            onUserClick(reaction.user?.id);
+                                            onUserClick(reaction.user?.id!);
                                         }
                                     }}
                                     className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 animate-in fade-in slide-in-from-bottom-2 ${

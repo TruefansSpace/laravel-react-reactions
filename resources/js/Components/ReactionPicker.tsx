@@ -1,6 +1,10 @@
-import React from 'react';
+interface ReactionPickerProps {
+    reactions: Record<string, string>;
+    onSelect: (type: string) => void;
+    currentReaction: string | null;
+}
 
-export default function ReactionPicker({ reactions, onSelect, currentReaction }) {
+export default function ReactionPicker({ reactions, onSelect, currentReaction }: ReactionPickerProps) {
     return (
         <div 
             className="absolute bottom-full left-0 mb-2 bg-white rounded-lg shadow-lg border border-gray-200 p-2 flex gap-1 animate-fade-in z-10"
@@ -22,7 +26,7 @@ export default function ReactionPicker({ reactions, onSelect, currentReaction })
                     {emoji}
                 </button>
             ))}
-            <style jsx>{`
+            <style>{`
                 @keyframes fadeInScale {
                     from {
                         opacity: 0;

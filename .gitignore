@@ -32,3 +32,4 @@ testbench.yaml
 /coverage
 /playwright-report
 /test-results
+/coverage-html

@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import ReactionsModal from './ReactionsModal';
 
-const REACTION_TYPES = {
+const REACTION_TYPES: Record<string, string> = {
     like: '👍',
     love: '❤️',
     haha: '😂',
@@ -18,7 +18,7 @@ const REACTION_TYPES = {
     angry: '😠',
 };
 
-const REACTION_LABELS = {
+const REACTION_LABELS: Record<string, string> = {
     like: 'Like',
     love: 'Love',
     haha: 'Haha',
@@ -27,21 +27,29 @@ const REACTION_LABELS = {
     angry: 'Angry',
 };
 
+interface ReactionsProps {
+    reactableType: string;
+    reactableId: number;
+    initialReactions?: Record<string, number>;
+    userReaction?: string | null;
+    onUserClick?: (userId: number) => void;
+}
+
 export default function Reactions({ 
     reactableType, 
     reactableId, 
     initialReactions = {}, 
     userReaction = null,
     onUserClick
-}) {
+}: ReactionsProps) {
     const [reactions, setReactions] = useState(initialReactions);
     const [currentUserReaction, setCurrentUserReaction] = useState(userReaction);
     const [isProcessing, setIsProcessing] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const hoverTimeoutRef = React.useRef(null);
+    const hoverTimeoutRef = React.useRef<number | null>(null);
 
-    const handleReaction = (type) => {
+    const handleReaction = (type: string) => {
         if (isProcessing) return;
 
         setIsProcessing(true);
@@ -87,7 +95,7 @@ export default function Reactions({
         const options = {
             preserveScroll: true,
             preserveState: true,
-            onSuccess: (page) => {
+            onSuccess: (page: any) => {
                 if (page.props.reactions_summary) {
                     setReactions(page.props.reactions_summary);
                 }
@@ -96,7 +104,7 @@ export default function Reactions({
                 }
                 setIsProcessing(false);
             },
-            onError: (errors) => {
+            onError: (errors: any) => {
                 console.error('Failed to update reaction:', errors);
                 setReactions(previousReactions);
                 setCurrentUserReaction(previousUserReaction);

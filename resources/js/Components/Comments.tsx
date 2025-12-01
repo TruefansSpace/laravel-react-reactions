@@ -1,8 +1,47 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { MessageSquare, Loader2 } from 'lucide-react';
 import CommentItem from './CommentItem';
 import CommentForm from './CommentForm';
 import axios from 'axios';
+
+interface User {
+    id: number;
+    name: string;
+    email?: string;
+}
+
+interface Comment {
+    id: number;
+    content: string;
+    user_id: number;
+    user?: User;
+    created_at: string;
+    is_edited?: boolean;
+    reactions_summary?: Record<string, number>;
+    user_reaction?: string | null;
+    replies?: Comment[];
+}
+
+interface CommentsProps {
+    commentableType: string;
+    commentableId: number;
+    initialComments?: Comment[];
+    totalComments?: number | null;
+    reactionsEnabled?: boolean;
+    onUserClick?: (userId: number) => void;
+    currentUserId: number;
+    perPage?: number;
+}
+
+interface PaginationData {
+    has_more: boolean;
+}
+
+interface CommentsResponse {
+    success: boolean;
+    comments: Comment[];
+    pagination: PaginationData;
+}
 
 export default function Comments({
     commentableType,
@@ -13,13 +52,12 @@ export default function Comments({
     onUserClick,
     currentUserId,
     perPage = 5
-}) {
-    const [comments, setComments] = useState(initialComments);
+}: CommentsProps) {
+    const [comments, setComments] = useState<Comment[]>(initialComments);
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [page, setPage] = useState(1);
-    const observerTarget = useRef(null);
 
     // Update comments when initialComments prop changes (after Inertia reload)
     useEffect(() => {
@@ -40,19 +78,19 @@ export default function Comments({
         setShowForm(false);
     };
 
-    const handleCommentUpdated = (commentId, updatedContent) => {
+    const handleCommentUpdated = (commentId: number, updatedContent: string) => {
         setComments(prev => prev.map(comment => 
             comment.id === commentId 
-                ? { ...comment, content: updatedContent, is_edited: true, edited_at: new Date() }
+                ? { ...comment, content: updatedContent, is_edited: true, edited_at: new Date().toISOString() }
                 : comment
         ));
     };
 
-    const handleCommentDeleted = (commentId) => {
+    const handleCommentDeleted = (commentId: number) => {
         setComments(prev => prev.filter(comment => comment.id !== commentId));
     };
 
-    const handleReplyAdded = (parentId, newReply) => {
+    const handleReplyAdded = (parentId: number, newReply: Comment) => {
         setComments(prev => prev.map(comment => {
             if (comment.id === parentId) {
                 return {
@@ -82,7 +120,7 @@ export default function Comments({
             console.log('Original type:', commentableType);
             console.log('Encoded type:', encodedType);
             
-            const response = await axios.get(url);
+            const response = await axios.get<CommentsResponse>(url);
             console.log('Response received:', response.data);
 
             if (response.data.success) {
@@ -104,7 +142,9 @@ export default function Comments({
             }
         } catch (error) {
             console.error('Failed to load more comments:', error);
-            console.error('Error details:', error.response?.data);
+            if (axios.isAxiosError(error)) {
+                console.error('Error details:', error.response?.data);
+            }
             setHasMore(false);
         } finally {
             setLoading(false);

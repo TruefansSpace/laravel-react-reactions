@@ -1,6 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { router } from '@inertiajs/react';
-import { Send, X } from 'lucide-react';
+import { Send } from 'lucide-react';
+
+interface CommentFormProps {
+    commentableType: string;
+    commentableId: number;
+    parentId?: number | null;
+    initialContent?: string;
+    commentId?: number | null;
+    onSuccess: (content: string) => void;
+    onCancel: () => void;
+    isEditing?: boolean;
+    placeholder?: string;
+}
 
 export default function CommentForm({
     commentableType,
@@ -12,11 +24,11 @@ export default function CommentForm({
     onCancel,
     isEditing = false,
     placeholder = 'Write a comment...'
-}) {
+}: CommentFormProps) {
     const [content, setContent] = useState(initialContent);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
-    const textareaRef = useRef(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
         // Auto-focus and adjust height
@@ -34,7 +46,7 @@ export default function CommentForm({
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
         if (!content.trim()) {
@@ -66,7 +78,7 @@ export default function CommentForm({
                     setContent('');
                 },
                 onError: (errors) => {
-                    setError(errors.content || errors.error || 'Failed to update comment');
+                    setError((errors as any).content || (errors as any).error || 'Failed to update comment');
                     setIsSubmitting(false);
                 },
                 onFinish: () => {
@@ -82,7 +94,7 @@ export default function CommentForm({
                     if (onCancel) onCancel();
                 },
                 onError: (errors) => {
-                    setError(errors.content || errors.error || 'Failed to add comment');
+                    setError((errors as any).content || (errors as any).error || 'Failed to add comment');
                     setIsSubmitting(false);
                 },
                 onFinish: () => {

@@ -1,6 +1,14 @@
 import React from 'react';
 
-export default function ReactionButton({ type, emoji, count, isActive, onClick }) {
+interface ReactionButtonProps {
+    type: string;
+    emoji: string;
+    count: number;
+    isActive: boolean;
+    onClick: () => void;
+}
+
+export default function ReactionButton({ type, emoji, count, isActive, onClick }: ReactionButtonProps) {
     return (
         <button
             onClick={onClick}

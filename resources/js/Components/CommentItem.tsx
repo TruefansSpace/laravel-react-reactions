@@ -6,6 +6,37 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import Reactions from './Reactions';
 import CommentForm from './CommentForm';
 
+interface User {
+    id: number;
+    name: string;
+    email?: string;
+}
+
+interface Comment {
+    id: number;
+    content: string;
+    user_id: number;
+    user?: User;
+    created_at: string;
+    is_edited?: boolean;
+    reactions_summary?: Record<string, number>;
+    user_reaction?: string | null;
+    replies?: Comment[];
+}
+
+interface CommentItemProps {
+    comment: Comment;
+    commentableType: string;
+    commentableId: number;
+    reactionsEnabled: boolean;
+    onUserClick?: (userId: number) => void;
+    onCommentUpdated: (commentId: number, updatedContent: string) => void;
+    onCommentDeleted: (commentId: number) => void;
+    onReplyAdded: (parentId: number, newReply: Comment) => void;
+    currentUserId: number;
+    isReply?: boolean;
+}
+
 export default function CommentItem({
     comment,
     commentableType,
@@ -17,7 +48,7 @@ export default function CommentItem({
     onReplyAdded,
     currentUserId,
     isReply = false
-}) {
+}: CommentItemProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -60,13 +91,13 @@ export default function CommentItem({
         });
     };
 
-    const handleEditSuccess = (updatedContent) => {
+    const handleEditSuccess = (updatedContent: string) => {
         onCommentUpdated(comment.id, updatedContent);
         setIsEditing(false);
     };
 
-    const handleReplySuccess = (newReply) => {
-        onReplyAdded(comment.id, newReply);
+    const handleReplySuccess = (newReply: string) => {
+        onReplyAdded(comment.id, { ...comment, content: newReply });
         setShowReplyForm(false);
     };
 
@@ -87,7 +118,7 @@ export default function CommentItem({
                         <div 
                         data-user_id={comment.user_id}
                         role="avatar"
-                            onClick={() => onUserClick?.(comment.user?.id)}
+                            onClick={() => onUserClick?.(comment.user?.id!)}
                             className={`w-8 h-8 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 ${
                                 onUserClick ? 'cursor-pointer hover:ring-2 hover:ring-gray-900 hover:ring-offset-1 transition-all' : ''
                             }`}
@@ -97,7 +128,7 @@ export default function CommentItem({
                         <div>
                             <div className="flex items-center gap-1.5">
                                 <span 
-                                    onClick={() => onUserClick?.(comment.user?.id)}
+                                    onClick={() => onUserClick?.(comment.user?.id!)}
                                     className={`text-sm font-semibold text-gray-900 ${
                                         onUserClick ? 'cursor-pointer hover:underline' : ''
                                     }`}
