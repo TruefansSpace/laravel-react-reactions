@@ -28,14 +28,14 @@ class CommentController extends Controller
         try {
             // Fix double-escaped backslashes from JavaScript
             $commentableClass = stripslashes($validated['commentable_type']);
-            
+
             // If stripslashes removed too much, try the original
-            if (!class_exists($commentableClass)) {
+            if (! class_exists($commentableClass)) {
                 $commentableClass = $validated['commentable_type'];
             }
 
             // Validate commentable class exists
-            if (!class_exists($commentableClass)) {
+            if (! class_exists($commentableClass)) {
                 throw ValidationException::withMessages([
                     'commentable_type' => 'Invalid commentable type.',
                 ]);
@@ -44,32 +44,32 @@ class CommentController extends Controller
             // Find commentable model
             $commentable = $commentableClass::find($validated['commentable_id']);
 
-            if (!$commentable) {
+            if (! $commentable) {
                 throw ValidationException::withMessages([
                     'commentable_id' => 'The selected item does not exist.',
                 ]);
             }
 
             // Check if commentable has the HasComments trait
-            if (!method_exists($commentable, 'canManageComment')) {
+            if (! method_exists($commentable, 'canManageComment')) {
                 throw ValidationException::withMessages([
                     'commentable_type' => 'This type does not support comments.',
                 ]);
             }
 
             // Authorization: Check if user can comment (pass null to check creation permission)
-            if (!$commentable->canManageComment(null)) {
+            if (! $commentable->canManageComment(null)) {
                 return redirect()->back(303)->withErrors([
                     'error' => 'You are not allowed to comment on this item.',
                 ]);
             }
 
             // If parent_id is provided, validate it belongs to the same commentable
-            if (!empty($validated['parent_id'])) {
+            if (! empty($validated['parent_id'])) {
                 $parentComment = Comment::find($validated['parent_id']);
-                
-                if (!$parentComment || 
-                    $parentComment->commentable_type !== $commentableClass || 
+
+                if (! $parentComment ||
+                    $parentComment->commentable_type !== $commentableClass ||
                     $parentComment->commentable_id != $validated['commentable_id']) {
                     throw ValidationException::withMessages([
                         'parent_id' => 'Invalid parent comment.',
@@ -79,7 +79,7 @@ class CommentController extends Controller
 
             // Create comment in transaction
             DB::beginTransaction();
-            
+
             $comment = Comment::create([
                 'commentable_type' => $commentableClass,
                 'commentable_id' => $validated['commentable_id'],
@@ -96,7 +96,7 @@ class CommentController extends Controller
             Log::info('Comment created', [
                 'comment_id' => $comment->id,
                 'user_id' => auth()->id(),
-                'commentable' => $commentableClass . ':' . $validated['commentable_id'],
+                'commentable' => $commentableClass.':'.$validated['commentable_id'],
             ]);
 
             return redirect()->back(303)->with('success', 'Comment posted successfully.');
@@ -106,7 +106,7 @@ class CommentController extends Controller
             throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             Log::error('Failed to create comment', [
                 'error' => $e->getMessage(),
                 'user_id' => auth()->id(),
@@ -114,7 +114,7 @@ class CommentController extends Controller
             ]);
 
             return redirect()->back(303)->withErrors([
-                'error' => 'Failed to post comment. Please try again. ' . $e->getMessage(),
+                'error' => 'Failed to post comment. Please try again. '.$e->getMessage(),
             ]);
         }
     }
@@ -125,7 +125,7 @@ class CommentController extends Controller
     public function update(Request $request, Comment $comment)
     {
         // Authorization: Check if user can edit this comment
-        if (!$comment->canEdit()) {
+        if (! $comment->canEdit()) {
             return redirect()->back(303)->withErrors([
                 'error' => 'You are not allowed to edit this comment.',
             ]);
@@ -164,7 +164,7 @@ class CommentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             Log::error('Failed to update comment', [
                 'error' => $e->getMessage(),
                 'comment_id' => $comment->id,
@@ -183,7 +183,7 @@ class CommentController extends Controller
     public function destroy(Comment $comment)
     {
         // Authorization: Check if user can delete this comment
-        if (!$comment->canDelete()) {
+        if (! $comment->canDelete()) {
             return redirect()->back(303)->withErrors([
                 'error' => 'You are not allowed to delete this comment.',
             ]);
@@ -206,7 +206,7 @@ class CommentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             Log::error('Failed to delete comment', [
                 'error' => $e->getMessage(),
                 'comment_id' => $comment->id,
@@ -279,10 +279,10 @@ class CommentController extends Controller
 
             // Decode the commentable type from base64
             $commentableClass = base64_decode($commentableType);
-            
+
             // Fix double-escaped backslashes
             $commentableClass = stripslashes($commentableClass);
-            
+
             Log::info('Comment list request', [
                 'original' => $commentableType,
                 'decoded' => $commentableClass,
@@ -290,21 +290,21 @@ class CommentController extends Controller
             ]);
 
             // Validate commentable class exists
-            if (!class_exists($commentableClass)) {
+            if (! class_exists($commentableClass)) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Invalid commentable type.',
                     'debug' => [
                         'received' => $commentableType,
                         'decoded' => $commentableClass,
-                    ]
+                    ],
                 ], 400);
             }
 
             // Find commentable model
             $commentable = $commentableClass::find($commentableId);
 
-            if (!$commentable) {
+            if (! $commentable) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Commentable not found.',
@@ -366,5 +366,4 @@ class CommentController extends Controller
             ], 500);
         }
     }
-
 }

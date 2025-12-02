@@ -23,9 +23,9 @@ test('comment created event can be instantiated', function () {
         'user_id' => $this->user->id,
         'content' => 'Test comment',
     ]);
-    
+
     $event = new CommentCreated($comment);
-    
+
     expect($event)->toBeInstanceOf(CommentCreated::class)
         ->and($event->comment)->toBeInstanceOf(Comment::class)
         ->and($event->comment->id)->toBe($comment->id);
@@ -41,16 +41,16 @@ test('comment created event uses serializes models trait', function () {
 
 test('comment created event can be dispatched', function () {
     Event::fake();
-    
+
     $comment = Comment::create([
         'commentable_type' => TestPost::class,
         'commentable_id' => $this->post->id,
         'user_id' => $this->user->id,
         'content' => 'Test comment',
     ]);
-    
+
     event(new CommentCreated($comment));
-    
+
     Event::assertDispatched(CommentCreated::class, function ($event) use ($comment) {
         return $event->comment->id === $comment->id;
     });

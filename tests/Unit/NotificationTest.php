@@ -20,7 +20,7 @@ it('notification has correct via channels', function () {
     ]);
 
     $notification = new NewCommentNotification($comment);
-    
+
     expect($notification->via($user))->toBe(['mail']);
 });
 
@@ -41,7 +41,7 @@ it('notification generates correct mail message', function () {
 
     $notification = new NewCommentNotification($comment);
     $mailMessage = $notification->toMail($user);
-    
+
     expect($mailMessage)->toBeInstanceOf(\Illuminate\Notifications\Messages\MailMessage::class)
         ->and($mailMessage->subject)->toContain('New comment')
         ->and($mailMessage->introLines)->toBeArray()
@@ -65,7 +65,7 @@ it('notification generates correct array representation', function () {
 
     $notification = new NewCommentNotification($comment);
     $array = $notification->toArray($user);
-    
+
     expect($array)->toBeArray()
         ->and($array)->toHaveKey('comment_id')
         ->and($array)->toHaveKey('commentable_type')
@@ -91,7 +91,7 @@ it('notification mail includes comment content', function () {
 
     $notification = new NewCommentNotification($comment);
     $mailMessage = $notification->toMail($user);
-    
+
     // Check that content is included
     $contentLine = $mailMessage->introLines[1];
     expect($contentLine)->toContain('This is my comment');
@@ -122,7 +122,7 @@ it('notification handles reply comments differently', function () {
 
     $notification = new NewCommentNotification($reply);
     $mailMessage = $notification->toMail($user);
-    
+
     expect($mailMessage->subject)->toContain('reply');
 });
 
@@ -143,7 +143,7 @@ it('notification mail structure is correct', function () {
 
     $notification = new \TrueFans\LaravelReactReactions\Notifications\NewCommentNotification($comment);
     $mailMessage = $notification->toMail($user);
-    
+
     expect($mailMessage)->toBeInstanceOf(\Illuminate\Notifications\Messages\MailMessage::class)
         ->and($mailMessage->subject)->toBeString()
         ->and($mailMessage->introLines)->toBeArray();

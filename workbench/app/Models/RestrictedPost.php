@@ -8,7 +8,7 @@ use TrueFans\LaravelReactReactions\Traits\HasReactions;
 
 class RestrictedPost extends Model
 {
-    use HasReactions, HasComments;
+    use HasComments, HasReactions;
 
     protected $table = 'test_posts';
 

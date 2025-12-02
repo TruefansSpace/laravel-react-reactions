@@ -72,34 +72,34 @@ trait HasReactions
 
     /**
      * Query Scope: Add reactions data using efficient subqueries
-     * 
+     *
      * This scope adds two subqueries to your main query:
      * 1. reactions_summary_json - A JSON object with counts for each reaction type
      * 2. user_reaction_type - The current user's reaction (if userId provided)
-     * 
+     *
      * HOW IT WORKS:
      * Instead of loading all reactions into memory, we use SQL subqueries that:
      * - Run aggregation (GROUP BY, COUNT) at the database level
      * - Return only the final counts, not all reaction records
      * - Execute as part of the main query (1 query total, not N+1)
-     * 
+     *
      * EXAMPLE SQL GENERATED:
      * SELECT posts.*,
      *   (SELECT JSON_OBJECT('like', COUNT(*), 'love', COUNT(*), ...)
      *    FROM reactions WHERE reactable_id = posts.id) as reactions_summary_json,
      *   (SELECT type FROM reactions WHERE reactable_id = posts.id AND user_id = 1) as user_reaction_type
      * FROM posts
-     * 
+     *
      * PERFORMANCE:
      * - Without this: 1 query for posts + 2 queries per post = 21 queries for 10 posts
      * - With this: 1 query total, regardless of number of posts
      * - Scales to millions of reactions without memory issues
-     * 
+     *
      * USAGE:
      * Post::withReactionsData(auth()->id())->get()
-     * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param int|null $userId Optional user ID to get their reaction
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int|null  $userId  Optional user ID to get their reaction
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeWithReactionsData($query, ?int $userId = null)
@@ -107,7 +107,7 @@ trait HasReactions
         $model = $query->getModel();
         $table = $model->getTable();
         $modelClass = get_class($model);
-        
+
         // Build JSON_OBJECT dynamically from config
         $reactionTypes = array_keys(config('react-reactions.types', [
             'like' => '👍',
@@ -117,7 +117,7 @@ trait HasReactions
             'sad' => '😢',
             'angry' => '😠',
         ]));
-        
+
         $jsonParts = [];
         foreach ($reactionTypes as $type) {
             $jsonParts[] = sprintf(
@@ -126,16 +126,16 @@ trait HasReactions
                 $type
             );
         }
-        $jsonObjectSql = 'JSON_OBJECT(' . implode(', ', $jsonParts) . ')';
-        
+        $jsonObjectSql = 'JSON_OBJECT('.implode(', ', $jsonParts).')';
+
         return $query
             // Select all columns from the main table first
-            ->select($table . '.*')
+            ->select($table.'.*')
             // Subquery 1: Get reaction counts aggregated by type
             ->selectSub(
                 \Illuminate\Support\Facades\DB::table('reactions')
                     ->selectRaw($jsonObjectSql)
-                    ->whereColumn('reactable_id', $table . '.id')
+                    ->whereColumn('reactable_id', $table.'.id')
                     ->where('reactable_type', $modelClass),
                 'reactions_summary_json'
             )
@@ -144,7 +144,7 @@ trait HasReactions
                 $q->selectSub(
                     \Illuminate\Support\Facades\DB::table('reactions')
                         ->select('type')
-                        ->whereColumn('reactable_id', $table . '.id')
+                        ->whereColumn('reactable_id', $table.'.id')
                         ->where('reactable_type', $modelClass)
                         ->where('user_id', $userId)
                         ->limit(1),
@@ -158,14 +158,14 @@ trait HasReactions
      */
     public function parseReactionsSummary(): array
     {
-        if (!isset($this->reactions_summary_json)) {
+        if (! isset($this->reactions_summary_json)) {
             return $this->reactionsSummary();
         }
 
         $summary = json_decode($this->reactions_summary_json, true) ?? [];
-        
+
         // Remove zeros for cleaner output
-        return array_filter($summary, fn($count) => $count > 0);
+        return array_filter($summary, fn ($count) => $count > 0);
     }
 
     /**

@@ -1,7 +1,6 @@
 <?php
 
 use TrueFans\LaravelReactReactions\Events\CommentCreated;
-use TrueFans\LaravelReactReactions\Listeners\SendCommentNotification;
 use TrueFans\LaravelReactReactions\LaravelReactReactionsServiceProvider;
 
 beforeEach(function () {
@@ -10,22 +9,22 @@ beforeEach(function () {
 
 it('registers config', function () {
     $this->provider->register();
-    
+
     expect(config('react-reactions'))->toBeArray();
 });
 
 it('registers service provider', function () {
     $this->provider->register();
-    
+
     expect($this->provider)->toBeInstanceOf(\TrueFans\LaravelReactReactions\LaravelReactReactionsServiceProvider::class);
 });
 
 it('boots and loads routes', function () {
     $this->provider->boot();
-    
+
     // Check if routes are registered
-    $routes = collect(app('router')->getRoutes())->map(fn($route) => $route->getName());
-    
+    $routes = collect(app('router')->getRoutes())->map(fn ($route) => $route->getName());
+
     expect($routes->contains('reactions.store'))->toBeTrue()
         ->and($routes->contains('reactions.destroy'))->toBeTrue()
         ->and($routes->contains('comments.store'))->toBeTrue()
@@ -34,9 +33,9 @@ it('boots and loads routes', function () {
 
 it('registers event listeners', function () {
     $this->provider->boot();
-    
+
     $listeners = app('events')->getListeners(CommentCreated::class);
-    
+
     expect($listeners)->not->toBeEmpty();
 });
 
@@ -45,7 +44,7 @@ it('publishes config files', function () {
         LaravelReactReactionsServiceProvider::class,
         'react-reactions-config'
     );
-    
+
     expect($publishes)->not->toBeEmpty()
         ->and(array_values($publishes)[0])->toContain('react-reactions.php');
 });
@@ -55,7 +54,7 @@ it('publishes migration files', function () {
         LaravelReactReactionsServiceProvider::class,
         'react-reactions-migrations'
     );
-    
+
     expect($publishes)->not->toBeEmpty();
 });
 
@@ -64,6 +63,6 @@ it('publishes react component files', function () {
         LaravelReactReactionsServiceProvider::class,
         'react-reactions-components'
     );
-    
+
     expect($publishes)->not->toBeEmpty();
 });

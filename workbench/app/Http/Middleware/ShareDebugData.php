@@ -14,7 +14,7 @@ class ShareDebugData
 
         if (config('app.debug') && $request->header('X-Inertia')) {
             $queries = DB::getQueryLog();
-            
+
             $debugData = [
                 'queries' => array_map(function ($query) {
                     return [
@@ -45,6 +45,6 @@ class ShareDebugData
         $pow = min($pow, count($units) - 1);
         $bytes /= (1 << (10 * $pow));
 
-        return round($bytes, $precision) . ' ' . $units[$pow];
+        return round($bytes, $precision).' '.$units[$pow];
     }
 }

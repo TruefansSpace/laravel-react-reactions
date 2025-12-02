@@ -3,9 +3,9 @@
 namespace Workbench\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use TrueFans\LaravelReactReactions\Models\Comment;
 use Workbench\App\Models\TestPost;
 use Workbench\App\Models\User;
-use TrueFans\LaravelReactReactions\Models\Comment;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
     {
         // Create 60 test users to demonstrate infinite scroll
         $users = [];
-        
+
         // First 5 main test users
         $mainUsers = [
             ['email' => 'test@example.com', 'name' => 'Test User'],
@@ -40,12 +40,12 @@ class DatabaseSeeder extends Seeder
         for ($i = 0; $i < 55; $i++) {
             $firstName = $firstNames[array_rand($firstNames)];
             $lastName = $lastNames[array_rand($lastNames)];
-            $email = strtolower($firstName . '.' . $lastName . $i . '@example.com');
-            
+            $email = strtolower($firstName.'.'.$lastName.$i.'@example.com');
+
             $users[] = User::updateOrCreate(
                 ['email' => $email],
                 [
-                    'name' => $firstName . ' ' . $lastName,
+                    'name' => $firstName.' '.$lastName,
                     'password' => bcrypt('password'),
                 ]
             );
@@ -115,7 +115,7 @@ class DatabaseSeeder extends Seeder
                 // Other posts get 3-8 random reactions
                 $numReactions = rand(3, 8);
                 $selectedUsers = collect($users)->random(min($numReactions, count($users)));
-                
+
                 foreach ($selectedUsers as $user) {
                     $randomReaction = $reactionTypes[array_rand($reactionTypes)];
                     $post->react($user->id, $randomReaction);
@@ -126,7 +126,7 @@ class DatabaseSeeder extends Seeder
             // First post gets 25 comments for infinite scroll demo (5 per page)
             $numComments = ($index === 0) ? 25 : rand(2, 5);
             $commentUsers = collect($users)->random(min($numComments, count($users)));
-            
+
             $commentTexts = [
                 'This is amazing! Great work!',
                 'I totally agree with this.',
@@ -157,7 +157,7 @@ class DatabaseSeeder extends Seeder
                 if (rand(0, 1)) {
                     $numReplies = rand(1, 2);
                     $replyUsers = collect($users)->random(min($numReplies, count($users)));
-                    
+
                     $replyTexts = [
                         'I agree with you!',
                         'Thanks for your comment!',

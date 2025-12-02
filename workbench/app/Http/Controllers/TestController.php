@@ -38,7 +38,7 @@ class TestController extends Controller
                 'user:id,name,email',
                 'replies' => function ($q) {
                     $q->with('user:id,name,email')->latest();
-                }
+                },
             ])
             ->withCount('replies')
             ->latest()
@@ -51,7 +51,7 @@ class TestController extends Controller
         // Map posts with their comments
         $postsData = $posts->map(function ($post) use ($commentCounts, $allComments) {
             $comments = $allComments->get($post->id, collect());
-            
+
             return [
                 'id' => $post->id,
                 'title' => $post->title,
@@ -59,7 +59,7 @@ class TestController extends Controller
                 'created_at' => $post->created_at,
                 'reactions_summary' => $post->parseReactionsSummary(),
                 'user_reaction' => $post->parseUserReaction(),
-                'comments' => $comments->map(function ($comment) use ($post) {
+                'comments' => $comments->map(function ($comment) {
                     return [
                         'id' => $comment->id,
                         'content' => $comment->content,
@@ -91,7 +91,7 @@ class TestController extends Controller
         });
 
         $errors = session()->get('errors');
-        
+
         // Explicitly pass auth, flash, and errors since middleware sharing isn't working
         return Inertia::render('TestPage', [
             'posts' => $postsData,

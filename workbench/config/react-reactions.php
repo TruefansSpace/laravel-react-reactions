@@ -54,4 +54,3 @@ return [
         'queue' => true, // Queue notification emails
     ],
 ];
-

@@ -109,7 +109,6 @@ it('enforces unique reaction per user per reactable', function () {
         ->and($post->userReaction(auth()->id()))->toBe('love');
 });
 
-
 it('returns null for user reaction when user id is zero', function () {
     $post = \Workbench\App\Models\TestPost::create([
         'title' => 'Test Post',
@@ -117,7 +116,7 @@ it('returns null for user reaction when user id is zero', function () {
     ]);
 
     $reaction = $post->userReaction(0);
-    
+
     expect($reaction)->toBeNull();
 });
 
@@ -133,6 +132,6 @@ it('can count total reactions', function () {
     $post->react($user2->id, 'love');
 
     $count = $post->reactions()->count();
-    
+
     expect($count)->toBe(2);
 });

@@ -27,7 +27,7 @@ class TestCase extends Orchestra
         // Prevent error handler issues with architecture tests
         restore_error_handler();
         restore_exception_handler();
-        
+
         parent::tearDown();
     }
 
@@ -47,10 +47,10 @@ class TestCase extends Orchestra
             'prefix' => '',
         ]);
         config()->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
-        
+
         // Configure auth to use Workbench User model
         config()->set('auth.providers.users.model', \Workbench\App\Models\User::class);
-        
+
         // Define login route for tests
         $app['router']->get('/login', function () {
             return 'login';

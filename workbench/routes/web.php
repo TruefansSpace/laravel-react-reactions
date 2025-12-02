@@ -13,4 +13,4 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/', [TestController::class, 'index'])->name('test.index');
 
 // Include package routes (reactions API endpoints with auth middleware)
-require __DIR__ . '/../../routes/web.php';
+require __DIR__.'/../../routes/web.php';

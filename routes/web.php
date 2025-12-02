@@ -13,7 +13,7 @@ Route::middleware(['web'])->prefix('comments')->name('comments.')->group(functio
     // Public routes (no auth required)
     Route::get('/list/{commentableType}/{commentableId}', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'list'])->name('list');
     Route::get('/{comment}/replies', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'replies'])->name('replies');
-    
+
     // Protected routes (auth required)
     Route::middleware(['auth'])->group(function () {
         Route::post('/', [\TrueFans\LaravelReactReactions\Http\Controllers\CommentController::class, 'store'])->name('store');

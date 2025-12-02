@@ -67,15 +67,12 @@ trait HasComments
     /**
      * Check if a user can create or manage comments
      * Override this method in your model to implement custom logic
-     *
-     * @param \TrueFans\LaravelReactReactions\Models\Comment|null $comment
-     * @return bool
      */
     public function canManageComment(?\TrueFans\LaravelReactReactions\Models\Comment $comment = null): bool
     {
         $user = auth()->user();
-        
-        if (!$user) {
+
+        if (! $user) {
             return false;
         }
 

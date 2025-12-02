@@ -24,10 +24,11 @@ return Application::configure(basePath: $APP_BASE_PATH ?? default_skeleton_path(
                 if ($request->expectsJson() || $request->inertia()) {
                     return \Inertia\Inertia::location(route('login'));
                 }
+
                 // For regular requests, redirect to login with 303
                 return redirect()->guest(route('login'), 303);
             }
-            
+
             return $response;
         });
     })->create();

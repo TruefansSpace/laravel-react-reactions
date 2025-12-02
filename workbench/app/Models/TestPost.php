@@ -3,12 +3,12 @@
 namespace Workbench\App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use TrueFans\LaravelReactReactions\Traits\HasReactions;
 use TrueFans\LaravelReactReactions\Traits\HasComments;
+use TrueFans\LaravelReactReactions\Traits\HasReactions;
 
 class TestPost extends Model
 {
-    use HasReactions, HasComments;
+    use HasComments, HasReactions;
 
     protected $fillable = [
         'title',

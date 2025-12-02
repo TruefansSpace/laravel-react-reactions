@@ -8,7 +8,7 @@ uses(RefreshDatabase::class);
 test('unauthorized user cannot comment on restricted post', function () {
     $owner = createUser();
     $otherUser = createUser();
-    
+
     $post = RestrictedPost::create([
         'title' => 'Restricted Post',
         'content' => 'Only owner can comment',
@@ -31,7 +31,7 @@ test('unauthorized user cannot comment on restricted post', function () {
 
 test('authorized user can comment on restricted post', function () {
     $owner = createUser();
-    
+
     $post = RestrictedPost::create([
         'title' => 'Restricted Post',
         'content' => 'Only owner can comment',
@@ -49,7 +49,7 @@ test('authorized user can comment on restricted post', function () {
 
     $response->assertRedirect();
     $response->assertSessionHas('success');
-    
+
     $this->assertDatabaseHas('comments', [
         'commentable_type' => RestrictedPost::class,
         'commentable_id' => $post->id,

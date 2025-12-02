@@ -3,7 +3,6 @@
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use TrueFans\LaravelReactReactions\Models\Comment;
 use Workbench\App\Models\TestPost;
-use Workbench\App\Models\User;
 
 uses(RefreshDatabase::class);
 
@@ -79,7 +78,7 @@ test('can count top level comments only', function () {
 
 test('can manage comment returns true for authenticated user by default', function () {
     $this->actingAs($this->user);
-    
+
     expect($this->post->canManageComment(null))->toBeTrue();
 });
 
@@ -131,7 +130,7 @@ test('comment tracks edit status', function () {
 
     // Fresh from database to get default values
     $comment = $comment->fresh();
-    
+
     expect($comment->is_edited)->toBeFalsy()
         ->and($comment->edited_at)->toBeNull();
 
@@ -160,7 +159,7 @@ it('can create reply using comment model', function () {
     ]);
 
     $reply = $comment->addReply($user->id, 'Reply content');
-    
+
     expect($reply)->toBeInstanceOf(\TrueFans\LaravelReactReactions\Models\Comment::class)
         ->and($reply->content)->toBe('Reply content')
         ->and($reply->parent_id)->toBe($comment->id);

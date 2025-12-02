@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use TrueFans\LaravelReactReactions\Models\Comment;
 use Workbench\App\Models\TestPost;
 
@@ -45,7 +44,7 @@ test('validates content is required for comment update', function () {
 
 test('non-owner cannot delete comment', function () {
     $otherUser = createUser();
-    
+
     $comment = Comment::create([
         'commentable_type' => TestPost::class,
         'commentable_id' => $this->post->id,
@@ -61,14 +60,14 @@ test('non-owner cannot delete comment', function () {
 test('edit timeout is checked when configured', function () {
     // Set edit timeout to 1 hour (3600 seconds)
     config(['react-reactions.comments.edit_timeout' => 3600]);
-    
+
     $comment = Comment::create([
         'commentable_type' => TestPost::class,
         'commentable_id' => $this->post->id,
         'user_id' => $this->user->id,
         'content' => 'Original content',
     ]);
-    
+
     // Manually set created_at to 3 hours ago
     $comment->created_at = now()->subHours(3);
     $comment->saveQuietly();
@@ -107,5 +106,3 @@ test('handles replies endpoint exception gracefully', function () {
         'replies',
     ]);
 });
-
-

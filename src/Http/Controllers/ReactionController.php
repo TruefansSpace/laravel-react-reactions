@@ -12,11 +12,11 @@ class ReactionController extends Controller
     public function store(Request $request)
     {
         $allowedTypes = implode(',', array_keys(config('react-reactions.types', [])));
-        
+
         $validator = Validator::make($request->all(), [
             'reactable_type' => 'required|string',
             'reactable_id' => 'required|integer',
-            'type' => 'required|string|in:' . $allowedTypes,
+            'type' => 'required|string|in:'.$allowedTypes,
         ]);
 
         if ($validator->fails()) {
@@ -25,12 +25,12 @@ class ReactionController extends Controller
 
         // Fix double-escaped backslashes from JavaScript
         $reactableClass = stripslashes($request->input('reactable_type'));
-        
+
         // If stripslashes removed too much, try the original
-        if (!class_exists($reactableClass)) {
+        if (! class_exists($reactableClass)) {
             $reactableClass = $request->input('reactable_type');
         }
-        
+
         if (! class_exists($reactableClass)) {
             return redirect()->back()->withErrors(['reactable_type' => 'Invalid reactable type']);
         }
@@ -63,12 +63,12 @@ class ReactionController extends Controller
 
         // Fix double-escaped backslashes from JavaScript
         $reactableClass = stripslashes($request->input('reactable_type'));
-        
+
         // If stripslashes removed too much, try the original
-        if (!class_exists($reactableClass)) {
+        if (! class_exists($reactableClass)) {
             $reactableClass = $request->input('reactable_type');
         }
-        
+
         if (! class_exists($reactableClass)) {
             return redirect()->back(303)->withErrors(['reactable_type' => 'Invalid reactable type']);
         }
@@ -92,10 +92,10 @@ class ReactionController extends Controller
 
         // Decode the reactable type (it's URL encoded)
         $reactableClass = urldecode($reactableType);
-        
+
         // Handle double-escaped backslashes from JavaScript
         // If the class doesn't exist, try with stripslashes
-        if (!class_exists($reactableClass)) {
+        if (! class_exists($reactableClass)) {
             $reactableClass = stripslashes($reactableClass);
         }
 
@@ -116,4 +116,3 @@ class ReactionController extends Controller
         ]);
     }
 }
-

@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use TrueFans\LaravelReactReactions\Models\Comment;
 use TrueFans\LaravelReactReactions\Notifications\NewCommentNotification;
@@ -330,7 +329,7 @@ test('validates commentable model exists', function () {
 
 test('validates commentable has HasComments trait', function () {
     $this->actingAs($this->user);
-    
+
     // Create a model without HasComments trait
     $user = createUser();
 
@@ -371,5 +370,3 @@ test('handles database transaction rollback on error', function () {
 
     $response->assertSessionHasErrors();
 });
-
-

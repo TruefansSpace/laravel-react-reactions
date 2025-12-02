@@ -75,7 +75,6 @@ it('validates reactable exists', function () {
     $response->assertSessionHasErrors('reactable_id');
 });
 
-
 it('updates existing reaction when posting again', function () {
     $post = TestPost::create([
         'title' => 'Test Post',
@@ -108,11 +107,11 @@ it('can list all reactions for a reactable', function () {
 
     $user1 = createUser();
     $user2 = createUser();
-    
+
     $post->react($user1->id, 'like');
     $post->react($user2->id, 'love');
 
-    $response = $this->get("/reactions/list/" . urlencode(TestPost::class) . "/{$post->id}");
+    $response = $this->get('/reactions/list/'.urlencode(TestPost::class)."/{$post->id}");
 
     $response->assertOk()
         ->assertJsonStructure([
@@ -122,7 +121,7 @@ it('can list all reactions for a reactable', function () {
                 'per_page',
             ],
         ]);
-    
+
     $data = $response->json('reactions.data');
     expect($data)->toHaveCount(2);
 });
@@ -135,14 +134,14 @@ it('can filter reactions by type', function () {
 
     $user1 = createUser();
     $user2 = createUser();
-    
+
     $post->react($user1->id, 'like');
     $post->react($user2->id, 'love');
 
-    $response = $this->get("/reactions/list/" . urlencode(TestPost::class) . "/{$post->id}?type=like");
+    $response = $this->get('/reactions/list/'.urlencode(TestPost::class)."/{$post->id}?type=like");
 
     $response->assertOk();
-    
+
     $data = $response->json('reactions.data');
     expect($data)->toHaveCount(1)
         ->and($data[0]['type'])->toBe('like');
@@ -160,10 +159,10 @@ it('paginates reactions list', function () {
         $post->react($user->id, 'like');
     }
 
-    $response = $this->get("/reactions/list/" . urlencode(TestPost::class) . "/{$post->id}");
+    $response = $this->get('/reactions/list/'.urlencode(TestPost::class)."/{$post->id}");
 
     $response->assertOk();
-    
+
     $reactions = $response->json('reactions');
     expect($reactions['per_page'])->toBe(8)
         ->and($reactions['total'])->toBe(10)
@@ -212,4 +211,3 @@ it('returns 303 status code on destroy', function () {
 
     expect($response->status())->toBe(303);
 });
-

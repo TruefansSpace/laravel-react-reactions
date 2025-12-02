@@ -11,7 +11,7 @@ use TrueFans\LaravelReactReactions\Traits\HasReactions;
 
 class Comment extends Model
 {
-    use SoftDeletes, HasReactions;
+    use HasReactions, SoftDeletes;
 
     protected $fillable = [
         'commentable_type',
@@ -90,8 +90,7 @@ class Comment extends Model
      * Check if a user can edit this comment
      * Override this method to implement custom logic
      *
-     * @param int|null $userId
-     * @return bool
+     * @param  int|null  $userId
      */
     public function canEdit(): bool
     {
@@ -102,8 +101,7 @@ class Comment extends Model
      * Check if a user can delete this comment
      * Override this method to implement custom logic
      *
-     * @param int|null $userId
-     * @return bool
+     * @param  int|null  $userId
      */
     public function canDelete(): bool
     {
@@ -112,10 +110,6 @@ class Comment extends Model
 
     /**
      * Add a reply to this comment
-     *
-     * @param int $userId
-     * @param string $content
-     * @return Comment
      */
     public function addReply(int $userId, string $content): Comment
     {

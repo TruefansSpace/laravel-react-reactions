@@ -8,7 +8,6 @@ use TrueFans\LaravelReactReactions\Models\Comment;
 
 class NewCommentNotification extends Notification
 {
-
     public Comment $comment;
 
     /**
@@ -35,19 +34,19 @@ class NewCommentNotification extends Notification
         $commentable = $this->comment->commentable;
         $commentableType = class_basename($commentable);
         $commentableTitle = $commentable->title ?? $commentable->name ?? "Item #{$commentable->id}";
-        
+
         $isReply = $this->comment->parent_id !== null;
-        $subject = $isReply 
+        $subject = $isReply
             ? "New reply on {$commentableType}: {$commentableTitle}"
             : "New comment on {$commentableType}: {$commentableTitle}";
 
         $message = (new MailMessage)
             ->subject($subject)
             ->greeting('Hello!')
-            ->line($isReply 
+            ->line($isReply
                 ? "{$this->comment->user->name} replied to a comment:"
                 : "{$this->comment->user->name} posted a new comment:")
-            ->line('"' . $this->comment->content . '"');
+            ->line('"'.$this->comment->content.'"');
 
         // Add view link if commentable has a URL method
         if (method_exists($commentable, 'url')) {
