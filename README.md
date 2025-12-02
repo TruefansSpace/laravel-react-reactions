@@ -29,13 +29,34 @@ A complete Facebook-like reaction and commenting system for Laravel with Inertia
 
 ```bash
 composer require truefanspace/laravel-react-reactions
+```
 
+### Publishing Assets
+
+You can publish all package assets at once or individually:
+
+**Publish everything (recommended for first-time setup):**
+```bash
+php artisan vendor:publish --provider="TrueFans\LaravelReactReactions\LaravelReactReactionsServiceProvider"
+```
+
+**Or publish individually:**
+```bash
+# Publish and run migrations
 php artisan vendor:publish --tag=react-reactions-migrations
 php artisan migrate
 
+# Publish React components (TypeScript)
 php artisan vendor:publish --tag=react-reactions-components
+
+# Publish configuration file
 php artisan vendor:publish --tag=react-reactions-config
 ```
+
+**Available tags:**
+- `react-reactions-migrations` - Database migrations for reactions and comments tables
+- `react-reactions-components` - React/TypeScript components to `resources/js/Components/Reactions`
+- `react-reactions-config` - Configuration file to `config/react-reactions.php`
 
 ## Quick Start
 
