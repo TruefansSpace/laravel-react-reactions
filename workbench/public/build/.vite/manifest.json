@@ -1,0 +1,8 @@
+{
+  "workbench/resources/js/ssr.tsx": {
+    "file": "ssr.js",
+    "name": "ssr",
+    "src": "workbench/resources/js/ssr.tsx",
+    "isEntry": true
+  }
+}

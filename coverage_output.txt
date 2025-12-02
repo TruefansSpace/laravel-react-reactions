@@ -1,0 +1,176 @@
+Cannot load Xdebug - it was already loaded
+
+   PASS  Tests\Unit\CommandTest
+  ✓ it can be instantiated                                                                  0.31s  
+  ✓ it has description                                                                      0.14s  
+  ✓ it has correct signature                                                                0.15s  
+
+   PASS  Tests\Feature\ReactionTest
+  ✓ it can store a reaction via API                                                         0.40s  
+  ✓ it can list all reactions for a reactable                                               0.74s  
+  ✓ it validates reaction type                                                              0.34s  
+  ✓ it validates reactable exists                                                           0.34s  
+  ✓ it updates existing reaction when posting again                                         0.35s  
+  ✓ it can delete a reaction via API                                                        0.34s  
+  ✓ it returns 303 status code on destroy                                                   0.34s  
+  ✓ it returns 303 status code on store                                                     0.35s  
+  ✓ it validates reactable type exists                                                      0.34s  
+  ✓ it can filter reactions by type                                                         0.72s  
+  ✓ it validates required fields for destroy                                                0.34s  
+  ✓ it validates required fields for store                                                  0.34s  
+  ✓ it paginates reactions list                                                             2.32s  
+
+   PASS  Tests\Feature\CommentTest
+  ✓ comment creation sends notification to admin                                            3.40s  
+  ✓ comment creation does not notify post owner if they are the commenter                   3.34s  
+  ✓ non-author cannot delete comment                                                        0.51s  
+  ✓ comment creation sends notification to post owner                                       0.74s  
+  ✓ can load replies for a comment                                                          0.34s  
+  ✓ comment author can update their comment                                                 0.34s  
+  ✓ comment creation validates required fields                                              0.33s  
+  ✓ comment with reactions can be retrieved                                                 0.33s  
+  ✓ authenticated user can create comment                                                   0.41s  
+  ✓ can create reply to comment                                                             0.36s  
+  ✓ comment author can delete their comment                                                 0.34s  
+  ✓ trims whitespace from comment content                                                   0.35s  
+  ✓ unauthenticated user cannot create comment                                              0.33s  
+  ✓ validates parent comment belongs to same commentable                                    0.30s  
+  ✓ non-author cannot update comment                                                        0.51s  
+  ✓ comment creation validates content length                                               0.43s  
+  ✓ reply sends notification to parent comment author                                       3.84s  
+
+   PASS  Tests\Unit\FacadeTest
+  ✓ it returns correct facade accessor name                                                 0.26s  
+  ✓ it resolves facade accessor correctly                                                   0.23s  
+
+   FAIL  Tests\Unit\ServiceProviderTest
+  ✓ it publishes config files                                                               0.17s  
+  ✓ it registers event listeners                                                            0.16s  
+  ✓ it boots and loads routes                                                               0.16s  
+  ✓ it publishes react component files                                                      0.14s  
+  ✓ it publishes migration files                                                            0.15s  
+  ⨯ it merges config from package                                                           0.15s  
+  ✓ it registers config                                                                     0.14s  
+
+   PASS  Tests\Feature\NotificationTest
+  ✓ sends notification to parent comment author on reply                                    3.89s  
+  ✓ respects notification enabled config                                                    3.35s  
+  ✓ notification email includes comment content                                             0.34s  
+  ✓ respects notify on replies config                                                       3.36s  
+  ✓ notification listener is called                                                         0.41s  
+  ✓ notification email has correct subject                                                  0.35s  
+  ✓ notification contains correct data                                                      3.36s  
+  ✓ does not notify parent author if they are the replier                                   3.35s  
+  ✓ comment creation dispatches event                                                       0.36s  
+  ✓ does not notify post owner if they are the commenter                                    3.36s  
+  ✓ sends notification to admin email                                                       3.35s  
+  ✓ notification email includes commenter name                                              0.34s  
+  ✓ sends notification to post owner                                                        3.74s  
+  ✓ notification distinguishes between comment and reply                                    0.36s  
+
+   PASS  Tests\Unit\HasCommentsTest
+  ✓ can add reply to comment                                                                0.36s  
+  ✓ can manage comment returns false for non-author                                         0.52s  
+  ✓ comment can delete returns true for author                                              0.35s  
+  ✓ can manage comment returns true for authenticated user by default                       0.33s  
+  ✓ can add comment to model                                                                0.41s  
+  ✓ can get comments with reactions data                                                    0.45s  
+  ✓ comment can edit returns true for author                                                0.34s  
+  ✓ can count total comments including replies                                              0.34s  
+  ✓ can count top level comments only                                                       0.44s  
+  ✓ comment tracks edit status                                                              0.44s  
+  ✓ can get top level comments only                                                         0.35s  
+  ✓ can manage comment returns true for comment author                                      0.35s  
+  ✓ can get comments relationship                                                           0.36s  
+  ✓ can manage comment returns false for unauthenticated user                               0.34s  
+  ✓ comment soft deletes                                                                    0.44s  
+
+   PASS  Tests\Unit\EventTest
+  ✓ comment created event can be dispatched                                                 0.38s  
+  ✓ comment created event uses dispatchable trait                                           0.38s  
+  ✓ comment created event uses serializes models trait                                      0.35s  
+  ✓ comment created event can be instantiated                                               0.41s  
+
+   PASS  Tests\Unit\HasReactionsTest
+  ✓ it can remove a reaction from a model                                                   0.43s  
+  ✓ it can toggle a reaction                                                                0.33s  
+  ✓ it can add a reaction to a model                                                        0.33s  
+  ✓ it can get reactions summary                                                            0.89s  
+  ✓ it can get user reaction                                                                0.34s  
+  ✓ it enforces unique reaction per user per reactable                                      0.33s  
+  ✓ it can change reaction type                                                             0.34s  
+
+   PASS  Tests\Unit\CommentModelTest
+  ✓ can create reply to comment                                                             0.36s  
+  ✓ top level scope filters parent comments                                                 0.33s  
+  ✓ comment fillable attributes                                                             0.33s  
+  ✓ comment can have replies                                                                0.35s  
+  ✓ can edit calls commentable can manage comment                                           0.43s  
+  ✓ comment uses soft deletes                                                               0.42s  
+  ✓ can delete calls commentable can manage comment                                         0.35s  
+  ✓ comment belongs to commentable                                                          0.34s  
+  ✓ comment casts attributes correctly                                                      0.34s  
+  ✓ comment can have parent                                                                 0.34s  
+  ✓ comment belongs to user                                                                 0.35s  
+  ✓ reactions enabled returns config value                                                  0.59s  
+
+   PASS  Tests\Unit\ReactionModelTest
+  ✓ reaction has unique constraint                                                          0.36s  
+  ✓ reaction scope by reactable                                                             0.34s  
+  ✓ reaction can be deleted                                                                 0.37s  
+  ✓ reaction scope by user                                                                  0.62s  
+  ✓ reaction belongs to user                                                                0.35s  
+  ✓ reaction belongs to reactable                                                           0.36s  
+  ✓ can update existing reaction type                                                       0.35s  
+  ✓ reaction type validation                                                                1.48s  
+  ✓ reaction fillable attributes                                                            0.34s  
+  ✓ reaction scope by type                                                                  0.54s  
+  ✓ reaction timestamps are set                                                             0.35s  
+
+   PASS  Tests\ArchTest
+  ✓ it will not use debugging functions                                                     0.52s  
+
+   PASS  Tests\Unit\ListenerTest
+  ✓ listener can be instantiated                                                            0.34s  
+  ✓ listener does not send notification when disabled                                       0.35s  
+  ✓ listener handles comment created event                                                  0.35s  
+  ✓ listener sends notification with correct comment data                                   0.35s  
+  ✓ listener does not send notification when no admin email                                 0.34s  
+
+   PASS  Tests\ExampleTest
+  ✓ it can test                                                                             0.15s  
+
+   PASS  Tests\Feature\ConfigurationTest
+  ✓ notifications config has enabled setting                                                0.15s  
+  ✓ reactions config has correct structure                                                  0.15s  
+  ✓ comments config has reactions enabled setting                                           0.15s  
+  ✓ comments config has max depth setting                                                   0.15s  
+  ✓ can set custom max comment depth                                                        0.15s  
+  ✓ can set custom admin email                                                              0.15s  
+  ✓ can override reactions config                                                           0.15s  
+  ✓ can disable notifications                                                               0.16s  
+  ✓ can disable comments reactions                                                          0.16s  
+  ✓ reactions config has enabled types                                                      0.15s  
+  ✓ notifications config has admin email setting                                            0.15s  
+  ───────────────────────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Unit\ServiceProviderTest > it merges config from package                          
+  Failed asserting that null is of type array.
+
+  at tests/Unit/ServiceProviderTest.php:22
+     18▕     $this->provider->register();
+     19▕     $this->provider->boot();
+     20▕     
+     21▕     expect(config('react-reactions'))->toBeArray()
+  ➜  22▕         ->and(config('react-reactions.reactions'))->toBeArray();
+     23▕ });
+     24▕ 
+     25▕ it('boots and loads routes', function () {
+     26▕     $this->provider->boot();
+
+  1   tests/Unit/ServiceProviderTest.php:22
+
+
+  Tests:    1 failed, 122 passed (249 assertions)
+  Duration: 80.26s
+  Random Order Seed: 1764509340
+

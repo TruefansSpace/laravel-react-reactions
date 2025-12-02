@@ -1,0 +1,19 @@
+{
+  "resources/js/Components/CommentForm.tsx": [],
+  "resources/js/Components/CommentItem.tsx": [],
+  "resources/js/Components/Comments.tsx": [],
+  "resources/js/Components/Reactions.tsx": [],
+  "resources/js/Components/ReactionsModal.tsx": [],
+  "workbench/resources/js/Pages/Auth/Login.tsx": [],
+  "workbench/resources/js/Pages/TestPage.tsx": [],
+  "workbench/resources/js/components/DebugPanel.tsx": [],
+  "workbench/resources/js/components/ui/alert-dialog.tsx": [],
+  "workbench/resources/js/components/ui/button.tsx": [],
+  "workbench/resources/js/components/ui/card.tsx": [],
+  "workbench/resources/js/components/ui/dropdown-menu.tsx": [],
+  "workbench/resources/js/components/ui/toast.tsx": [],
+  "workbench/resources/js/components/ui/toaster.tsx": [],
+  "workbench/resources/js/hooks/use-toast.ts": [],
+  "workbench/resources/js/lib/utils.ts": [],
+  "workbench/resources/js/ssr.tsx": []
+}
