@@ -30,14 +30,7 @@ export default function Reactions({
     onUserClick
 }: ReactionsProps) {
     const pageProps = usePage<PageProps>().props;
-    const reactionTypes = pageProps.reactionTypes || {
-        like: '👍',
-        adore: '🥰',
-        haha: '😂',
-        wow: '😮',
-        sad: '😢',
-        angry: '😠',
-    };
+    const reactionTypes = pageProps.reactionTypes;
     
     const [reactions, setReactions] = useState(initialReactions);
     const [currentUserReaction, setCurrentUserReaction] = useState(userReaction);

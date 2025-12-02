@@ -49,14 +49,7 @@ export default function ReactionsModal({
     onUserClick
 }: ReactionsModalProps) {
     const pageProps = usePage<PageProps>().props;
-    const reactionTypes = pageProps.reactionTypes || {
-        like: '👍',
-        adore: '🥰',
-        haha: '😂',
-        wow: '😮',
-        sad: '😢',
-        angry: '😠',
-    };
+    const reactionTypes = pageProps.reactionTypes;
     
     const [activeTab, setActiveTab] = useState('all');
     const [isAnimating, setIsAnimating] = useState(false);

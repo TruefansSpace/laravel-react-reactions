@@ -107,6 +107,7 @@ class TestController extends Controller
                 'error' => session()->get('error'),
             ],
             'errors' => $errors ? $errors->getBag('default')->getMessages() : [],
+            'reactionTypes' => config('react-reactions.types', []),
         ]);
     }
 }

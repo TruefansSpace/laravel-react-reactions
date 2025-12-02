@@ -317,14 +317,7 @@ function ReactionsModal({
   onUserClick
 }) {
   const pageProps = usePage().props;
-  const reactionTypes = pageProps.reactionTypes || {
-    like: "👍",
-    adore: "🥰",
-    haha: "😂",
-    wow: "😮",
-    sad: "😢",
-    angry: "😠"
-  };
+  const reactionTypes = pageProps.reactionTypes;
   const [activeTab, setActiveTab] = useState("all");
   const [isAnimating, setIsAnimating] = useState(false);
   const [reactions, setReactions] = useState([]);
@@ -563,14 +556,7 @@ function Reactions({
   onUserClick
 }) {
   const pageProps = usePage().props;
-  const reactionTypes = pageProps.reactionTypes || {
-    like: "👍",
-    adore: "🥰",
-    haha: "😂",
-    wow: "😮",
-    sad: "😢",
-    angry: "😠"
-  };
+  const reactionTypes = pageProps.reactionTypes;
   const [reactions, setReactions] = useState(initialReactions);
   const [currentUserReaction, setCurrentUserReaction] = useState(userReaction);
   const [isProcessing, setIsProcessing] = useState(false);
