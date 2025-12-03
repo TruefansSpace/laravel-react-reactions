@@ -209,7 +209,7 @@ export default function ReactionsModal({
                 <div className="flex items-center justify-between p-4 border-b border-gray-200">
                     <h2 id="modal-title" className="text-lg font-semibold">Reactions</h2>
                     <button
-                        onClick={onClose}
+                        onClick={handleClose}
                         className="p-1 hover:bg-gray-100 rounded-full transition-colors"
                         data-testid="close-modal"
                     >
