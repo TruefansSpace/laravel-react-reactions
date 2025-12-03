@@ -15,6 +15,7 @@ interface ReactionsProps {
     initialReactions?: Record<string, number>;
     userReaction?: string | null;
     onUserClick?: (userId: number) => void;
+    onToast?: (message: string, variant?: 'default' | 'success' | 'destructive') => void;
 }
 
 interface PageProps {
@@ -27,7 +28,8 @@ export default function Reactions({
     reactableId, 
     initialReactions = {}, 
     userReaction = null,
-    onUserClick
+    onUserClick,
+    onToast
 }: ReactionsProps) {
     const pageProps = usePage<PageProps>().props;
     const reactionTypes = pageProps.reactionTypes;
