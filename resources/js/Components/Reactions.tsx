@@ -6,7 +6,7 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from './ui/dropdown-menu';
 import ReactionsModal from './ReactionsModal';
 
 interface ReactionsProps {
