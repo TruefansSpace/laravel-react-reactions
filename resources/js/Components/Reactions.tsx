@@ -15,6 +15,7 @@ interface ReactionsProps {
     initialReactions?: Record<string, number>;
     userReaction?: string | null;
     onUserClick?: (userId: number) => void;
+    onToast?: (message: string, variant?: 'default' | 'success' | 'destructive') => void;
 }
 
 interface PageProps {
@@ -27,7 +28,8 @@ export default function Reactions({
     reactableId, 
     initialReactions = {}, 
     userReaction = null,
-    onUserClick
+    onUserClick,
+    onToast
 }: ReactionsProps) {
     const pageProps = usePage<PageProps>().props;
     const reactionTypes = pageProps.reactionTypes;
@@ -230,6 +232,7 @@ export default function Reactions({
                         onClick={() => setShowModal(true)}
                         className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
                         title="See who reacted"
+                        data-testid="open-reactions-modal"
                     >
                         <ChevronDown className="w-4 h-4 text-gray-600" />
                     </button>

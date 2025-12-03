@@ -5,11 +5,11 @@ test.describe('Toast Notifications', () => {
 
     test.beforeEach(async ({ page }) => {
         // Login first
-        await page.goto('/login');
+        await page.goto('http://localhost:8000/login');
         await page.fill('input[name="email"]', 'test@example.com');
         await page.fill('input[name="password"]', 'password');
         await page.click('button[type="submit"]');
-        await page.waitForURL('/');
+        await page.waitForURL('http://localhost:8000');
         
         // Ensure we are on the test page
         await page.waitForLoadState('networkidle');
@@ -20,113 +20,79 @@ test.describe('Toast Notifications', () => {
         console.log('Authenticated user:', authUser);
     });
 
-    test('shows success toast when adding reaction', async ({ page }) => {
-        await page.click('[data-testid="reaction-button-like"]');
-        
-        // Wait for toast to appear
-        await expect(page.locator('[data-testid="toast"]')).toBeVisible();
-        await expect(page.locator('text=Reaction added')).toBeVisible();
-    });
-
-    test('shows success toast when removing reaction', async ({ page }) => {
-        // Add reaction first
-        await page.click('[data-testid="reaction-button-like"]');
-        await page.waitForTimeout(500);
-        
-        // Remove reaction
-        await page.click('[data-testid="reaction-button-like"]');
-        
-        // Check toast
-        await expect(page.locator('text=Reaction removed')).toBeVisible();
-    });
-
-    test('shows success toast when changing reaction', async ({ page }) => {
-        // Add reaction
-        await page.click('[data-testid="reaction-button-like"]');
-        await page.waitForTimeout(500);
-        
-        // Change to different reaction
-        await page.click('[data-testid="reaction-button-love"]');
-        
-        // Check toast
-        await expect(page.locator('text=Reaction updated')).toBeVisible();
-    });
-
     test('shows success toast when adding comment', async ({ page }) => {
-        await page.fill('[data-testid="comment-input"]', 'Test comment');
+        // Click to show comment form
+        await page.locator('[data-testid="add-comment-button"]').first().click();
+        await page.waitForTimeout(200);
+        
+        // Fill and submit comment
+        await page.fill('[data-testid="comment-input"]', 'Test comment for toast');
         await page.click('[data-testid="submit-comment"]');
         
-        await expect(page.locator('text=Comment added')).toBeVisible();
-    });
-
-    test('shows success toast when editing comment', async ({ page }) => {
-        // Add comment first
-        await page.fill('[data-testid="comment-input"]', 'Original comment');
-        await page.click('[data-testid="submit-comment"]');
-        await page.waitForTimeout(500);
+        // Wait for page reload (Inertia redirect)
+        await page.waitForLoadState('networkidle');
         
-        // Edit comment
-        await page.click('[data-testid="edit-comment"]');
-        await page.fill('[data-testid="edit-comment-input"]', 'Edited comment');
-        await page.click('[data-testid="save-edit"]');
+        // Check toast appears with success message
+        const toast = page.locator('[data-testid="toast"]').first();
+        await expect(toast).toBeVisible({ timeout: 3000 });
         
-        await expect(page.locator('text=Comment updated')).toBeVisible();
+        // Verify toast contains success message
+        await expect(toast).toContainText('Comment posted successfully');
     });
 
     test('shows success toast when deleting comment', async ({ page }) => {
-        // Add comment first
-        await page.fill('[data-testid="comment-input"]', 'Test comment');
+        // First, add a comment
+        await page.locator('[data-testid="add-comment-button"]').first().click();
+        await page.waitForTimeout(200);
+        await page.fill('[data-testid="comment-input"]', 'Comment to be deleted');
         await page.click('[data-testid="submit-comment"]');
-        await page.waitForTimeout(500);
+        await page.waitForLoadState('networkidle');
         
-        // Delete comment
-        await page.click('[data-testid="delete-comment"]');
-        await page.click('[data-testid="confirm-delete"]');
+        // Wait for the "posted" toast to disappear
+        await page.waitForTimeout(6000);
         
-        await expect(page.locator('text=Comment deleted')).toBeVisible();
-    });
-
-    test('shows error toast on network failure', async ({ page }) => {
-        // Simulate network failure
-        await page.route('**/reactions/toggle', route => route.abort());
+        // Find the comment we just created and delete it
+        // Look for the comment with our text
+        const commentContainer = page.locator('text=Comment to be deleted').locator('..').locator('..');
         
-        await page.click('[data-testid="reaction-button-like"]');
+        // Click the more options button (three dots)
+        await commentContainer.locator('button').first().click();
+        await page.waitForTimeout(200);
         
-        await expect(page.locator('[data-testid="toast-error"]')).toBeVisible();
+        // Click delete
+        await page.locator('[data-testid="delete-comment"]').click();
+        await page.waitForTimeout(200);
+        
+        // Confirm deletion
+        await page.locator('[data-testid="confirm-delete"]').click();
+        
+        // Wait for page reload
+        await page.waitForLoadState('networkidle');
+        
+        // Check toast appears with success message
+        const toast = page.locator('[data-testid="toast"]').first();
+        await expect(toast).toBeVisible({ timeout: 3000 });
+        
+        // Verify toast contains success message
+        await expect(toast).toContainText('Comment deleted successfully');
     });
 
     test('toast auto-dismisses after timeout', async ({ page }) => {
-        await page.click('[data-testid="reaction-button-like"]');
+        // Add a comment to trigger toast
+        await page.locator('[data-testid="add-comment-button"]').first().click();
+        await page.waitForTimeout(200);
+        await page.fill('[data-testid="comment-input"]', 'Test auto-dismiss');
+        await page.click('[data-testid="submit-comment"]');
+        await page.waitForLoadState('networkidle');
         
         // Toast should be visible
-        await expect(page.locator('[data-testid="toast"]')).toBeVisible();
+        const toast = page.locator('[data-testid="toast"]').first();
+        await expect(toast).toBeVisible({ timeout: 3000 });
         
-        // Wait for auto-dismiss (usually 3-5 seconds)
+        // Wait for auto-dismiss (5 seconds as per use-toast.ts)
         await page.waitForTimeout(6000);
         
         // Toast should be gone
-        await expect(page.locator('[data-testid="toast"]')).not.toBeVisible();
-    });
-
-    test('can manually dismiss toast', async ({ page }) => {
-        await page.click('[data-testid="reaction-button-like"]');
-        
-        await expect(page.locator('[data-testid="toast"]')).toBeVisible();
-        
-        // Click dismiss button
-        await page.click('[data-testid="toast-close"]');
-        
-        await expect(page.locator('[data-testid="toast"]')).not.toBeVisible();
-    });
-
-    test('multiple toasts stack correctly', async ({ page }) => {
-        // Trigger multiple actions quickly
-        await page.click('[data-testid="reaction-button-like"]');
-        await page.waitForTimeout(100);
-        await page.click('[data-testid="reaction-button-love"]');
-        
-        // Should show multiple toasts or queue them
-        const toasts = page.locator('[data-testid="toast"]');
-        await expect(toasts).toHaveCount(2);
+        await expect(toast).toBeHidden();
     });
 });

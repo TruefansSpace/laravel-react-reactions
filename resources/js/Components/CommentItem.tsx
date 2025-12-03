@@ -35,6 +35,7 @@ interface CommentItemProps {
     onReplyAdded: (parentId: number, newReply: Comment) => void;
     currentUserId: number;
     isReply?: boolean;
+    onToast?: (message: string, variant?: 'default' | 'success' | 'destructive') => void;
 }
 
 export default function CommentItem({
@@ -47,7 +48,8 @@ export default function CommentItem({
     onCommentDeleted,
     onReplyAdded,
     currentUserId,
-    isReply = false
+    isReply = false,
+    onToast
 }: CommentItemProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [showReplyForm, setShowReplyForm] = useState(false);

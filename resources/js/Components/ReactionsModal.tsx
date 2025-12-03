@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { usePage } from '@inertiajs/react';
 import { X, AlertCircle, Loader2 } from 'lucide-react';
 
@@ -66,6 +67,18 @@ export default function ReactionsModal({
         if (isOpen) {
             setIsAnimating(true);
             loadReactions(1, false);
+            
+            // Focus first focusable element when modal opens
+            setTimeout(() => {
+                if (modalRef.current) {
+                    const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
+                        'button:not([disabled]), [tabindex="0"]'
+                    );
+                    if (focusableElements.length > 0) {
+                        focusableElements[0].focus();
+                    }
+                }
+            }, 100);
         }
     }, [isOpen, activeTab]);
 
@@ -185,7 +198,7 @@ export default function ReactionsModal({
 
     if (!isOpen && !isAnimating) return null;
 
-    return (
+    const modalContent = (
         <div 
             className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-200 ${
                 isOpen && isAnimating ? 'bg-black/50' : 'bg-black/0'
@@ -209,7 +222,7 @@ export default function ReactionsModal({
                 <div className="flex items-center justify-between p-4 border-b border-gray-200">
                     <h2 id="modal-title" className="text-lg font-semibold">Reactions</h2>
                     <button
-                        onClick={onClose}
+                        onClick={handleClose}
                         className="p-1 hover:bg-gray-100 rounded-full transition-colors"
                         data-testid="close-modal"
                     >
@@ -328,4 +341,6 @@ export default function ReactionsModal({
             </div>
         </div>
     );
+
+    return createPortal(modalContent, document.body);
 }

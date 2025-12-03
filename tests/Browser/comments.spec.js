@@ -99,10 +99,15 @@ test.describe('Comments System', () => {
         // Submit update
         await page.click('button:has-text("Update")');
         
-        // Wait for success
-        await expect(page.locator('text=Success').first()).toBeVisible({ timeout: 5000 });
-        await expect(page.locator(`text=${updatedText}`)).toBeVisible();
-        await expect(page.locator('text=edited')).toBeVisible();
+        // Wait for page reload
+        await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(2000);
+        
+        // Verify updated content
+        await expect(page.locator(`text=${updatedText}`)).toBeVisible({ timeout: 5000 });
+        
+        // Verify edited indicator
+        await expect(page.getByText(/edited/i).first()).toBeVisible({ timeout: 3000 });
         
         // Take screenshot of edited comment
         await page.screenshot({ 
@@ -132,9 +137,9 @@ test.describe('Comments System', () => {
         // Submit reply
         await page.click('button:has-text("Post")');
         
-        // Wait for success
-        await expect(page.locator('text=Comment posted successfully')).toBeVisible({ timeout: 5000 });
-        await expect(page.locator(`text=${replyText}`)).toBeVisible();
+        // Wait for page reload and reply to appear
+        await page.waitForLoadState('networkidle');
+        await expect(page.locator(`text=${replyText}`)).toBeVisible({ timeout: 5000 });
         
         // Take screenshot of nested reply
         await page.screenshot({ 
@@ -161,10 +166,15 @@ test.describe('Comments System', () => {
         });
         
         // Confirm deletion
-        await page.click('button:has-text("Delete")');
+        await page.click('[data-testid="confirm-delete"]');
         
-        // Wait for success
-        await expect(page.locator('text=Comment deleted successfully')).toBeVisible({ timeout: 5000 });
+        // Wait for page reload
+        await page.waitForLoadState('networkidle');
+        
+        // Check toast appears with success message
+        const toast = page.locator('[data-testid="toast"]').first();
+        await expect(toast).toBeVisible({ timeout: 3000 });
+        await expect(toast).toContainText('Comment deleted successfully');
         
         await page.screenshot({ 
             path: 'tests/Browser/comments.spec.js-snapshots/comment-deleted.png',

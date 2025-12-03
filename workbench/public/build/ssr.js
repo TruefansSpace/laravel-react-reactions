@@ -13,14 +13,14 @@ import axios from "axios";
 import * as ToastPrimitives from "@radix-ui/react-toast";
 import createServer from "@inertiajs/react/server";
 import ReactDOMServer from "react-dom/server";
-function cn(...inputs) {
+function cn$1(...inputs) {
   return twMerge(clsx(inputs));
 }
 const Card = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
   "div",
   {
     ref,
-    className: cn(
+    className: cn$1(
       "rounded-xl border bg-card text-card-foreground shadow",
       className
     ),
@@ -32,7 +32,7 @@ const CardHeader = React.forwardRef(({ className, ...props }, ref) => /* @__PURE
   "div",
   {
     ref,
-    className: cn("flex flex-col space-y-1.5 p-6", className),
+    className: cn$1("flex flex-col space-y-1.5 p-6", className),
     ...props
   }
 ));
@@ -41,7 +41,7 @@ const CardTitle = React.forwardRef(({ className, ...props }, ref) => /* @__PURE_
   "h3",
   {
     ref,
-    className: cn("font-semibold leading-none tracking-tight", className),
+    className: cn$1("font-semibold leading-none tracking-tight", className),
     ...props
   }
 ));
@@ -50,18 +50,18 @@ const CardDescription = React.forwardRef(({ className, ...props }, ref) => /* @_
   "p",
   {
     ref,
-    className: cn("text-sm text-muted-foreground", className),
+    className: cn$1("text-sm text-muted-foreground", className),
     ...props
   }
 ));
 CardDescription.displayName = "CardDescription";
-const CardContent = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx("div", { ref, className: cn("p-6 pt-0", className), ...props }));
+const CardContent = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx("div", { ref, className: cn$1("p-6 pt-0", className), ...props }));
 CardContent.displayName = "CardContent";
 const CardFooter = React.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ jsx(
   "div",
   {
     ref,
-    className: cn("flex items-center p-6 pt-0", className),
+    className: cn$1("flex items-center p-6 pt-0", className),
     ...props
   }
 ));
@@ -97,7 +97,7 @@ const Button = React.forwardRef(
     return /* @__PURE__ */ jsx(
       Comp,
       {
-        className: cn(buttonVariants({ variant, size, className })),
+        className: cn$1(buttonVariants({ variant, size, className })),
         ref,
         ...props
       }
@@ -279,6 +279,9 @@ const __vite_glob_0_0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
   __proto__: null,
   default: Login
 }, Symbol.toStringTag, { value: "Module" }));
+function cn(...inputs) {
+  return twMerge(clsx(inputs));
+}
 const DropdownMenu = DropdownMenuPrimitive.Root;
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 const DropdownMenuContent = React.forwardRef(({ className, sideOffset = 4, ...props }, ref) => /* @__PURE__ */ jsx(DropdownMenuPrimitive.Portal, { children: /* @__PURE__ */ jsx(
@@ -1453,7 +1456,7 @@ const ToastViewport = React.forwardRef(({ className, ...props }, ref) => /* @__P
   ToastPrimitives.Viewport,
   {
     ref,
-    className: cn(
+    className: cn$1(
       "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
       className
     ),
@@ -1466,7 +1469,7 @@ const Toast = React.forwardRef(({ className, variant, ...props }, ref) => {
     ToastPrimitives.Root,
     {
       ref,
-      className: cn(
+      className: cn$1(
         "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
         variant === "destructive" && "destructive group border-red-500 bg-red-500 text-white",
         variant === "success" && "border-green-500 bg-green-500 text-white",
@@ -1482,7 +1485,7 @@ const ToastAction = React.forwardRef(({ className, ...props }, ref) => /* @__PUR
   ToastPrimitives.Action,
   {
     ref,
-    className: cn(
+    className: cn$1(
       "inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-white transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
       className
     ),
@@ -1494,7 +1497,7 @@ const ToastClose = React.forwardRef(({ className, ...props }, ref) => /* @__PURE
   ToastPrimitives.Close,
   {
     ref,
-    className: cn(
+    className: cn$1(
       "absolute right-2 top-2 rounded-md p-1 text-white/50 opacity-0 transition-opacity hover:text-white focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100",
       className
     ),
@@ -1508,7 +1511,7 @@ const ToastTitle = React.forwardRef(({ className, ...props }, ref) => /* @__PURE
   ToastPrimitives.Title,
   {
     ref,
-    className: cn("text-sm font-semibold", className),
+    className: cn$1("text-sm font-semibold", className),
     ...props
   }
 ));
@@ -1517,7 +1520,7 @@ const ToastDescription = React.forwardRef(({ className, ...props }, ref) => /* @
   ToastPrimitives.Description,
   {
     ref,
-    className: cn("text-sm opacity-90", className),
+    className: cn$1("text-sm opacity-90", className),
     ...props
   }
 ));
