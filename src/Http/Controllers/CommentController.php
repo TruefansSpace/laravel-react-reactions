@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use TrueFans\LaravelReactReactions\Events\CommentCreated;
+use TrueFans\LaravelReactReactions\Events\CommentDeleted;
 use TrueFans\LaravelReactReactions\Models\Comment;
 
 class CommentController extends Controller
@@ -193,6 +194,10 @@ class CommentController extends Controller
             DB::beginTransaction();
 
             $commentId = $comment->id;
+            
+            // Dispatch event before deletion (while we still have access to relationships)
+            event(new CommentDeleted($comment));
+            
             $comment->delete();
 
             DB::commit();

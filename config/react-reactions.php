@@ -51,6 +51,7 @@ return [
         'notify_owner' => true, // Notify the owner of the commentable item
         'notify_parent_author' => true, // Notify parent comment author on replies
         'notify_on_replies' => true, // Send notifications for replies (not just top-level comments)
+        'notify_on_delete' => env('REACTIONS_NOTIFY_ON_DELETE', true), // Send notifications when comments are deleted
         'queue' => true, // Queue notification emails
     ],
 ];

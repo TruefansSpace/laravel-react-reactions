@@ -8,6 +8,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import { X, AlertCircle, Loader2, ChevronDown, Send, Clock, MoreVertical, Edit2, Trash2, Reply, MessageSquare, LogOut, User } from "lucide-react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
+import { createPortal } from "react-dom";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 import axios from "axios";
 import * as ToastPrimitives from "@radix-ui/react-toast";
@@ -335,6 +336,16 @@ function ReactionsModal({
     if (isOpen) {
       setIsAnimating(true);
       loadReactions(1, false);
+      setTimeout(() => {
+        if (modalRef.current) {
+          const focusableElements = modalRef.current.querySelectorAll(
+            'button:not([disabled]), [tabindex="0"]'
+          );
+          if (focusableElements.length > 0) {
+            focusableElements[0].focus();
+          }
+        }
+      }, 100);
     }
   }, [isOpen, activeTab]);
   useEffect(() => {
@@ -430,7 +441,7 @@ function ReactionsModal({
     }, 200);
   };
   if (!isOpen && !isAnimating) return null;
-  return /* @__PURE__ */ jsx(
+  const modalContent = /* @__PURE__ */ jsx(
     "div",
     {
       className: `fixed inset-0 z-50 flex items-center justify-center transition-all duration-200 ${isOpen && isAnimating ? "bg-black/50" : "bg-black/0"}`,
@@ -451,7 +462,7 @@ function ReactionsModal({
               /* @__PURE__ */ jsx(
                 "button",
                 {
-                  onClick: onClose,
+                  onClick: handleClose,
                   className: "p-1 hover:bg-gray-100 rounded-full transition-colors",
                   "data-testid": "close-modal",
                   children: /* @__PURE__ */ jsx(X, { className: "w-5 h-5" })
@@ -550,13 +561,15 @@ function ReactionsModal({
       )
     }
   );
+  return createPortal(modalContent, document.body);
 }
 function Reactions({
   reactableType,
   reactableId,
   initialReactions = {},
   userReaction = null,
-  onUserClick
+  onUserClick,
+  onToast
 }) {
   const pageProps = usePage().props;
   const reactionTypes = pageProps.reactionTypes;
@@ -721,6 +734,7 @@ function Reactions({
           onClick: () => setShowModal(true),
           className: "p-1.5 hover:bg-gray-100 rounded-full transition-colors",
           title: "See who reacted",
+          "data-testid": "open-reactions-modal",
           children: /* @__PURE__ */ jsx(ChevronDown, { className: "w-4 h-4 text-gray-600" })
         }
       )
@@ -986,7 +1000,8 @@ function CommentItem({
   onCommentDeleted,
   onReplyAdded,
   currentUserId,
-  isReply = false
+  isReply = false,
+  onToast
 }) {
   var _a, _b, _c, _d, _e;
   const [isEditing, setIsEditing] = useState(false);
@@ -1469,6 +1484,7 @@ const Toast = React.forwardRef(({ className, variant, ...props }, ref) => {
     ToastPrimitives.Root,
     {
       ref,
+      "data-testid": "toast",
       className: cn$1(
         "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
         variant === "destructive" && "destructive group border-red-500 bg-red-500 text-white",
