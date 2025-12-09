@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Notification;
 use TrueFans\LaravelReactReactions\Events\CommentDeleted;
 use TrueFans\LaravelReactReactions\Notifications\CommentDeletedNotification;
 use Workbench\App\Models\TestPost;
-use Workbench\App\Models\User;
 
 uses(RefreshDatabase::class);
 
@@ -17,7 +16,7 @@ beforeEach(function () {
         'content' => 'Test content',
         'user_id' => $this->user->id,
     ]);
-    
+
     // Enable delete notifications for testing
     config(['react-reactions.notifications.notify_on_delete' => true]);
     config(['react-reactions.notifications.admin_email' => 'admin@example.com']);
@@ -52,7 +51,7 @@ test('admin receives notification when comment is deleted', function () {
 
 test('notification is not sent when notify_on_delete is disabled', function () {
     config(['react-reactions.notifications.notify_on_delete' => false]);
-    
+
     Notification::fake();
 
     $comment = $this->post->comment($this->user->id, 'Test comment');
@@ -64,7 +63,7 @@ test('notification is not sent when notify_on_delete is disabled', function () {
 
 test('post owner receives notification when their post comment is deleted', function () {
     config(['react-reactions.notifications.notify_owner' => true]);
-    
+
     $commenter = createUser();
     $comment = $this->post->comment($commenter->id, 'Test comment');
 

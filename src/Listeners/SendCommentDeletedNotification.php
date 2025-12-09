@@ -28,6 +28,7 @@ class SendCommentDeletedNotification
 
         if (! $adminEmail) {
             \Log::warning('No admin email configured');
+
             return;
         }
 
@@ -39,6 +40,7 @@ class SendCommentDeletedNotification
 
         if (! $notificationsEnabled) {
             \Log::warning('Notifications disabled');
+
             return;
         }
 
@@ -50,6 +52,7 @@ class SendCommentDeletedNotification
 
         if (! $notifyOnDelete) {
             \Log::warning('Delete notifications disabled');
+
             return;
         }
 

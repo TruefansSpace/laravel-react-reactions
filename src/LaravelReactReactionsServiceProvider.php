@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use TrueFans\LaravelReactReactions\Events\CommentCreated;
 use TrueFans\LaravelReactReactions\Events\CommentDeleted;
-use TrueFans\LaravelReactReactions\Listeners\SendCommentNotification;
 use TrueFans\LaravelReactReactions\Listeners\SendCommentDeletedNotification;
+use TrueFans\LaravelReactReactions\Listeners\SendCommentNotification;
 
 class LaravelReactReactionsServiceProvider extends ServiceProvider
 {
@@ -50,7 +50,7 @@ class LaravelReactReactionsServiceProvider extends ServiceProvider
             CommentCreated::class,
             SendCommentNotification::class
         );
-        
+
         Event::listen(
             CommentDeleted::class,
             SendCommentDeletedNotification::class

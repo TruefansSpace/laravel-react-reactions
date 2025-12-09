@@ -194,10 +194,10 @@ class CommentController extends Controller
             DB::beginTransaction();
 
             $commentId = $comment->id;
-            
+
             // Dispatch event before deletion (while we still have access to relationships)
             event(new CommentDeleted($comment));
-            
+
             $comment->delete();
 
             DB::commit();
