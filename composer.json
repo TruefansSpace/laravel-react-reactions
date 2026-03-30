@@ -22,7 +22,7 @@
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.16",
-        "inertiajs/inertia-laravel": "^2.0",
+        "inertiajs/inertia-laravel": "^3.0",
         "larastan/larastan": "^3.0",
         "laravel/pint": "^1.14",
         "nunomaduro/collision": "^8.8",
